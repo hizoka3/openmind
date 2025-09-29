@@ -1,0 +1,13 @@
+{
+    "name": "openmind/plugin",
+    "description": "Plugin WordPress para gestión de pacientes y psicólogos",
+    "type": "wordpress-plugin",
+    "require": {
+        "php": ">=7.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Openmind\\": "src/"
+        }
+    }
+}
