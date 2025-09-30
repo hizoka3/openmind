@@ -6,6 +6,14 @@ class Plugin {
     public static function init(): void {
         self::loadHooks();
         self::loadAssets();
+        self::loadControllers();
+    }
+
+    private static function loadControllers(): void {
+        \Openmind\Controllers\ActivityController::init();
+        \Openmind\Controllers\MessageController::init();
+        \Openmind\Controllers\PatientController::init();
+        \Openmind\Controllers\DiaryController::init();
     }
 
     public static function activate(): void {
@@ -20,6 +28,30 @@ class Plugin {
     private static function loadHooks(): void {
         add_action('init', [self::class, 'registerRoles']);
         add_action('init', [self::class, 'registerPostTypes']);
+        add_filter('template_include', [self::class, 'loadTemplate']);
+        add_filter('login_redirect', [self::class, 'redirectAfterLogin'], 10, 3);
+    }
+
+    public static function loadTemplate(string $template): string {
+        if (is_page('dashboard-psicologo') && current_user_can('manage_patients')) {
+            return OPENMIND_PATH . 'templates/dashboard-psychologist.php';
+        }
+        if (is_page('dashboard-paciente') && current_user_can('view_activities')) {
+            return OPENMIND_PATH . 'templates/dashboard-patient.php';
+        }
+        return $template;
+    }
+
+    public static function redirectAfterLogin(string $redirect, string $request, $user): string {
+        if (!isset($user->roles)) return $redirect;
+
+        if (in_array('psychologist', $user->roles)) {
+            return home_url('/dashboard-psicologo');
+        }
+        if (in_array('patient', $user->roles)) {
+            return home_url('/dashboard-paciente');
+        }
+        return $redirect;
     }
 
     private static function loadAssets(): void {

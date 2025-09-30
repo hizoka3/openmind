@@ -51,5 +51,32 @@ class Installer {
         }
 
         update_option('openmind_db_version', OPENMIND_VERSION);
+
+        // Crear páginas de dashboard
+        self::createPages();
+    }
+
+    private static function createPages(): void {
+        // Dashboard Psicólogo
+        if (!get_page_by_path('dashboard-psicologo')) {
+            wp_insert_post([
+                'post_title' => 'Dashboard Psicólogo',
+                'post_name' => 'dashboard-psicologo',
+                'post_status' => 'publish',
+                'post_type' => 'page',
+                'post_content' => '<!-- OpenMind Dashboard -->'
+            ]);
+        }
+
+        // Dashboard Paciente
+        if (!get_page_by_path('dashboard-paciente')) {
+            wp_insert_post([
+                'post_title' => 'Dashboard Paciente',
+                'post_name' => 'dashboard-paciente',
+                'post_status' => 'publish',
+                'post_type' => 'page',
+                'post_content' => '<!-- OpenMind Dashboard -->'
+            ]);
+        }
     }
 }
