@@ -3,7 +3,7 @@
  * Plugin Name: OpenMind
  * Description: Gestión de pacientes y psicólogos
  * Version: 1.0.0
- * Author: Tu Nombre
+ * Author: Pez web
  * Text Domain: openmind
  */
 

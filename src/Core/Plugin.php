@@ -4,9 +4,14 @@ namespace Openmind\Core;
 class Plugin {
 
     public static function init(): void {
+        self::loadHelpers();
         self::loadHooks();
         self::loadAssets();
         self::loadControllers();
+    }
+
+    private static function loadHelpers(): void {
+        require_once OPENMIND_PATH . 'src/helpers.php';
     }
 
     private static function loadControllers(): void {

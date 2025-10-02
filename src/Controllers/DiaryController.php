@@ -21,12 +21,13 @@ class DiaryController {
         $patient_id = get_current_user_id();
         $content = wp_kses_post($_POST['content'] ?? '');
         $mood = sanitize_text_field($_POST['mood'] ?? '');
+        $is_private = isset($_POST['is_private']) && $_POST['is_private'] === '1';
 
         if (empty($content)) {
             wp_send_json_error(['message' => 'El contenido es requerido'], 400);
         }
 
-        $entry_id = DiaryRepository::create($patient_id, $content, $mood);
+        $entry_id = DiaryRepository::create($patient_id, $content, $mood, $is_private);
 
         if ($entry_id) {
             wp_send_json_success([
@@ -43,8 +44,9 @@ class DiaryController {
 
         $patient_id = get_current_user_id();
         $limit = intval($_POST['limit'] ?? 10);
+        $private_only = isset($_POST['private_only']) && $_POST['private_only'] === '1';
 
-        $entries = DiaryRepository::getByPatient($patient_id, $limit);
+        $entries = DiaryRepository::getByPatient($patient_id, $limit, $private_only);
 
         wp_send_json_success(['entries' => $entries]);
     }

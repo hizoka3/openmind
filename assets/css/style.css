@@ -1,37 +1,780 @@
-/* assets/css/style.css */
+/* Responsive */
+@media (max-width: 768px) {
+    .openmind-dashboard {
+        flex-direction: column;
+    }
 
-/* Layout */
-.openmind-dashboard {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+    .openmind-sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
-.dashboard-content {
+/* === NUEVOS ESTILOS FASE 1 === */
+
+/* Page Header */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    margin: 0;
+}
+
+.page-description {
+    color: #7f8c8d;
+    margin-top: 5px;
+}
+
+/* Tables */
+.openmind-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.openmind-table thead {
+    background: #f8f9fa;
+}
+
+.openmind-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 14px;
+}
+
+.openmind-table td {
+    padding: 16px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.patient-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.patient-cell img {
+    border-radius: 50%;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-badge.active {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-badge.inactive {
+    background: #f8f9fa;
+    color: #6c757d;
+}
+
+/* Activities Grid */
+.activities-grid {
     display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.activity-item {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.3s;
+}
+
+.activity-item:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.activity-item.completed {
+    opacity: 0.6;
+}
+
+.activity-meta {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.assigned-to, .unassigned {
+    font-size: 13px;
+    color: #7f8c8d;
+}
+
+.status {
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.status.completed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status.pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.activity-actions {
+    margin-top: 15px;
+    display: flex;
+    gap: 8px;
+}
+
+/* Activities Layout (con sidebar) */
+.activities-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
     gap: 30px;
 }
 
-.dashboard-section {
-    background: #fff;
-    border-radius: 8px;
-    padding: 24px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.dashboard-section h2 {
-    margin-top: 0;
-    color: #2c3e50;
-    font-size: 24px;
-}
-
-/* Header */
-.openmind-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+.activities-sidebar {
+    background: #f8f9fa;
     padding: 20px;
     border-radius: 8px;
-    margin-bottom: 30px;
+    height: fit-content;
+}
+
+.sidebar-section h3 {
+    margin-top: 0;
+    font-size: 16px;
+}
+
+.help-text {
+    font-size: 13px;
+    color: #7f8c8d;
+}
+
+/* Messages Layout */
+.messages-layout {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 0;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    height: 600px;
+}
+
+.conversations-list {
+    border-right: 1px solid #e0e0e0;
+    overflow-y: auto;
+}
+
+.conversation-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+    border-bottom: 1px solid #f0f0f0;
+    position: relative;
+}
+
+.conversation-item:hover {
+    background: #f8f9fa;
+}
+
+.conversation-item.has-unread {
+    background: #f0f7ff;
+}
+
+.conv-avatar img {
+    border-radius: 50%;
+}
+
+.conv-info h4 {
+    margin: 0 0 5px;
+    font-size: 14px;
+}
+
+.last-message-time {
+    font-size: 12px;
+    color: #95a5a6;
+    margin: 0;
+}
+
+.unread-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: #e74c3c;
+    color: white;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.message-thread {
+    display: flex;
+    flex-direction: column;
+}
+
+.empty-thread {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #95a5a6;
+}
+
+/* Chat Container (Patient) */
+.message-container {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 600px;
+}
+
+.chat-header {
+    padding: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.psychologist-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.psychologist-info img {
+    border-radius: 50%;
+}
+
+.subtitle {
+    color: #7f8c8d;
+    font-size: 13px;
+    margin: 0;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.message {
+    max-width: 70%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    word-wrap: break-word;
+}
+
+.message.sent {
+    align-self: flex-end;
+    background: #667eea;
+    color: white;
+}
+
+.message.received {
+    align-self: flex-start;
+    background: #f0f0f0;
+    color: #2c3e50;
+}
+
+.message-time {
+    font-size: 11px;
+    opacity: 0.7;
+    margin-top: 5px;
+}
+
+.chat-input {
+    padding: 20px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.chat-input form {
+    display: flex;
+    gap: 10px;
+}
+
+.chat-input textarea {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    resize: none;
+    font-family: inherit;
+}
+
+/* Diary Sections */
+.patients-diary-list {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.patient-diary-section {
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
+}
+
+.patient-diary-section .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.patient-diary-section .patient-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.patient-diary-section .patient-info img {
+    border-radius: 50%;
+}
+
+.diary-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.diary-preview-item {
+    background: #f8f9fa;
+    padding: 16px;
+    border-radius: 8px;
+}
+
+.entry-meta {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.entry-meta .mood {
+    font-size: 20px;
+}
+
+.entry-meta .date {
+    font-size: 13px;
+    color: #7f8c8d;
+}
+
+.entry-excerpt {
+    color: #555;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.no-entries {
+    color: #95a5a6;
+    font-style: italic;
+}
+
+/* Profile Layout */
+.profile-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+}
+
+.profile-card {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+}
+
+.profile-header {
+    text-align: center;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 24px;
+}
+
+.profile-header img {
+    border-radius: 50%;
+    margin-bottom: 15px;
+}
+
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 13px;
+}
+
+.info-group {
+    margin-bottom: 20px;
+}
+
+.info-group label {
+    display: block;
+    font-size: 13px;
+    color: #7f8c8d;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.info-group p {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 15px;
+}
+
+.psychologist-mini {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.psychologist-mini img {
+    border-radius: 50%;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 30px;
+}
+
+.profile-stats {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    height: fit-content;
+}
+
+.profile-stats h3 {
+    margin-top: 0;
+    font-size: 18px;
+}
+
+.stats-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-value {
+    font-size: 32px;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #7f8c8d;
+}
+
+/* Info Boxes */
+.info-box {
+    background: #e3f2fd;
+    border-left: 4px solid #2196f3;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.info-box.private {
+    background: #fff3e0;
+    border-left-color: #ff9800;
+}
+
+.info-box p {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 14px;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 800px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.modal-header h2 {
+    margin: 0;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: #95a5a6;
+}
+
+.modal-close:hover {
+    color: #2c3e50;
+}
+
+.modal form {
+    padding: 24px;
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.mood-selector {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.mood-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.mood-option:hover {
+    border-color: #667eea;
+    background: #f5f7ff;
+}
+
+.mood-option input {
+    display: none;
+}
+
+.mood-option input:checked + span {
+    font-weight: bold;
+}
+
+.mood-option:has(input:checked) {
+    border-color: #667eea;
+    background: #f5f7ff;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 24px;
+}
+
+/* Diary Entry Cards */
+.diary-entries-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.diary-entry-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.activities-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.activities-tabs .count {
+    color: #7f8c8d;
+    font-weight: normal;
+}
+
+@media (max-width: 1024px) {
+    .activities-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .messages-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .conversations-list {
+        display: none;
+    }
+
+    .profile-layout {
+        grid-template-columns: 1fr;
+    }
+}
+/* assets/css/style.css */
+
+/* Layout principal con sidebar */
+.openmind-dashboard {
+    display: flex;
+    min-height: 100vh;
+    background: #f5f7fa;
+}
+
+.dashboard-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Sidebar */
+.openmind-sidebar {
+    width: 250px;
+    background: #2c3e50;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+}
+
+.sidebar-header {
+    padding: 30px 20px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.user-avatar img {
+    border-radius: 50%;
+    border: 3px solid #667eea;
+}
+
+.sidebar-header h3 {
+    margin: 15px 0 5px;
+    font-size: 18px;
+    color: white;
+}
+
+.user-role {
+    font-size: 13px;
+    color: #95a5a6;
+    margin: 0;
+}
+
+.sidebar-menu {
+    flex: 1;
+    padding: 20px 0;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: #bdc3c7;
+    text-decoration: none;
+    transition: all 0.3s;
+    border-left: 3px solid transparent;
+}
+
+.menu-item:hover {
+    background: rgba(255,255,255,0.05);
+    color: white;
+}
+
+.menu-item.active {
+    background: rgba(102, 126, 234, 0.2);
+    border-left-color: #667eea;
+    color: white;
+}
+
+.menu-icon {
+    font-size: 20px;
+    margin-right: 12px;
+    width: 24px;
+}
+
+.menu-label {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.sidebar-footer {
+    padding: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.btn-logout {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background: rgba(231, 76, 60, 0.2);
+    color: #e74c3c;
+    text-align: center;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.3s;
+}
+
+.btn-logout:hover {
+    background: rgba(231, 76, 60, 0.3);
+}
+
+/* Header (ya no ocupa todo el ancho) */
+.openmind-header {
+    background: white;
+    padding: 20px 30px;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 0;
 }
 
 .header-content {
@@ -40,18 +783,197 @@
     align-items: center;
 }
 
-.header-actions {
-    display: flex;
-    gap: 15px;
-    align-items: center;
+.openmind-header h1 {
+    margin: 0;
+    font-size: 24px;
+    color: #2c3e50;
+    background: none;
+    padding: 0;
 }
 
-.user-name {
-    font-weight: 500;
+/* Content area */
+.dashboard-content {
+    padding: 30px;
+    max-width: 1400px;
+}
+
+/* Página de Inicio */
+.page-inicio {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.welcome-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 40px;
+    border-radius: 12px;
+    color: white;
+}
+
+.welcome-section h1 {
+    margin: 0;
+    font-size: 32px;
+}
+
+.wave {
+    display: inline-block;
+    animation: wave 2s ease-in-out infinite;
+}
+
+@keyframes wave {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(20deg); }
+    75% { transform: rotate(-20deg); }
+}
+
+.subtitle {
+    margin: 10px 0 0;
+    opacity: 0.9;
+    font-size: 16px;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.stat-card {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+.stat-card.has-notification {
+    border-left: 4px solid #e74c3c;
+}
+
+.stat-icon {
+    font-size: 40px;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f5f7fa;
+    border-radius: 12px;
+}
+
+.stat-info h3 {
+    margin: 0;
+    font-size: 32px;
+    color: #2c3e50;
+}
+
+.stat-info p {
+    margin: 5px 0 0;
+    color: #7f8c8d;
+    font-size: 14px;
+}
+
+/* Dashboard Section */
+.dashboard-section {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-header h2 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 20px;
+}
+
+/* Activity Log */
+.activity-log {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.log-item {
+    display: flex;
+    gap: 15px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    transition: background 0.3s;
+}
+
+.log-item:hover {
+    background: #ecf0f1;
+}
+
+.log-icon {
+    font-size: 24px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.log-content {
+    flex: 1;
+}
+
+.log-text {
+    margin: 0 0 5px;
+    color: #2c3e50;
+    font-size: 14px;
+}
+
+.log-time {
+    font-size: 12px;
+    color: #95a5a6;
 }
 
 /* Buttons */
-.btn-primary, .btn-secondary, .btn-icon, .btn-text {
+.btn-text {
+    color: #667eea;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.btn-text:hover {
+    color: #5568d3;
+}
+
+/* Empty States */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #95a5a6;
+    font-style: italic;
+}
+
+/* Estilos anteriores que se mantienen */
+.btn-primary, .btn-secondary, .btn-icon {
     padding: 10px 20px;
     border-radius: 6px;
     border: none;
@@ -93,226 +1015,6 @@
     font-size: 11px;
 }
 
-.btn-text {
-    background: transparent;
-    color: white;
-    padding: 8px 16px;
-}
-
-.btn-text:hover {
-    background: rgba(255,255,255,0.1);
-}
-
-/* Patient Cards */
-.patients-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    margin: 20px 0;
-}
-
-.patient-card {
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 16px;
-    display: flex;
-    gap: 15px;
-    align-items: start;
-    transition: all 0.3s;
-}
-
-.patient-card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    transform: translateY(-2px);
-}
-
-.patient-avatar img {
-    border-radius: 50%;
-}
-
-.patient-info {
-    flex: 1;
-}
-
-.patient-info h3 {
-    margin: 0 0 5px 0;
-    font-size: 18px;
-    color: #2c3e50;
-}
-
-.patient-email {
-    color: #7f8c8d;
-    font-size: 14px;
-    margin: 0;
-}
-
-.patient-stats {
-    display: flex;
-    gap: 15px;
-    margin-top: 10px;
-    font-size: 13px;
-}
-
-.stat {
-    color: #7f8c8d;
-}
-
-.patient-actions {
-    display: flex;
-    gap: 8px;
-}
-
-/* Activity Cards */
-.activities-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.activities-tabs {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #e0e0e0;
-}
-
-.tab {
-    padding: 10px 20px;
-    background: transparent;
-    border: none;
-    border-bottom: 3px solid transparent;
-    cursor: pointer;
-    font-size: 14px;
-    color: #7f8c8d;
-    transition: all 0.3s;
-}
-
-.tab.active {
-    color: #667eea;
-    border-bottom-color: #667eea;
-}
-
-.activity-card {
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 20px;
-    transition: all 0.3s;
-}
-
-.activity-card.completed {
-    opacity: 0.7;
-    background: #f8f9fa;
-}
-
-.activity-card.overdue {
-    border-left: 4px solid #e74c3c;
-}
-
-.activity-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: start;
-    margin-bottom: 15px;
-}
-
-.activity-header h3 {
-    margin: 0;
-    font-size: 18px;
-    color: #2c3e50;
-}
-
-.due-date {
-    background: #f0f0f0;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 13px;
-    white-space: nowrap;
-}
-
-.activity-content {
-    color: #555;
-    line-height: 1.6;
-}
-
-.activity-footer {
-    margin-top: 15px;
-}
-
-.completed-badge {
-    color: #27ae60;
-    font-weight: 500;
-}
-
-/* Diary Entries */
-.diary-entries {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    margin-top: 20px;
-}
-
-.diary-entry {
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 20px;
-    transition: opacity 0.3s;
-}
-
-.entry-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.entry-meta {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-}
-
-.mood-badge {
-    background: #f0f0f0;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 13px;
-}
-
-.entry-date {
-    color: #7f8c8d;
-    font-size: 13px;
-}
-
-.btn-delete {
-    opacity: 0.5;
-    transition: opacity 0.3s;
-}
-
-.btn-delete:hover {
-    opacity: 1;
-}
-
-.entry-content {
-    color: #555;
-    line-height: 1.6;
-}
-
-/* Psychologist Info */
-.psychologist-info {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    padding: 20px;
-    border-radius: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.psychologist-info h3 {
-    margin: 0;
-    color: #2c3e50;
-}
-
 /* Notifications */
 .openmind-notification {
     position: fixed;
@@ -339,36 +1041,19 @@
     border-left: 4px solid #e74c3c;
 }
 
-.openmind-notification.info {
-    border-left: 4px solid #3498db;
-}
-
-/* Empty States */
-.empty-state {
-    text-align: center;
-    color: #7f8c8d;
-    padding: 40px 20px;
-    font-style: italic;
-}
-
 /* Responsive */
 @media (max-width: 768px) {
-    .patients-grid {
+    .openmind-dashboard {
+        flex-direction: column;
+    }
+
+    .openmind-sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+
+    .stats-grid {
         grid-template-columns: 1fr;
-    }
-
-    .header-content {
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .patient-card {
-        flex-direction: column;
-    }
-
-    .psychologist-info {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
     }
 }

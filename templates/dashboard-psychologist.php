@@ -2,57 +2,30 @@
 if (!current_user_can('manage_patients')) wp_die('Acceso denegado');
 
 $user_id = get_current_user_id();
-$patients = get_users([
-    'role' => 'patient',
-    'meta_query' => [
-        [
-            'key' => 'psychologist_id',
-            'value' => $user_id,
-            'compare' => '='
-        ]
-    ]
-]);
+$current_page = $_GET['view'] ?? 'inicio';
 
 get_header();
 ?>
 
     <div class="openmind-dashboard psychologist">
-        <?php get_template_part('openmind/components/header', null, ['role' => 'psychologist']); ?>
+        <?php include OPENMIND_PATH . 'templates/components/sidebar-psychologist.php'; ?>
 
-        <div class="dashboard-content">
-            <div class="dashboard-section">
-                <h2>Mis Pacientes (<?php echo count($patients); ?>)</h2>
+        <div class="dashboard-main">
+            <?php
+            $role = 'psychologist';
+            include OPENMIND_PATH . 'templates/components/header.php';
+            ?>
 
-                <div class="patients-grid">
-                    <?php if (empty($patients)): ?>
-                        <p class="empty-state">No tienes pacientes asignados aún.</p>
-                    <?php else: ?>
-                        <?php foreach ($patients as $patient): ?>
-                            <?php get_template_part('openmind/components/patient-card', null, ['patient' => $patient]); ?>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </div>
-
-                <button class="btn-primary" id="add-patient">Agregar Paciente</button>
-            </div>
-
-            <div class="dashboard-section">
-                <h2>Actividades Recientes</h2>
+            <div class="dashboard-content">
                 <?php
-                $activities = get_posts([
-                    'post_type' => 'activity',
-                    'author' => $user_id,
-                    'posts_per_page' => 5,
-                    'orderby' => 'date',
-                    'order' => 'DESC'
-                ]);
-                ?>
+                $page_file = OPENMIND_PATH . "templates/pages/psychologist/{$current_page}.php";
 
-                <div class="activities-list">
-                    <?php foreach ($activities as $activity): ?>
-                        <?php get_template_part('openmind/components/activity-item', null, ['activity' => $activity]); ?>
-                    <?php endforeach; ?>
-                </div>
+                if (file_exists($page_file)) {
+                    include $page_file;
+                } else {
+                    include OPENMIND_PATH . 'templates/pages/psychologist/inicio.php';
+                }
+                ?>
             </div>
         </div>
     </div>

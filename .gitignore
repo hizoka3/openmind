@@ -1,0 +1,68 @@
+# Composer
+vendor/
+composer.lock
+package-lock.json
+
+# WordPress
+flattened/
+.htaccess
+flatten.sh
+
+# WordPress.org SVN
+.svn/
+trunk/
+tags/
+branches/
+
+# IDE/Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node.js (si usas build tools)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Logs
+*.log
+error_log
+debug.log
+
+# Cache
+.cache/
+*.cache
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Temporary files
+*.tmp
+*.temp
+
+# Build artifacts
+/dist/
+/build/
+/build-deploy/
+
+# PHPStorm
+.phpstorm.meta.php
+
+# Backup files
+*.bak
+*.backup
+
+# XAMPP specific (para tu entorno local)
+php_errorlog
+
+# Plugin deployment (ZIP files for WordPress.org)
+*.zip
+kame-erp-integration-*.zip

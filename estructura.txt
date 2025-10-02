@@ -1,0 +1,40 @@
+.
+├── README.md
+├── assets
+│   ├── css
+│   │   └── style.css
+│   └── js
+│       └── main.js
+├── composer.json
+├── composer.lock
+├── estructura.txt
+├── flatten.sh
+├── openmind.php
+├── src
+│   ├── Controllers
+│   │   ├── ActivityController.php
+│   │   ├── DiaryController.php
+│   │   ├── MessageController.php
+│   │   └── PatientController.php
+│   ├── Core
+│   │   ├── Installer.php
+│   │   └── Plugin.php
+│   └── Repositories
+│       ├── DiaryRepository.php
+│       └── MessageRepository.php
+├── templates
+│   ├── components
+│   │   ├── activity-card.php
+│   │   ├── components
+│   │   │   └── diary-list.php
+│   │   ├── header.php
+│   │   ├── patient-card.php
+│   │   └── sidebar-psychologist.php
+│   ├── dashboard-patient.php
+│   ├── dashboard-psychologist.php
+│   └── pages
+│       └── psychologist
+│           └── inicio.php
+└── test-setup.php
+
+13 directories, 25 files

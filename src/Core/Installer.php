@@ -34,16 +34,18 @@ class Installer {
             KEY created_at (created_at)
         ) $charset;";
 
-        // Tabla bitácora
+        // Tabla bitácora/diario
         $sql[] = "CREATE TABLE {$wpdb->prefix}openmind_diary (
             id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
             patient_id bigint(20) unsigned NOT NULL,
             content text NOT NULL,
             mood varchar(20),
+            is_private tinyint(1) DEFAULT 0,
             created_at datetime DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (id),
             KEY patient_id (patient_id),
-            KEY created_at (created_at)
+            KEY created_at (created_at),
+            KEY is_private (is_private)
         ) $charset;";
 
         foreach ($sql as $query) {

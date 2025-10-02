@@ -3,7 +3,7 @@ namespace Openmind\Repositories;
 
 class DiaryRepository {
 
-    public static function create(int $patient_id, string $content, string $mood = ''): int {
+    public static function create(int $patient_id, string $content, string $mood = '', bool $is_private = false): int {
         global $wpdb;
 
         $wpdb->insert(
@@ -11,21 +11,24 @@ class DiaryRepository {
             [
                 'patient_id' => $patient_id,
                 'content' => $content,
-                'mood' => $mood
+                'mood' => $mood,
+                'is_private' => $is_private ? 1 : 0
             ],
-            ['%d', '%s', '%s']
+            ['%d', '%s', '%s', '%d']
         );
 
         return $wpdb->insert_id;
     }
 
-    public static function getByPatient(int $patient_id, int $limit = 10): array {
+    public static function getByPatient(int $patient_id, int $limit = 10, bool $private_only = false): array {
         global $wpdb;
+
+        $where = $private_only ? "AND is_private = 1" : "AND (is_private = 0 OR is_private IS NULL)";
 
         return $wpdb->get_results($wpdb->prepare("
             SELECT * 
             FROM {$wpdb->prefix}openmind_diary
-            WHERE patient_id = %d
+            WHERE patient_id = %d {$where}
             ORDER BY created_at DESC
             LIMIT %d
         ", $patient_id, $limit));
