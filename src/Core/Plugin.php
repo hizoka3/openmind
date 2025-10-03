@@ -8,6 +8,7 @@ class Plugin {
         self::loadHooks();
         self::loadAssets();
         self::loadControllers();
+        self::registerFormActions(); // NUEVO
     }
 
     private static function loadHelpers(): void {
@@ -20,6 +21,23 @@ class Plugin {
         \Openmind\Controllers\PatientController::init();
         \Openmind\Controllers\DiaryController::init();
         \Openmind\Controllers\AuthController::init();
+    }
+
+    /**
+     * Registrar acciones para formularios (admin-post.php)
+     */
+    private static function registerFormActions(): void {
+        // Guardar bitácora del psicólogo
+        add_action('admin_post_openmind_save_psychologist_diary', [
+            '\Openmind\Controllers\DiaryController',
+            'savePsychologistDiary'
+        ]);
+
+        // Actualizar bitácora del psicólogo
+        add_action('admin_post_openmind_update_psychologist_diary', [
+            '\Openmind\Controllers\DiaryController',
+            'updatePsychologistDiary'
+        ]);
     }
 
     public static function activate(): void {

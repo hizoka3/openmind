@@ -34,16 +34,19 @@ class Installer {
             KEY created_at (created_at)
         ) $charset;";
 
-        // Tabla bitácora/diario
+        // Tabla bitácora/diario - ACTUALIZADA
         $sql[] = "CREATE TABLE {$wpdb->prefix}openmind_diary (
             id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
             patient_id bigint(20) unsigned NOT NULL,
+            author_id bigint(20) unsigned NOT NULL,
             content text NOT NULL,
             mood varchar(20),
             is_private tinyint(1) DEFAULT 0,
             created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (id),
             KEY patient_id (patient_id),
+            KEY author_id (author_id),
             KEY created_at (created_at),
             KEY is_private (is_private)
         ) $charset;";
@@ -52,14 +55,44 @@ class Installer {
             dbDelta($query);
         }
 
-        update_option('openmind_db_version', OPENMIND_VERSION);
+        // Migrar datos existentes si ya existe la tabla
+        self::migrateExistingDiary();
 
-        // Crear páginas de dashboard
+        update_option('openmind_db_version', OPENMIND_VERSION);
         self::createPages();
     }
 
+    private static function migrateExistingDiary(): void {
+        global $wpdb;
+
+        // Verificar si la columna author_id ya existe
+        $column_exists = $wpdb->get_results(
+            "SHOW COLUMNS FROM {$wpdb->prefix}openmind_diary LIKE 'author_id'"
+        );
+
+        if (empty($column_exists)) {
+            // Agregar columna author_id
+            $wpdb->query(
+                "ALTER TABLE {$wpdb->prefix}openmind_diary 
+                ADD COLUMN author_id bigint(20) unsigned NOT NULL AFTER patient_id"
+            );
+
+            // Agregar columna updated_at si no existe
+            $wpdb->query(
+                "ALTER TABLE {$wpdb->prefix}openmind_diary 
+                ADD COLUMN updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP AFTER created_at"
+            );
+
+            // Actualizar entradas existentes: author_id = patient_id (asumimos que el paciente las escribió)
+            $wpdb->query(
+                "UPDATE {$wpdb->prefix}openmind_diary 
+                SET author_id = patient_id 
+                WHERE author_id = 0"
+            );
+        }
+    }
+
     private static function createPages(): void {
-        // Dashboard Psicólogo
         if (!get_page_by_path('dashboard-psicologo')) {
             wp_insert_post([
                 'post_title' => 'Dashboard Psicólogo',
@@ -70,7 +103,6 @@ class Installer {
             ]);
         }
 
-        // Dashboard Paciente
         if (!get_page_by_path('dashboard-paciente')) {
             wp_insert_post([
                 'post_title' => 'Dashboard Paciente',

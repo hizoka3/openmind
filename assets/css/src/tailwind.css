@@ -177,6 +177,184 @@
     @apply tw-text-center tw-py-16 tw-text-gray-400 tw-italic;
 }
 
+/* ==========================================
+   PÁGINA DETALLE PACIENTE
+   ========================================== */
+
+/* Breadcrumb */
+.breadcrumb a {
+    @apply tw-inline-flex tw-items-center tw-gap-2 tw-text-primary-600 tw-text-sm tw-font-medium tw-transition-colors tw-mb-6 tw-no-underline;
+}
+
+.breadcrumb a:hover {
+    @apply tw-text-primary-700;
+}
+
+/* Patient Detail Header */
+.patient-detail-header {
+    @apply tw-bg-white tw-rounded-2xl tw-p-8 tw-mb-8 tw-shadow-sm;
+}
+
+.patient-main-info {
+    @apply tw-flex tw-gap-6 tw-items-start tw-mb-6;
+}
+
+.patient-main-info img {
+    @apply tw-rounded-2xl tw-border-4 tw-border-gray-100;
+}
+
+.patient-main-info h1 {
+    @apply tw-text-3xl tw-font-bold tw-text-gray-900 tw-m-0 tw-mb-3;
+}
+
+.patient-email,
+.patient-since {
+    @apply tw-flex tw-items-center tw-gap-2 tw-text-gray-600 tw-text-sm tw-my-1;
+}
+
+.patient-actions {
+    @apply tw-flex tw-gap-3 tw-flex-wrap;
+}
+
+/* Tabs */
+.detail-tabs {
+    @apply tw-flex tw-gap-2 tw-border-b-2 tw-border-gray-200 tw-mb-8 tw-overflow-x-auto;
+}
+
+.tab-btn {
+    @apply tw-flex tw-items-center tw-gap-2 tw-px-6 tw-py-3 tw-bg-transparent tw-border-0 tw-border-b-4 tw-border-transparent tw-cursor-pointer tw-text-sm tw-font-medium tw-text-gray-500 tw-transition-all tw-whitespace-nowrap tw-rounded-t-lg;
+}
+
+.tab-btn:hover {
+    @apply tw-text-gray-900 tw-bg-gray-50;
+}
+
+.tab-btn.active {
+    @apply tw-text-primary-600 tw-border-b-primary-600;
+}
+
+/* Tab Content */
+.tab-content {
+    @apply tw-min-h-96;
+}
+
+.tab-pane {
+    @apply tw-hidden;
+}
+
+.tab-pane.active {
+    @apply tw-block;
+}
+
+/* Section Header */
+.section-header {
+    @apply tw-flex tw-justify-between tw-items-center tw-mb-6;
+}
+
+.section-header h2 {
+    @apply tw-text-2xl tw-font-bold tw-text-gray-900 tw-m-0;
+}
+
+/* Activities Section */
+.activities-section {
+    @apply tw-mb-10;
+}
+
+.activities-section h3 {
+    @apply tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4 tw-pb-2 tw-border-b-2 tw-border-gray-100;
+}
+
+.activities-list {
+    @apply tw-flex tw-flex-col tw-gap-4;
+}
+
+.activity-item {
+    @apply tw-bg-white tw-border tw-border-gray-200 tw-rounded-xl tw-p-5 tw-transition-all;
+}
+
+.activity-item:hover {
+    @apply tw-shadow-md;
+}
+
+.activity-item.overdue {
+    @apply tw-border-l-4 tw-border-l-red-500 tw-bg-red-50;
+}
+
+.activity-item.completed {
+    @apply tw-bg-gray-50 tw-opacity-75;
+}
+
+.activity-content h4 {
+    @apply tw-text-base tw-font-semibold tw-text-gray-900 tw-mb-2 tw-flex tw-items-center tw-gap-2;
+}
+
+.activity-content p {
+    @apply tw-text-sm tw-text-gray-600 tw-mb-3 tw-leading-relaxed;
+}
+
+.due-date {
+    @apply tw-inline-flex tw-items-center tw-gap-2 tw-text-xs tw-font-medium tw-text-gray-600 tw-bg-gray-100 tw-px-3 tw-py-1 tw-rounded-full;
+}
+
+.overdue-badge {
+    @apply tw-bg-red-500 tw-text-white tw-px-2 tw-py-1 tw-rounded-full tw-text-xs tw-font-semibold tw-ml-2;
+}
+
+.completed-date {
+    @apply tw-text-xs tw-font-medium tw-text-green-600 tw-flex tw-items-center tw-gap-1;
+}
+
+/* Diary Entries */
+.diary-entries {
+    @apply tw-space-y-6;
+}
+
+.diary-entry {
+    @apply tw-bg-white tw-border tw-border-gray-200 tw-rounded-xl tw-p-6 tw-transition-all;
+}
+
+.diary-entry:hover {
+    @apply tw-shadow-sm;
+}
+
+.entry-header {
+    @apply tw-mb-4;
+}
+
+.entry-meta {
+    @apply tw-flex tw-gap-3 tw-items-center tw-flex-wrap;
+}
+
+.mood-badge {
+    @apply tw-inline-flex tw-items-center tw-gap-2 tw-bg-primary-50 tw-text-primary-700 tw-px-3 tw-py-1 tw-rounded-full tw-text-sm tw-font-medium;
+}
+
+.entry-date {
+    @apply tw-text-sm tw-text-gray-500;
+}
+
+.entry-content {
+    @apply tw-text-gray-700 tw-leading-relaxed;
+}
+
+.entry-content p {
+    @apply tw-mb-2;
+}
+
+/* Messages Preview */
+.messages-preview {
+    @apply tw-bg-gray-50 tw-border-2 tw-border-dashed tw-border-gray-300 tw-rounded-xl tw-p-12 tw-text-center;
+}
+
+.help-text {
+    @apply tw-text-gray-600 tw-m-0;
+}
+
+/* Error Message */
+.error-message {
+    @apply tw-bg-red-50 tw-border tw-border-red-200 tw-rounded-xl tw-p-4 tw-text-red-700 tw-text-center tw-my-6;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .openmind-dashboard {
@@ -189,5 +367,17 @@
 
     .stats-grid {
         @apply tw-grid-cols-1;
+    }
+
+    .patient-detail-header {
+        @apply tw-p-6;
+    }
+
+    .patient-main-info {
+        @apply tw-flex-col tw-text-center;
+    }
+
+    .patient-actions {
+        @apply tw-flex-col tw-w-full;
     }
 }

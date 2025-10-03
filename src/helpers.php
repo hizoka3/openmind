@@ -90,3 +90,16 @@ function openmind_include_template(string $template_path, array $data = []): voi
         include $file;
     }
 }
+
+/**
+ * Incluir template del plugin con args
+ */
+function openmind_template(string $template_path, array $args = []): void {
+    $file = OPENMIND_PATH . "templates/{$template_path}.php";
+
+    if (file_exists($file)) {
+        // Extraer variables del array $args
+        extract($args);
+        include $file;
+    }
+}

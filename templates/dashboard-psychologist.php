@@ -18,10 +18,27 @@ get_header();
 
             <div class="dashboard-content">
                 <?php
-                $page_file = OPENMIND_PATH . "templates/pages/psychologist/{$current_page}.php";
+                // Lista de vistas permitidas
+                $allowed_views = [
+                        'inicio',
+                        'pacientes',
+                        'actividades',
+                        'mensajeria',
+                        'bitacora',
+                        'bitacora-nueva',      // NUEVO
+                        'bitacora-editar',     // NUEVO
+                        'perfil'
+                ];
 
-                if (file_exists($page_file)) {
-                    include $page_file;
+                // Determinar qué archivo cargar
+                if (in_array($current_page, $allowed_views)) {
+                    $page_file = OPENMIND_PATH . "templates/pages/psychologist/{$current_page}.php";
+
+                    if (file_exists($page_file)) {
+                        include $page_file;
+                    } else {
+                        include OPENMIND_PATH . 'templates/pages/psychologist/inicio.php';
+                    }
                 } else {
                     include OPENMIND_PATH . 'templates/pages/psychologist/inicio.php';
                 }
