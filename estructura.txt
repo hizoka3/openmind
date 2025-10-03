@@ -2,15 +2,20 @@
 ├── README.md
 ├── assets
 │   ├── css
+│   │   ├── src
+│   │   │   ├── custom.css
+│   │   │   └── tailwind.css
 │   │   └── style.css
 │   └── js
 │       ├── main.js
-│       └── tailwind.config.js
+│       └── tailwind-init.js
 ├── composer.json
 ├── composer.lock
 ├── estructura.txt
 ├── flatten.sh
 ├── openmind.php
+├── package-lock.json
+├── package.json
 ├── src
 │   ├── Controllers
 │   │   ├── ActivityController.php
@@ -25,9 +30,12 @@
 │   │   ├── DiaryRepository.php
 │   │   └── MessageRepository.php
 │   └── helpers.php
+├── tailwind.config.js
 ├── templates
 │   ├── components
 │   │   ├── activity-card.php
+│   │   ├── bitacora-form.php
+│   │   ├── bitacora-list.php
 │   │   ├── diary-list.php
 │   │   ├── header.php
 │   │   ├── patient-card.php
@@ -44,6 +52,9 @@
 │       │   └── perfil.php
 │       └── psychologist
 │           ├── actividades.php
+│           ├── bitacora-editar.php
+│           ├── bitacora-nueva.php
+│           ├── bitacora-paciente.php
 │           ├── bitacora.php
 │           ├── inicio.php
 │           ├── mensajeria.php
@@ -52,4 +63,4 @@
 │           └── perfil.php
 └── test-setup.php
 
-13 directories, 40 files
+14 directories, 50 files

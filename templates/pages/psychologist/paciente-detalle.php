@@ -338,21 +338,176 @@ $completion_rate = count($all_activities) > 0 ? round((count($completed_activiti
 
         <!-- Tab Mensajes -->
         <div class="tab-pane" id="tab-mensajes" style="display: none;">
-            <div class="tw-flex tw-justify-between tw-items-center tw-mb-6">
-                <h2 class="tw-text-2xl tw-font-bold tw-text-gray-900 tw-m-0">Conversación</h2>
-                <a href="<?php echo add_query_arg(['view' => 'mensajeria', 'patient_id' => $patient_id]); ?>"
-                   class="tw-inline-flex tw-items-center tw-gap-2 tw-px-5 tw-py-2.5 tw-bg-gray-200 tw-text-gray-700 tw-rounded-lg tw-border-0 tw-text-sm tw-font-medium tw-transition-all hover:tw-bg-gray-300 tw-no-underline">
+            <div class="tw-flex tw-flex-col md:tw-flex-row tw-justify-between tw-items-start md:tw-items-center tw-gap-4 tw-mb-6">
+                <div>
+                    <h2 class="tw-text-2xl tw-font-bold tw-text-gray-900 tw-m-0 tw-mb-2">Conversación con <?php echo esc_html($patient->display_name); ?></h2>
+                    <p class="tw-text-sm tw-text-gray-500 tw-m-0">
+                        <i class="fa-solid fa-info-circle tw-mr-1"></i>
+                        Preview de los últimos mensajes
+                    </p>
+                </div>
+                <a href="<?php echo add_query_arg(['view' => 'mensajeria', 'user_id' => $patient_id], home_url('/dashboard-psicologo/')); ?>"
+                   class="tw-inline-flex tw-items-center tw-gap-2 tw-px-5 tw-py-2.5 tw-bg-primary-500 tw-text-white tw-rounded-lg tw-text-sm tw-font-medium tw-transition-all hover:tw-bg-primary-600 hover:tw--translate-y-0.5 hover:tw-shadow-lg tw-no-underline">
                     <i class="fa-solid fa-comments"></i>
                     Abrir Chat Completo
                 </a>
             </div>
 
-            <div class="tw-bg-gray-50 tw-border-2 tw-border-dashed tw-border-gray-300 tw-rounded-xl tw-p-12 tw-text-center">
-                <i class="fa-solid fa-comments tw-text-6xl tw-text-gray-300 tw-mb-4"></i>
-                <p class="tw-text-gray-600 tw-m-0 tw-text-base">
-                    Ve a la sección de Mensajería para ver el historial completo y enviar mensajes.
-                </p>
-            </div>
+            <?php
+            // Obtener últimos 5 mensajes
+            $last_messages = \Openmind\Repositories\MessageRepository::getConversationPaginated(
+                    get_current_user_id(),
+                    $patient_id,
+                    5,
+                    0
+            );
+
+            if (empty($last_messages)): ?>
+                <div class="tw-bg-gradient-to-br tw-from-blue-50 tw-to-indigo-50 tw-border-2 tw-border-dashed tw-border-blue-300 tw-rounded-2xl tw-p-16 tw-text-center">
+                    <div class="tw-mb-6">
+                        <i class="fa-solid fa-comments tw-text-7xl tw-text-blue-300"></i>
+                    </div>
+                    <h3 class="tw-text-xl tw-font-semibold tw-text-gray-800 tw-mb-2 tw-m-0">
+                        Sin conversación iniciada
+                    </h3>
+                    <p class="tw-text-gray-600 tw-m-0 tw-mb-6 tw-text-base">
+                        No hay mensajes con este paciente aún.
+                    </p>
+                    <a href="<?php echo add_query_arg(['view' => 'mensajeria', 'user_id' => $patient_id], home_url('/dashboard-psicologo/')); ?>"
+                       class="tw-inline-flex tw-items-center tw-gap-2 tw-px-6 tw-py-3 tw-bg-primary-500 tw-text-white tw-rounded-lg tw-text-sm tw-font-medium tw-transition-all hover:tw-bg-primary-600 hover:tw--translate-y-1 hover:tw-shadow-lg tw-no-underline">
+                        <i class="fa-solid fa-message"></i>
+                        Iniciar Conversación
+                    </a>
+                </div>
+            <?php else: ?>
+                <!-- Contenedor de mensajes con mejor diseño -->
+                <div class="tw-bg-gradient-to-br tw-from-gray-50 tw-to-blue-50 tw-rounded-2xl tw-p-6 tw-mb-6">
+                    <div class="tw-space-y-4">
+                        <?php
+                        // Invertir para mostrar cronológicamente (más antiguo arriba, más nuevo abajo)
+                        $messages_display = array_reverse($last_messages);
+                        foreach ($messages_display as $index => $msg):
+                            $is_sent = $msg->sender_id == get_current_user_id();
+                            ?>
+                            <div class="tw-flex tw-gap-3 <?php echo $is_sent ? 'tw-justify-end' : 'tw-justify-start'; ?>">
+                                <!-- Avatar (opcional) -->
+                                <?php if (!$is_sent): ?>
+                                    <div class="tw-flex-shrink-0 tw-mt-1">
+                                        <?php echo get_avatar($patient_id, 32, '', '', ['class' => 'tw-rounded-full tw-border-2 tw-border-white tw-shadow-sm']); ?>
+                                    </div>
+                                <?php endif; ?>
+
+                                <!-- Burbuja de mensaje -->
+                                <div class="tw-max-w-lg tw-flex tw-flex-col <?php echo $is_sent ? 'tw-items-end' : 'tw-items-start'; ?>">
+                                    <div class="tw-px-4 tw-py-3 tw-rounded-2xl tw-shadow-sm <?php echo $is_sent ? 'tw-bg-primary-500 tw-text-white tw-rounded-br-sm' : 'tw-bg-white tw-text-gray-800 tw-rounded-bl-sm tw-border tw-border-gray-200'; ?>">
+                                        <p class="tw-m-0 tw-text-sm tw-leading-relaxed" style="white-space: pre-wrap; word-wrap: break-word;">
+                                            <?php echo esc_html($msg->message); ?>
+                                        </p>
+                                    </div>
+                                    <div class="tw-flex tw-items-center tw-gap-1.5 tw-mt-1 tw-px-1">
+                                        <i class="fa-solid fa-clock tw-text-xs <?php echo $is_sent ? 'tw-text-primary-600' : 'tw-text-gray-400'; ?>"></i>
+                                        <span class="tw-text-xs <?php echo $is_sent ? 'tw-text-primary-600' : 'tw-text-gray-500'; ?>">
+                                    <?php
+                                    $date = new DateTime($msg->created_at);
+                                    $now = new DateTime();
+                                    $diff = $now->diff($date);
+
+                                    if ($diff->days == 0) {
+                                        echo 'Hoy ' . $date->format('H:i');
+                                    } elseif ($diff->days == 1) {
+                                        echo 'Ayer ' . $date->format('H:i');
+                                    } else {
+                                        echo $date->format('d/m/Y H:i');
+                                    }
+                                    ?>
+                                </span>
+                                    </div>
+                                </div>
+
+                                <!-- Avatar del psicólogo (opcional) -->
+                                <?php if ($is_sent): ?>
+                                    <div class="tw-flex-shrink-0 tw-mt-1">
+                                        <?php echo get_avatar(get_current_user_id(), 32, '', '', ['class' => 'tw-rounded-full tw-border-2 tw-border-primary-200 tw-shadow-sm']); ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+
+                            <?php
+                            // Separador de día (si cambia la fecha)
+                            if ($index < count($messages_display) - 1) {
+                                $current_date = date('Y-m-d', strtotime($msg->created_at));
+                                $next_date = date('Y-m-d', strtotime($messages_display[$index + 1]->created_at));
+
+                                if ($current_date !== $next_date):
+                                    ?>
+                                    <div class="tw-flex tw-items-center tw-gap-3 tw-my-4">
+                                        <div class="tw-flex-1 tw-border-t tw-border-gray-300"></div>
+                                        <span class="tw-text-xs tw-font-medium tw-text-gray-500 tw-bg-white tw-px-3 tw-py-1 tw-rounded-full tw-border tw-border-gray-200">
+                                <?php echo date('d/m/Y', strtotime($messages_display[$index + 1]->created_at)); ?>
+                            </span>
+                                        <div class="tw-flex-1 tw-border-t tw-border-gray-300"></div>
+                                    </div>
+                                <?php
+                                endif;
+                            }
+                            ?>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <!-- Footer con estadísticas y link -->
+                <div class="tw-bg-white tw-border tw-border-gray-200 tw-rounded-xl tw-p-5">
+                    <div class="tw-flex tw-flex-col md:tw-flex-row tw-items-start md:tw-items-center tw-justify-between tw-gap-4">
+                        <div class="tw-flex tw-items-center tw-gap-6">
+                            <?php
+                            // Contar mensajes totales
+                            $total_messages = \Openmind\Repositories\MessageRepository::getConversationCount(
+                                    get_current_user_id(),
+                                    $patient_id
+                            );
+
+                            // Contar mensajes enviados y recibidos
+                            $sent_count = 0;
+                            $received_count = 0;
+                            foreach ($last_messages as $msg) {
+                                if ($msg->sender_id == get_current_user_id()) {
+                                    $sent_count++;
+                                } else {
+                                    $received_count++;
+                                }
+                            }
+                            ?>
+                            <div class="tw-text-center">
+                                <div class="tw-text-2xl tw-font-bold tw-text-gray-900"><?php echo $total_messages; ?></div>
+                                <div class="tw-text-xs tw-text-gray-500">Total mensajes</div>
+                            </div>
+                            <div class="tw-text-center">
+                                <div class="tw-text-2xl tw-font-bold tw-text-primary-600"><?php echo count($last_messages); ?></div>
+                                <div class="tw-text-xs tw-text-gray-500">Mostrando</div>
+                            </div>
+                        </div>
+
+                        <?php if ($total_messages > 5): ?>
+                            <div class="tw-flex tw-items-center tw-gap-3">
+                                <div class="tw-text-sm tw-text-gray-600">
+                                    <i class="fa-solid fa-arrow-down tw-mr-1"></i>
+                                    Hay <strong><?php echo $total_messages - 5; ?> mensajes más</strong> en el historial
+                                </div>
+                                <a href="<?php echo add_query_arg(['view' => 'mensajeria', 'user_id' => $patient_id], home_url('/dashboard-psicologo/')); ?>"
+                                   class="tw-inline-flex tw-items-center tw-gap-2 tw-px-4 tw-py-2 tw-bg-gradient-to-r tw-from-primary-500 tw-to-primary-600 tw-text-white tw-rounded-lg tw-text-sm tw-font-medium tw-transition-all hover:tw-from-primary-600 hover:tw-to-primary-700 hover:tw--translate-y-0.5 hover:tw-shadow-lg tw-no-underline">
+                                    Ver todos
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        <?php else: ?>
+                            <div class="tw-text-sm tw-text-gray-500">
+                                <i class="fa-solid fa-check-circle tw-text-green-500 tw-mr-1"></i>
+                                Estás viendo toda la conversación
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>

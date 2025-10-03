@@ -1,4 +1,5 @@
-<?php // templates/dashboard-patient.php
+<?php
+// templates/dashboard-patient.php
 if (!current_user_can('view_activities')) wp_die('Acceso denegado');
 
 $user_id = get_current_user_id();
@@ -18,11 +19,36 @@ get_header();
 
             <div class="dashboard-content">
                 <?php
-                $page_file = OPENMIND_PATH . "templates/pages/patient/{$current_page}.php";
+                // Mapeo de vistas a archivos
+                $view_files = [
+                        'actividades' => 'actividades.php',
+                        'mensajeria' => 'mensajeria.php',  // NUEVO
+                        'bitacora' => 'bitacora.php',
+                        'diario' => 'diario.php',
+                        'perfil' => 'perfil.php'
+                ];
 
-                if (file_exists($page_file)) {
-                    include $page_file;
+                // Determinar qué archivo cargar
+                if (array_key_exists($current_page, $view_files)) {
+                    $file_path = OPENMIND_PATH . 'templates/pages/patient/' . $view_files[$current_page];
+
+                    if (file_exists($file_path)) {
+                        include $file_path;
+                    } else {
+                        // Si no existe en patient, buscar en pages general
+                        $general_path = OPENMIND_PATH . 'templates/pages/' . $view_files[$current_page];
+
+                        if (file_exists($general_path)) {
+                            include $general_path;
+                        } else {
+                            echo '<div class="tw-bg-red-50 tw-border tw-border-red-200 tw-rounded-xl tw-p-4 tw-text-red-700 tw-text-center tw-my-6">
+                            <i class="fa-solid fa-triangle-exclamation tw-mr-2"></i>
+                            Página no encontrada: ' . esc_html($current_page) . '
+                        </div>';
+                        }
+                    }
                 } else {
+                    // Vista no reconocida, cargar actividades
                     include OPENMIND_PATH . 'templates/pages/patient/actividades.php';
                 }
                 ?>

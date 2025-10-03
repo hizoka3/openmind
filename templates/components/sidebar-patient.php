@@ -1,5 +1,4 @@
 <?php
-// templates/components/sidebar-patient.php
 if (!defined('ABSPATH')) exit;
 
 $current_user = wp_get_current_user();
@@ -7,11 +6,11 @@ $current_view = $_GET['view'] ?? 'actividades';
 $base_url = get_permalink();
 
 $menu_items = [
-    'actividades' => ['label' => 'Actividades', 'icon' => '📋'],
-    'mensajeria' => ['label' => 'Mensajería', 'icon' => '💬'],
-    'bitacora' => ['label' => 'Bitácora', 'icon' => '📖'],
-    'diario' => ['label' => 'Diario de vida', 'icon' => '✍️'],
-    'perfil' => ['label' => 'Mi perfil', 'icon' => '👤']
+        'actividades' => ['label' => 'Actividades', 'icon' => '📋', 'badge' => false],
+        'mensajeria' => ['label' => 'Mensajería', 'icon' => '💬', 'badge' => 'messages'], // NUEVO
+        'bitacora' => ['label' => 'Bitácora', 'icon' => '📖', 'badge' => false],
+        'diario' => ['label' => 'Diario de vida', 'icon' => '✍️', 'badge' => false],
+        'perfil' => ['label' => 'Mi perfil', 'icon' => '👤', 'badge' => false]
 ];
 ?>
 
@@ -30,6 +29,10 @@ $menu_items = [
                class="menu-item <?php echo $current_view === $view ? 'active' : ''; ?>">
                 <span class="menu-icon"><?php echo $item['icon']; ?></span>
                 <span class="menu-label"><?php echo esc_html($item['label']); ?></span>
+
+                <?php if ($item['badge'] === 'messages'): ?>
+                    <span class="unread-badge" id="messages-badge" style="display:none;">0</span>
+                <?php endif; ?>
             </a>
         <?php endforeach; ?>
     </nav>

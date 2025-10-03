@@ -774,3 +774,410 @@ const OpenmindApp = {
 };
 
 document.addEventListener('DOMContentLoaded', () => OpenmindApp.init());
+
+
+// ==========================================
+// MÓDULO DE MENSAJERÍA
+// ==========================================
+
+const OpenmindMessages = {
+    currentConversation: null,
+    pollInterval: null,
+
+    init(initialUserId = 0) {
+        this.loadConversations();
+        this.startPolling();
+
+        if (initialUserId) {
+            // Pequeño delay para que cargue la lista primero
+            setTimeout(() => this.openConversation(initialUserId), 500);
+        }
+    },
+
+    async loadConversations() {
+        const formData = new FormData();
+        formData.append('action', 'openmind_get_conversations');
+        formData.append('nonce', openmindData.nonce);
+
+        try {
+            const response = await fetch(openmindData.ajaxUrl, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                this.renderConversations(data.data.conversations);
+            }
+        } catch (error) {
+            console.error('Error loading conversations:', error);
+            document.getElementById('conversations-list').innerHTML =
+                '<div class="tw-p-4 tw-text-center tw-text-red-500">Error al cargar conversaciones</div>';
+        }
+    },
+
+    renderConversations(conversations) {
+        const container = document.getElementById('conversations-list');
+
+        if (!conversations || conversations.length === 0) {
+            container.innerHTML = `
+            <div class="tw-p-8 tw-text-center tw-text-gray-400">
+                <i class="fa-solid fa-inbox tw-text-4xl tw-mb-3 tw-text-gray-300"></i>
+                <p class="tw-text-sm tw-not-italic">No tienes conversaciones aún</p>
+            </div>
+        `;
+            return;
+        }
+
+        const html = conversations.map(conv => {
+            const userId = conv.patient_id || conv.psychologist_id;
+            const isActive = this.currentConversation == userId;
+            const isCurrent = conv.is_current === true || conv.is_current === '1';
+
+            return `
+            <div class="conversation-item ${isActive ? 'active' : ''} ${conv.unread_count > 0 ? 'has-unread' : ''}" 
+                 data-user-id="${userId}"
+                 data-is-current="${isCurrent}"
+                 onclick="OpenmindMessages.openConversation(${userId})">
+                <div class="tw-flex-1">
+                    <div class="tw-flex tw-items-center tw-gap-2 tw-mb-1">
+                        <h4 class="tw-text-sm tw-font-semibold tw-text-gray-900 tw-m-0">
+                            ${conv.display_name}
+                        </h4>
+                        ${isCurrent ? '<span class="tw-text-xs tw-bg-green-100 tw-text-green-700 tw-px-2 tw-py-0.5 tw-rounded-full tw-font-medium">Actual</span>' : ''}
+                    </div>
+                    <p class="tw-text-xs tw-text-gray-500 tw-m-0">
+                        <i class="fa-solid fa-clock tw-mr-1"></i>
+                        ${this.formatDate(conv.last_message_at)}
+                    </p>
+                </div>
+                ${conv.unread_count > 0 ? `<span class="unread-badge">${conv.unread_count}</span>` : ''}
+            </div>
+        `;
+        }).join('');
+
+        container.innerHTML = html;
+    },
+
+    async openConversation(otherUserId) {
+        this.currentConversation = otherUserId;
+
+        // Actualizar items activos
+        document.querySelectorAll('.conversation-item').forEach(item => {
+            item.classList.toggle('active', item.dataset.userId == otherUserId);
+        });
+
+        // Cargar mensajes
+        await this.loadMessages(otherUserId);
+
+        // Marcar como leídos
+        this.markConversationRead(otherUserId);
+    },
+
+    async loadMessages(otherUserId, page = 1) {
+        const container = document.getElementById('message-thread');
+        container.innerHTML = `
+            <div class="tw-flex tw-items-center tw-justify-center tw-py-8 tw-text-gray-400">
+                <i class="fa-solid fa-spinner fa-spin tw-mr-2"></i>
+                Cargando mensajes...
+            </div>
+        `;
+
+        const formData = new FormData();
+        formData.append('action', 'openmind_get_messages');
+        formData.append('nonce', openmindData.nonce);
+        formData.append('other_user_id', otherUserId);
+        formData.append('page', page);
+
+        try {
+            const response = await fetch(openmindData.ajaxUrl, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                this.renderMessages(data.data.messages, otherUserId);
+            } else {
+                container.innerHTML = `
+                    <div class="tw-p-8 tw-text-center tw-text-red-500">
+                        <i class="fa-solid fa-exclamation-triangle tw-text-4xl tw-mb-3"></i>
+                        <p>${data.data?.message || 'Error al cargar mensajes'}</p>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('Error loading messages:', error);
+            container.innerHTML = `
+                <div class="tw-p-8 tw-text-center tw-text-red-500">
+                    <i class="fa-solid fa-exclamation-triangle tw-text-4xl tw-mb-3"></i>
+                    <p>Error al cargar mensajes</p>
+                </div>
+            `;
+        }
+    },
+
+    renderMessages(messages, otherUserId) {
+        const container = document.getElementById('message-thread');
+        const currentUserId = openmindData.userId;
+
+        if (!messages || messages.length === 0) {
+            container.innerHTML = `
+                <div class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-py-16 tw-text-gray-400">
+                    <i class="fa-solid fa-comment-dots tw-text-6xl tw-mb-4 tw-text-gray-300"></i>
+                    <p class="tw-text-lg tw-not-italic tw-text-gray-600 tw-mb-6">
+                        No hay mensajes aún. ¡Inicia la conversación!
+                    </p>
+                </div>
+                ${this.renderMessageForm(otherUserId)}
+            `;
+            this.bindMessageForm();
+            return;
+        }
+
+        const messagesHtml = messages.map(msg => `
+            <div class="message ${msg.sender_id == currentUserId ? 'sent' : 'received'}">
+                <div class="message-content">${this.escapeHtml(msg.message)}</div>
+                <div class="message-time">
+                    <i class="fa-solid fa-clock tw-mr-1"></i>
+                    ${this.formatDate(msg.created_at)}
+                </div>
+            </div>
+        `).join('');
+
+        container.innerHTML = `
+            <div class="messages-container" id="messages-container">
+                ${messagesHtml}
+            </div>
+            ${this.renderMessageForm(otherUserId)}
+        `;
+
+        // Scroll al final
+        setTimeout(() => {
+            const messagesContainer = document.getElementById('messages-container');
+            if (messagesContainer) {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        }, 100);
+
+        // Bind form
+        this.bindMessageForm();
+    },
+
+    renderMessageForm(otherUserId) {
+        // Verificar si es el psicólogo actual (solo para pacientes)
+        const canSendMessages = this.canSendMessagesTo(otherUserId);
+
+        if (!canSendMessages) {
+            return `
+            <div class="message-input">
+                <div class="tw-bg-yellow-50 tw-border tw-border-yellow-200 tw-rounded-lg tw-p-4 tw-text-center">
+                    <i class="fa-solid fa-info-circle tw-text-yellow-600 tw-mr-2"></i>
+                    <span class="tw-text-sm tw-text-yellow-700">
+                        Este psicólogo ya no está asignado a ti. Solo puedes leer el historial de mensajes.
+                    </span>
+                </div>
+            </div>
+        `;
+        }
+
+        return `
+        <div class="message-input">
+            <form id="send-message-form">
+                <input type="hidden" name="receiver_id" value="${otherUserId}">
+                <div class="tw-flex tw-gap-3">
+                    <textarea 
+                        name="message" 
+                        placeholder="Escribe un mensaje..." 
+                        rows="2"
+                        class="tw-flex-1 tw-border tw-border-gray-300 tw-rounded-lg tw-p-3 tw-resize-none focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary-500"
+                        required
+                    ></textarea>
+                    <button type="submit" class="tw-px-6 tw-py-2 tw-bg-primary-500 tw-text-white tw-rounded-lg tw-border-0 tw-cursor-pointer tw-text-sm tw-font-medium tw-transition-all hover:tw-bg-primary-600 tw-self-end">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span class="tw-ml-2 tw-hidden md:tw-inline">Enviar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    },
+
+// NUEVO MÉTODO: Verificar si puede enviar mensajes
+    canSendMessagesTo(otherUserId) {
+        // Si es psicólogo, siempre puede enviar
+        if (window.location.href.includes('dashboard-psicologo')) {
+            return true;
+        }
+
+        // Si es paciente, verificar si es el psicólogo actual
+        // Esta info debe venir del servidor
+        return this.isCurrentPsychologist(otherUserId);
+    },
+
+    isCurrentPsychologist(psychologistId) {
+        // Buscar en la lista de conversaciones si este psicólogo está marcado como actual
+        const conversations = document.querySelectorAll('.conversation-item');
+
+        for (let conv of conversations) {
+            if (conv.dataset.userId == psychologistId) {
+                // Si tiene el atributo data-is-current, es el psicólogo actual
+                return conv.dataset.isCurrent === 'true';
+            }
+        }
+
+        // Por defecto, permitir (por si hay error)
+        return true;
+    },
+
+    bindMessageForm() {
+        const form = document.getElementById('send-message-form');
+        if (!form) return;
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const textarea = form.querySelector('textarea[name="message"]');
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const message = textarea.value.trim();
+
+            if (!message) return;
+
+            // Deshabilitar mientras envía
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+            const formData = new FormData(form);
+            formData.append('action', 'openmind_send_message');
+            formData.append('nonce', openmindData.nonce);
+
+            try {
+                const response = await fetch(openmindData.ajaxUrl, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    form.reset();
+                    this.loadMessages(this.currentConversation);
+                } else {
+                    OpenmindApp.showNotification(data.data?.message || 'Error al enviar', 'error');
+                }
+            } catch (error) {
+                console.error('Error sending message:', error);
+                OpenmindApp.showNotification('Error al enviar mensaje', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> <span class="tw-ml-2 tw-hidden md:tw-inline">Enviar</span>';
+            }
+        });
+
+        // Enter para enviar (Shift+Enter para nueva línea)
+        const textarea = form.querySelector('textarea[name="message"]');
+        textarea.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                form.requestSubmit();
+            }
+        });
+    },
+
+    async markConversationRead(otherUserId) {
+        const formData = new FormData();
+        formData.append('action', 'openmind_mark_conversation_read');
+        formData.append('nonce', openmindData.nonce);
+        formData.append('other_user_id', otherUserId);
+
+        try {
+            await fetch(openmindData.ajaxUrl, {
+                method: 'POST',
+                body: formData
+            });
+
+            // Actualizar badge global y lista
+            this.updateGlobalBadge();
+            this.loadConversations();
+        } catch (error) {
+            console.error('Error marking as read:', error);
+        }
+    },
+
+    async updateGlobalBadge() {
+        const formData = new FormData();
+        formData.append('action', 'openmind_get_unread_count');
+        formData.append('nonce', openmindData.nonce);
+
+        try {
+            const response = await fetch(openmindData.ajaxUrl, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                const badge = document.getElementById('messages-badge');
+                if (badge) {
+                    if (data.data.count > 0) {
+                        badge.textContent = data.data.count;
+                        badge.style.display = 'inline-flex';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error updating badge:', error);
+        }
+    },
+
+    startPolling() {
+        // Actualizar badge cada 15 segundos
+        this.pollInterval = setInterval(() => {
+            this.updateGlobalBadge();
+
+            // Si hay conversación abierta, recargar lista (para actualizar badges)
+            if (document.getElementById('conversations-list')) {
+                this.loadConversations();
+            }
+        }, 15000);
+
+        // Primera actualización inmediata
+        this.updateGlobalBadge();
+    },
+
+    formatDate(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diff = now - date;
+        const hours = Math.floor(diff / 3600000);
+        const days = Math.floor(diff / 86400000);
+
+        if (hours < 1) return 'Hace un momento';
+        if (hours < 24) return `Hace ${hours}h`;
+        if (days < 7) return `Hace ${days}d`;
+
+        return date.toLocaleDateString('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    },
+
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+};
+
+// Iniciar polling en todas las páginas
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof OpenmindMessages !== 'undefined' && typeof openmindData !== 'undefined') {
+        // Solo iniciar polling si estamos en dashboard
+        if (document.querySelector('.openmind-dashboard')) {
+            OpenmindMessages.updateGlobalBadge();
+            OpenmindMessages.startPolling();
+        }
+    }
+});

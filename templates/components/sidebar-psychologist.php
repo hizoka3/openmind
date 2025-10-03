@@ -6,12 +6,12 @@ $current_view = $_GET['view'] ?? 'inicio';
 $base_url = get_permalink();
 
 $menu_items = [
-        'inicio' => ['label' => 'Inicio', 'icon' => 'fa-home'],
-        'pacientes' => ['label' => 'Mis pacientes', 'icon' => 'fa-users'],
-        'actividades' => ['label' => 'Actividades', 'icon' => 'fa-clipboard-list'],
-        'mensajeria' => ['label' => 'Mensajería', 'icon' => 'fa-comments'],
-        'bitacora' => ['label' => 'Bitácora', 'icon' => 'fa-book'],
-        'perfil' => ['label' => 'Mi perfil', 'icon' => 'fa-user']
+        'inicio' => ['label' => 'Inicio', 'icon' => 'fa-home', 'badge' => false],
+        'pacientes' => ['label' => 'Mis pacientes', 'icon' => 'fa-users', 'badge' => false],
+        'actividades' => ['label' => 'Actividades', 'icon' => 'fa-clipboard-list', 'badge' => false],
+        'mensajeria' => ['label' => 'Mensajería', 'icon' => 'fa-comments', 'badge' => 'messages'], // NUEVO
+        'bitacora' => ['label' => 'Bitácora', 'icon' => 'fa-book', 'badge' => false],
+        'perfil' => ['label' => 'Mi perfil', 'icon' => 'fa-user', 'badge' => false]
 ];
 ?>
 
@@ -32,6 +32,10 @@ $menu_items = [
                     <i class="fa-solid <?php echo $item['icon']; ?>"></i>
                 </span>
                 <span class="menu-label"><?php echo esc_html($item['label']); ?></span>
+
+                <?php if ($item['badge'] === 'messages'): ?>
+                    <span class="unread-badge" id="messages-badge" style="display:none;">0</span>
+                <?php endif; ?>
             </a>
         <?php endforeach; ?>
     </nav>

@@ -3,381 +3,440 @@
 @tailwind utilities;
 
 /* ==========================================
-   ESTILOS CUSTOM DE OPENMIND
+   COMPONENTES CUSTOM (No Tailwind)
    ========================================== */
 
-/* Layout principal */
-.openmind-dashboard {
-    @apply tw-flex tw-min-h-screen tw-bg-gray-50;
-}
-
-.dashboard-main {
-    @apply tw-flex-1 tw-flex tw-flex-col;
-}
-
-/* Sidebar */
-.openmind-sidebar {
-    @apply tw-w-64 tw-bg-gray-800 tw-text-white tw-flex tw-flex-col tw-sticky tw-top-0 tw-h-screen;
-}
-
-.sidebar-header {
-    @apply tw-p-8 tw-text-center tw-border-b tw-border-gray-700;
-}
-
-.user-avatar img {
-    @apply tw-rounded-full tw-border-4 tw-border-primary-500 tw-mx-auto;
-}
-
-.sidebar-header h3 {
-    @apply tw-mt-4 tw-text-lg tw-font-semibold tw-text-white;
-}
-
-.user-role {
-    @apply tw-text-sm tw-text-gray-400 tw-mt-1;
-}
-
-/* Menu Items */
-.sidebar-menu {
-    @apply tw-flex-1 tw-py-6;
-}
-
-.menu-item {
-    @apply tw-flex tw-items-center tw-gap-3 tw-px-6 tw-py-3 tw-text-gray-400 tw-transition-all tw-border-l-4 tw-border-transparent;
-}
-
-.menu-item:hover {
-    @apply tw-bg-gray-700/50 tw-text-white;
-}
-
-.menu-item.active {
-    @apply tw-bg-primary-500/20 tw-border-primary-500 tw-text-white;
-}
-
-.menu-icon {
-    @apply tw-text-xl tw-w-6;
-}
-
-.menu-label {
-    @apply tw-text-sm tw-font-medium;
-}
-
-/* Sidebar Footer */
-.sidebar-footer {
-    @apply tw-p-6 tw-border-t tw-border-gray-700;
-}
-
-.btn-logout {
-    @apply tw-block tw-w-full tw-py-3 tw-bg-red-500/20 tw-text-red-400 tw-text-center tw-rounded-lg tw-transition-colors tw-font-medium;
-}
-
-.btn-logout:hover {
-    @apply tw-bg-red-500/30;
-}
-
-/* Header */
-.openmind-header {
-    @apply tw-bg-white tw-p-6 tw-border-b tw-border-gray-200;
-}
-
-.header-content {
-    @apply tw-flex tw-justify-between tw-items-center;
-}
-
-.openmind-header h1 {
-    @apply tw-text-2xl tw-font-bold tw-text-gray-800 tw-m-0;
-}
-
-.header-actions {
-    @apply tw-flex tw-items-center tw-gap-4;
-}
-
-/* Dashboard Content */
-.dashboard-content {
-    @apply tw-p-8 tw-max-w-7xl;
-}
-
-/* Buttons */
-.btn-primary {
-    @apply tw-px-5 tw-py-2.5 tw-bg-primary-500 tw-text-white tw-rounded-lg tw-border-0 tw-cursor-pointer tw-text-sm tw-font-medium tw-transition-all;
-}
-
-.btn-primary:hover {
-    @apply tw-bg-primary-600 tw--translate-y-0.5 tw-shadow-lg;
-}
-
-.btn-secondary {
-    @apply tw-px-5 tw-py-2.5 tw-bg-gray-200 tw-text-gray-700 tw-rounded-lg tw-border-0 tw-cursor-pointer tw-text-sm tw-font-medium tw-transition-all;
-}
-
-.btn-secondary:hover {
-    @apply tw-bg-gray-300;
-}
-
-.btn-icon {
-    @apply tw-p-2 tw-bg-transparent tw-border-0 tw-cursor-pointer tw-transition-all tw-rounded-lg;
-}
-
-.btn-icon:hover {
-    @apply tw-bg-gray-100;
-}
-
-/* Stats Grid */
-.stats-grid {
-    @apply tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-3 tw-gap-6;
-}
-
-.stat-card {
-    @apply tw-bg-white tw-p-6 tw-rounded-xl tw-shadow-sm tw-flex tw-items-center tw-gap-5 tw-transition-all;
-}
-
-.stat-card:hover {
-    @apply tw--translate-y-1 tw-shadow-md;
-}
-
-.stat-icon {
-    @apply tw-text-4xl tw-w-16 tw-h-16 tw-flex tw-items-center tw-justify-center tw-bg-gray-50 tw-rounded-xl;
-}
-
-.stat-info h3 {
-    @apply tw-text-3xl tw-font-bold tw-text-gray-800 tw-m-0;
-}
-
-.stat-info p {
-    @apply tw-text-sm tw-text-gray-500 tw-mt-1 tw-m-0;
-}
-
-/* Tables */
-.openmind-table {
-    @apply tw-w-full tw-bg-white tw-rounded-xl tw-overflow-hidden tw-shadow-sm;
-}
-
-.openmind-table thead {
-    @apply tw-bg-gray-50;
-}
-
-.openmind-table th {
-    @apply tw-px-4 tw-py-3 tw-text-left tw-font-semibold tw-text-gray-700 tw-text-sm;
-}
-
-.openmind-table td {
-    @apply tw-px-4 tw-py-4 tw-border-t tw-border-gray-100;
-}
-
-/* Cards */
-.activity-card {
-    @apply tw-bg-white tw-border tw-border-gray-200 tw-rounded-xl tw-p-6 tw-transition-all;
-}
-
-.activity-card:hover {
-    @apply tw-shadow-md tw--translate-y-0.5;
-}
-
-/* Empty States */
-.empty-state {
-    @apply tw-text-center tw-py-16 tw-text-gray-400 tw-italic;
-}
-
-/* ==========================================
-   PÁGINA DETALLE PACIENTE
-   ========================================== */
-
-/* Breadcrumb */
-.breadcrumb a {
-    @apply tw-inline-flex tw-items-center tw-gap-2 tw-text-primary-600 tw-text-sm tw-font-medium tw-transition-colors tw-mb-6 tw-no-underline;
-}
-
-.breadcrumb a:hover {
-    @apply tw-text-primary-700;
-}
-
-/* Patient Detail Header */
-.patient-detail-header {
-    @apply tw-bg-white tw-rounded-2xl tw-p-8 tw-mb-8 tw-shadow-sm;
-}
-
-.patient-main-info {
-    @apply tw-flex tw-gap-6 tw-items-start tw-mb-6;
-}
-
-.patient-main-info img {
-    @apply tw-rounded-2xl tw-border-4 tw-border-gray-100;
-}
-
-.patient-main-info h1 {
-    @apply tw-text-3xl tw-font-bold tw-text-gray-900 tw-m-0 tw-mb-3;
-}
-
-.patient-email,
-.patient-since {
-    @apply tw-flex tw-items-center tw-gap-2 tw-text-gray-600 tw-text-sm tw-my-1;
-}
-
-.patient-actions {
-    @apply tw-flex tw-gap-3 tw-flex-wrap;
-}
-
-/* Tabs */
-.detail-tabs {
-    @apply tw-flex tw-gap-2 tw-border-b-2 tw-border-gray-200 tw-mb-8 tw-overflow-x-auto;
-}
-
-.tab-btn {
-    @apply tw-flex tw-items-center tw-gap-2 tw-px-6 tw-py-3 tw-bg-transparent tw-border-0 tw-border-b-4 tw-border-transparent tw-cursor-pointer tw-text-sm tw-font-medium tw-text-gray-500 tw-transition-all tw-whitespace-nowrap tw-rounded-t-lg;
-}
-
-.tab-btn:hover {
-    @apply tw-text-gray-900 tw-bg-gray-50;
-}
-
-.tab-btn.active {
-    @apply tw-text-primary-600 tw-border-b-primary-600;
-}
-
-/* Tab Content */
-.tab-content {
-    @apply tw-min-h-96;
-}
-
-.tab-pane {
-    @apply tw-hidden;
-}
-
-.tab-pane.active {
-    @apply tw-block;
-}
-
-/* Section Header */
-.section-header {
-    @apply tw-flex tw-justify-between tw-items-center tw-mb-6;
-}
-
-.section-header h2 {
-    @apply tw-text-2xl tw-font-bold tw-text-gray-900 tw-m-0;
-}
-
-/* Activities Section */
-.activities-section {
-    @apply tw-mb-10;
-}
-
-.activities-section h3 {
-    @apply tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4 tw-pb-2 tw-border-b-2 tw-border-gray-100;
-}
-
-.activities-list {
-    @apply tw-flex tw-flex-col tw-gap-4;
-}
-
-.activity-item {
-    @apply tw-bg-white tw-border tw-border-gray-200 tw-rounded-xl tw-p-5 tw-transition-all;
-}
-
-.activity-item:hover {
-    @apply tw-shadow-md;
-}
-
-.activity-item.overdue {
-    @apply tw-border-l-4 tw-border-l-red-500 tw-bg-red-50;
-}
-
-.activity-item.completed {
-    @apply tw-bg-gray-50 tw-opacity-75;
-}
-
-.activity-content h4 {
-    @apply tw-text-base tw-font-semibold tw-text-gray-900 tw-mb-2 tw-flex tw-items-center tw-gap-2;
-}
-
-.activity-content p {
-    @apply tw-text-sm tw-text-gray-600 tw-mb-3 tw-leading-relaxed;
-}
-
-.due-date {
-    @apply tw-inline-flex tw-items-center tw-gap-2 tw-text-xs tw-font-medium tw-text-gray-600 tw-bg-gray-100 tw-px-3 tw-py-1 tw-rounded-full;
-}
-
-.overdue-badge {
-    @apply tw-bg-red-500 tw-text-white tw-px-2 tw-py-1 tw-rounded-full tw-text-xs tw-font-semibold tw-ml-2;
-}
-
-.completed-date {
-    @apply tw-text-xs tw-font-medium tw-text-green-600 tw-flex tw-items-center tw-gap-1;
-}
-
-/* Diary Entries */
-.diary-entries {
-    @apply tw-space-y-6;
-}
-
-.diary-entry {
-    @apply tw-bg-white tw-border tw-border-gray-200 tw-rounded-xl tw-p-6 tw-transition-all;
-}
-
-.diary-entry:hover {
-    @apply tw-shadow-sm;
-}
-
-.entry-header {
-    @apply tw-mb-4;
-}
-
-.entry-meta {
-    @apply tw-flex tw-gap-3 tw-items-center tw-flex-wrap;
-}
-
-.mood-badge {
-    @apply tw-inline-flex tw-items-center tw-gap-2 tw-bg-primary-50 tw-text-primary-700 tw-px-3 tw-py-1 tw-rounded-full tw-text-sm tw-font-medium;
-}
-
-.entry-date {
-    @apply tw-text-sm tw-text-gray-500;
-}
-
-.entry-content {
-    @apply tw-text-gray-700 tw-leading-relaxed;
-}
-
-.entry-content p {
-    @apply tw-mb-2;
-}
-
-/* Messages Preview */
-.messages-preview {
-    @apply tw-bg-gray-50 tw-border-2 tw-border-dashed tw-border-gray-300 tw-rounded-xl tw-p-12 tw-text-center;
-}
-
-.help-text {
-    @apply tw-text-gray-600 tw-m-0;
-}
-
-/* Error Message */
-.error-message {
-    @apply tw-bg-red-50 tw-border tw-border-red-200 tw-rounded-xl tw-p-4 tw-text-red-700 tw-text-center tw-my-6;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
+@layer components {
+    /* Sidebar */
     .openmind-dashboard {
-        @apply tw-flex-col;
+        display: flex;
+        min-height: 100vh;
+        background-color: #f9fafb;
+    }
+
+    .dashboard-main {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
     }
 
     .openmind-sidebar {
-        @apply tw-w-full tw-h-auto tw-relative;
+        position: sticky;
+        top: 0;
+        display: flex;
+        height: 100vh;
+        width: 16rem;
+        flex-direction: column;
+        background-color: #1f2937;
+        color: white;
     }
 
+    .sidebar-header {
+        border-bottom: 1px solid #374151;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .user-avatar img {
+        margin: 0 auto;
+        border-radius: 9999px;
+        border: 4px solid #667eea;
+    }
+
+    .sidebar-header h3 {
+        margin-top: 1rem;
+        font-size: 1.125rem;
+        font-weight: 600;
+    }
+
+    .user-role {
+        margin-top: 0.25rem;
+        font-size: 0.875rem;
+        color: #9ca3af;
+    }
+
+    .sidebar-menu {
+        flex: 1;
+        padding: 1.5rem 0;
+    }
+
+    .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        border-left: 4px solid transparent;
+        padding: 0.75rem 1.5rem;
+        color: #9ca3af;
+        transition: all 150ms;
+    }
+
+    .menu-item:hover {
+        background-color: rgba(55, 65, 81, 0.5);
+        color: white;
+    }
+
+    .menu-item.active {
+        border-left-color: #667eea;
+        background-color: rgba(102, 126, 234, 0.2);
+        color: white;
+    }
+
+    .menu-icon {
+        width: 1.5rem;
+        font-size: 1.25rem;
+    }
+
+    .menu-label {
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .sidebar-footer {
+        border-top: 1px solid #374151;
+        padding: 1.5rem;
+    }
+
+    .btn-logout {
+        display: block;
+        width: 100%;
+        padding: 0.75rem;
+        background-color: rgba(239, 68, 68, 0.2);
+        color: #fca5a5;
+        text-align: center;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: background-color 150ms;
+    }
+
+    .btn-logout:hover {
+        background-color: rgba(239, 68, 68, 0.3);
+    }
+
+    /* Header */
+    .openmind-header {
+        background-color: white;
+        padding: 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .header-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .openmind-header h1 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .dashboard-content {
+        max-width: 80rem;
+        padding: 2rem;
+    }
+
+    /* Buttons Base */
+    .btn-primary {
+        cursor: pointer;
+        border-radius: 0.5rem;
+        border: 0;
+        background-color: #667eea;
+        padding: 0.625rem 1.25rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: white;
+        transition: all 150ms;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        background-color: #5568d3;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-secondary {
+        cursor: pointer;
+        border-radius: 0.5rem;
+        border: 0;
+        background-color: #e5e7eb;
+        padding: 0.625rem 1.25rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #374151;
+        transition: all 150ms;
+    }
+
+    .btn-secondary:hover {
+        background-color: #d1d5db;
+    }
+
+    .btn-icon {
+        cursor: pointer;
+        border-radius: 0.5rem;
+        border: 0;
+        background-color: transparent;
+        padding: 0.5rem;
+        transition: all 150ms;
+    }
+
+    .btn-icon:hover {
+        background-color: #f3f4f6;
+    }
+
+    /* Stats */
     .stats-grid {
-        @apply tw-grid-cols-1;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
     }
 
-    .patient-detail-header {
-        @apply tw-p-6;
+    @media (min-width: 768px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
     }
 
-    .patient-main-info {
-        @apply tw-flex-col tw-text-center;
+    @media (min-width: 1024px) {
+        .stats-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
     }
 
-    .patient-actions {
-        @apply tw-flex-col tw-w-full;
+    .stat-card {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        border-radius: 0.75rem;
+        background-color: white;
+        padding: 1.5rem;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        transition: all 150ms;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-icon {
+        display: flex;
+        height: 4rem;
+        width: 4rem;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.75rem;
+        background-color: #f9fafb;
+        font-size: 2.25rem;
+    }
+
+    .stat-info h3 {
+        margin: 0;
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .stat-info p {
+        margin: 0;
+        margin-top: 0.25rem;
+        font-size: 0.875rem;
+        color: #6b7280;
+    }
+
+    /* Tables */
+    .openmind-table {
+        width: 100%;
+        background-color: white;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    }
+
+    .openmind-table thead {
+        background-color: #f9fafb;
+    }
+
+    .openmind-table th {
+        padding: 0.75rem 1rem;
+        text-align: left;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .openmind-table td {
+        padding: 1rem;
+        border-top: 1px solid #f3f4f6;
+    }
+
+    /* Cards */
+    .activity-card {
+        border-radius: 0.75rem;
+        border: 1px solid #e5e7eb;
+        background-color: white;
+        padding: 1.5rem;
+        transition: all 150ms;
+    }
+
+    .activity-card:hover {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+
+    /* Empty States */
+    .empty-state {
+        padding: 4rem 0;
+        text-align: center;
+        font-style: italic;
+        color: #9ca3af;
+    }
+
+    /* ==========================================
+       MENSAJERÍA - Usando CSS Vanilla
+       ========================================== */
+
+    .messages-layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+        .messages-layout {
+            grid-template-columns: repeat(12, 1fr);
+        }
+
+        .conversations-sidebar {
+            grid-column: span 4;
+        }
+
+        .message-thread {
+            grid-column: span 8;
+        }
+    }
+
+    .conversations-sidebar,
+    .message-thread {
+        background: white;
+        border-radius: 0.75rem;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+
+    .conversation-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem;
+        border-bottom: 1px solid #f3f4f6;
+        cursor: pointer;
+        transition: background-color 150ms;
+    }
+
+    .conversation-item:hover {
+        background: #f9fafb;
+    }
+
+    .conversation-item.active {
+        background: #f5f7ff;
+        border-left: 4px solid #667eea;
+    }
+
+    .conversation-item.has-unread {
+        background: rgba(239, 246, 255, 0.5);
+    }
+
+    .conversation-item:last-child {
+        border-bottom: 0;
+    }
+
+    .unread-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1.25rem;
+        height: 1.25rem;
+        padding: 0 0.375rem;
+        background: #ef4444;
+        color: white;
+        font-size: 0.75rem;
+        font-weight: 700;
+        border-radius: 9999px;
+        margin-left: auto;
+    }
+
+    .messages-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 1.5rem;
+        overflow-y: auto;
+        max-height: 500px;
+    }
+
+    .message {
+        max-width: 28rem;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        word-wrap: break-word;
+    }
+
+    .message.sent {
+        background: #667eea;
+        color: white;
+        margin-left: auto;
+        border-bottom-right-radius: 0;
+    }
+
+    .message.received {
+        background: #e5e7eb;
+        color: #1f2937;
+        margin-right: auto;
+        border-bottom-left-radius: 0;
+    }
+
+    .message-content {
+        font-size: 0.875rem;
+        margin-bottom: 0.25rem;
+        line-height: 1.625;
+        white-space: pre-wrap;
+    }
+
+    .message-time {
+        font-size: 0.75rem;
+        opacity: 0.75;
+    }
+
+    .message.sent .message-time {
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .message.received .message-time {
+        color: #4b5563;
+    }
+
+    .message-input {
+        border-top: 1px solid #e5e7eb;
+        padding: 1rem;
+        background: white;
+    }
+
+    .empty-thread {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 1rem;
+        min-height: 400px;
+        color: #9ca3af;
     }
 }
