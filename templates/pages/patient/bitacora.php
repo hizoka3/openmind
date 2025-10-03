@@ -18,23 +18,23 @@ $total_entries = \Openmind\Repositories\DiaryRepository::countPsychologistEntrie
 $base_url = add_query_arg(['view' => 'bitacora'], home_url('/dashboard-paciente/'));
 ?>
 
-<div class="tw-max-w-5xl tw-mx-auto">
-    <div class="tw-mb-8">
-        <h1 class="tw-text-3xl tw-font-bold tw-text-gray-900 tw-m-0 tw-mb-2">
-            <i class="fa-solid fa-book tw-mr-3 tw-text-primary-500"></i>
+<div class="max-w-5xl mx-auto">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 m-0 mb-2">
+            <i class="fa-solid fa-book mr-3 text-primary-500"></i>
             Bitácora de Sesiones
         </h1>
-        <p class="tw-text-gray-600 tw-m-0">
+        <p class="text-gray-600 m-0">
             Registro de tus sesiones terapéuticas
         </p>
     </div>
 
     <?php if ($psychologist): ?>
-        <div class="tw-bg-blue-50 tw-border-l-4 tw-border-blue-400 tw-p-4 tw-mb-6 tw-rounded-lg">
-            <div class="tw-flex tw-items-start">
-                <i class="fa-solid fa-info-circle tw-text-blue-600 tw-mr-3 tw-mt-1"></i>
+        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6 rounded-lg">
+            <div class="flex items-start">
+                <i class="fa-solid fa-info-circle text-blue-600 mr-3 mt-1"></i>
                 <div>
-                    <p class="tw-text-sm tw-text-blue-800 tw-m-0">
+                    <p class="text-sm text-blue-800 m-0">
                         <strong>Tu psicólogo/a <?php echo esc_html($psychologist->display_name); ?></strong> registra aquí
                         el contenido y avances de cada sesión terapéutica.
                     </p>
@@ -44,15 +44,15 @@ $base_url = add_query_arg(['view' => 'bitacora'], home_url('/dashboard-paciente/
     <?php endif; ?>
 
     <!-- Stats -->
-    <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-6 tw-mb-8">
-        <div class="tw-bg-gradient-to-br tw-from-blue-50 tw-to-blue-100 tw-p-6 tw-rounded-xl tw-border tw-border-blue-200">
-            <div class="tw-flex tw-items-center tw-gap-4">
-                <div class="tw-w-12 tw-h-12 tw-bg-blue-500 tw-rounded-xl tw-flex tw-items-center tw-justify-center">
-                    <i class="fa-solid fa-book tw-text-white tw-text-xl"></i>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
+                    <i class="fa-solid fa-book text-white text-xl"></i>
                 </div>
                 <div>
-                    <p class="tw-text-sm tw-text-blue-700 tw-m-0">Total Sesiones</p>
-                    <p class="tw-text-3xl tw-font-bold tw-text-blue-900 tw-m-0"><?php echo $total_entries; ?></p>
+                    <p class="text-sm text-blue-700 m-0">Total Sesiones</p>
+                    <p class="text-3xl font-bold text-blue-900 m-0"><?php echo $total_entries; ?></p>
                 </div>
             </div>
         </div>
@@ -60,14 +60,14 @@ $base_url = add_query_arg(['view' => 'bitacora'], home_url('/dashboard-paciente/
         <?php
         $latest_entry = \Openmind\Repositories\DiaryRepository::getLatestEntry($user_id);
         ?>
-        <div class="tw-bg-gradient-to-br tw-from-purple-50 tw-to-purple-100 tw-p-6 tw-rounded-xl tw-border tw-border-purple-200">
-            <div class="tw-flex tw-items-center tw-gap-4">
-                <div class="tw-w-12 tw-h-12 tw-bg-purple-500 tw-rounded-xl tw-flex tw-items-center tw-justify-center">
-                    <i class="fa-solid fa-calendar tw-text-white tw-text-xl"></i>
+        <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl border border-purple-200">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center">
+                    <i class="fa-solid fa-calendar text-white text-xl"></i>
                 </div>
                 <div>
-                    <p class="tw-text-sm tw-text-purple-700 tw-m-0">Última Sesión</p>
-                    <p class="tw-text-lg tw-font-bold tw-text-purple-900 tw-m-0">
+                    <p class="text-sm text-purple-700 m-0">Última Sesión</p>
+                    <p class="text-lg font-bold text-purple-900 m-0">
                         <?php echo $latest_entry ? date('d/m/Y', strtotime($latest_entry->created_at)) : 'N/A'; ?>
                     </p>
                 </div>
@@ -76,7 +76,7 @@ $base_url = add_query_arg(['view' => 'bitacora'], home_url('/dashboard-paciente/
     </div>
 
     <!-- Lista de Bitácoras -->
-    <div class="tw-bg-white tw-rounded-2xl tw-p-8 tw-shadow-sm">
+    <div class="bg-white rounded-2xl p-8 shadow-sm">
         <?php
         $args = [
                 'patient_id' => $user_id,

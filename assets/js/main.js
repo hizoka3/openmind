@@ -812,7 +812,7 @@ const OpenmindMessages = {
         } catch (error) {
             console.error('Error loading conversations:', error);
             document.getElementById('conversations-list').innerHTML =
-                '<div class="tw-p-4 tw-text-center tw-text-red-500">Error al cargar conversaciones</div>';
+                '<div class="p-4 text-center text-red-500">Error al cargar conversaciones</div>';
         }
     },
 
@@ -821,9 +821,9 @@ const OpenmindMessages = {
 
         if (!conversations || conversations.length === 0) {
             container.innerHTML = `
-            <div class="tw-p-8 tw-text-center tw-text-gray-400">
-                <i class="fa-solid fa-inbox tw-text-4xl tw-mb-3 tw-text-gray-300"></i>
-                <p class="tw-text-sm tw-not-italic">No tienes conversaciones aún</p>
+            <div class="p-8 text-center text-gray-400">
+                <i class="fa-solid fa-inbox text-4xl mb-3 text-gray-300"></i>
+                <p class="text-sm not-italic">No tienes conversaciones aún</p>
             </div>
         `;
             return;
@@ -839,15 +839,15 @@ const OpenmindMessages = {
                  data-user-id="${userId}"
                  data-is-current="${isCurrent}"
                  onclick="OpenmindMessages.openConversation(${userId})">
-                <div class="tw-flex-1">
-                    <div class="tw-flex tw-items-center tw-gap-2 tw-mb-1">
-                        <h4 class="tw-text-sm tw-font-semibold tw-text-gray-900 tw-m-0">
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                        <h4 class="text-sm font-semibold text-gray-900 m-0">
                             ${conv.display_name}
                         </h4>
-                        ${isCurrent ? '<span class="tw-text-xs tw-bg-green-100 tw-text-green-700 tw-px-2 tw-py-0.5 tw-rounded-full tw-font-medium">Actual</span>' : ''}
+                        ${isCurrent ? '<span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Actual</span>' : ''}
                     </div>
-                    <p class="tw-text-xs tw-text-gray-500 tw-m-0">
-                        <i class="fa-solid fa-clock tw-mr-1"></i>
+                    <p class="text-xs text-gray-500 m-0">
+                        <i class="fa-solid fa-clock mr-1"></i>
                         ${this.formatDate(conv.last_message_at)}
                     </p>
                 </div>
@@ -877,8 +877,8 @@ const OpenmindMessages = {
     async loadMessages(otherUserId, page = 1) {
         const container = document.getElementById('message-thread');
         container.innerHTML = `
-            <div class="tw-flex tw-items-center tw-justify-center tw-py-8 tw-text-gray-400">
-                <i class="fa-solid fa-spinner fa-spin tw-mr-2"></i>
+            <div class="flex items-center justify-center py-8 text-gray-400">
+                <i class="fa-solid fa-spinner fa-spin mr-2"></i>
                 Cargando mensajes...
             </div>
         `;
@@ -900,8 +900,8 @@ const OpenmindMessages = {
                 this.renderMessages(data.data.messages, otherUserId);
             } else {
                 container.innerHTML = `
-                    <div class="tw-p-8 tw-text-center tw-text-red-500">
-                        <i class="fa-solid fa-exclamation-triangle tw-text-4xl tw-mb-3"></i>
+                    <div class="p-8 text-center text-red-500">
+                        <i class="fa-solid fa-exclamation-triangle text-4xl mb-3"></i>
                         <p>${data.data?.message || 'Error al cargar mensajes'}</p>
                     </div>
                 `;
@@ -909,8 +909,8 @@ const OpenmindMessages = {
         } catch (error) {
             console.error('Error loading messages:', error);
             container.innerHTML = `
-                <div class="tw-p-8 tw-text-center tw-text-red-500">
-                    <i class="fa-solid fa-exclamation-triangle tw-text-4xl tw-mb-3"></i>
+                <div class="p-8 text-center text-red-500">
+                    <i class="fa-solid fa-exclamation-triangle text-4xl mb-3"></i>
                     <p>Error al cargar mensajes</p>
                 </div>
             `;
@@ -923,9 +923,9 @@ const OpenmindMessages = {
 
         if (!messages || messages.length === 0) {
             container.innerHTML = `
-                <div class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-py-16 tw-text-gray-400">
-                    <i class="fa-solid fa-comment-dots tw-text-6xl tw-mb-4 tw-text-gray-300"></i>
-                    <p class="tw-text-lg tw-not-italic tw-text-gray-600 tw-mb-6">
+                <div class="flex flex-col items-center justify-center py-16 text-gray-400">
+                    <i class="fa-solid fa-comment-dots text-6xl mb-4 text-gray-300"></i>
+                    <p class="text-lg not-italic text-gray-600 mb-6">
                         No hay mensajes aún. ¡Inicia la conversación!
                     </p>
                 </div>
@@ -939,7 +939,7 @@ const OpenmindMessages = {
             <div class="message ${msg.sender_id == currentUserId ? 'sent' : 'received'}">
                 <div class="message-content">${this.escapeHtml(msg.message)}</div>
                 <div class="message-time">
-                    <i class="fa-solid fa-clock tw-mr-1"></i>
+                    <i class="fa-solid fa-clock mr-1"></i>
                     ${this.formatDate(msg.created_at)}
                 </div>
             </div>
@@ -971,9 +971,9 @@ const OpenmindMessages = {
         if (!canSendMessages) {
             return `
             <div class="message-input">
-                <div class="tw-bg-yellow-50 tw-border tw-border-yellow-200 tw-rounded-lg tw-p-4 tw-text-center">
-                    <i class="fa-solid fa-info-circle tw-text-yellow-600 tw-mr-2"></i>
-                    <span class="tw-text-sm tw-text-yellow-700">
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
+                    <i class="fa-solid fa-info-circle text-yellow-600 mr-2"></i>
+                    <span class="text-sm text-yellow-700">
                         Este psicólogo ya no está asignado a ti. Solo puedes leer el historial de mensajes.
                     </span>
                 </div>
@@ -985,17 +985,17 @@ const OpenmindMessages = {
         <div class="message-input">
             <form id="send-message-form">
                 <input type="hidden" name="receiver_id" value="${otherUserId}">
-                <div class="tw-flex tw-gap-3">
+                <div class="flex gap-3">
                     <textarea 
                         name="message" 
                         placeholder="Escribe un mensaje..." 
                         rows="2"
-                        class="tw-flex-1 tw-border tw-border-gray-300 tw-rounded-lg tw-p-3 tw-resize-none focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary-500"
+                        class="flex-1 border border-gray-300 rounded-lg p-3 resize-none focus:outline-none focus:ring-2 focus:ring-primary-500"
                         required
                     ></textarea>
-                    <button type="submit" class="tw-px-6 tw-py-2 tw-bg-primary-500 tw-text-white tw-rounded-lg tw-border-0 tw-cursor-pointer tw-text-sm tw-font-medium tw-transition-all hover:tw-bg-primary-600 tw-self-end">
+                    <button type="submit" class="px-6 py-2 bg-primary-500 text-white rounded-lg border-0 cursor-pointer text-sm font-medium transition-all hover:bg-primary-600 self-end">
                         <i class="fa-solid fa-paper-plane"></i>
-                        <span class="tw-ml-2 tw-hidden md:tw-inline">Enviar</span>
+                        <span class="ml-2 hidden md:inline">Enviar</span>
                     </button>
                 </div>
             </form>
@@ -1069,7 +1069,7 @@ const OpenmindMessages = {
                 OpenmindApp.showNotification('Error al enviar mensaje', 'error');
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> <span class="tw-ml-2 tw-hidden md:tw-inline">Enviar</span>';
+                submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> <span class="ml-2 hidden md:inline">Enviar</span>';
             }
         });
 
@@ -1149,19 +1149,33 @@ const OpenmindMessages = {
     formatDate(dateString) {
         const date = new Date(dateString);
         const now = new Date();
-        const diff = now - date;
-        const hours = Math.floor(diff / 3600000);
-        const days = Math.floor(diff / 86400000);
 
-        if (hours < 1) return 'Hace un momento';
-        if (hours < 24) return `Hace ${hours}h`;
-        if (days < 7) return `Hace ${days}d`;
+        // Calcular diferencia en días
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const startOfMessageDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        const diffDays = Math.floor((startOfToday - startOfMessageDay) / 86400000);
 
-        return date.toLocaleDateString('es-ES', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
+        // Formatear hora
+        const timeStr = date.toLocaleTimeString('es-ES', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
         });
+
+        if (diffDays === 0) {
+            return `Hoy ${timeStr}`;
+        } else if (diffDays === 1) {
+            return `Ayer ${timeStr}`;
+        } else {
+            return date.toLocaleDateString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+        }
     },
 
     escapeHtml(text) {

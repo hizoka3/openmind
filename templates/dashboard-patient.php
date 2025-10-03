@@ -41,8 +41,8 @@ get_header();
                         if (file_exists($general_path)) {
                             include $general_path;
                         } else {
-                            echo '<div class="tw-bg-red-50 tw-border tw-border-red-200 tw-rounded-xl tw-p-4 tw-text-red-700 tw-text-center tw-my-6">
-                            <i class="fa-solid fa-triangle-exclamation tw-mr-2"></i>
+                            echo '<div class="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-center my-6">
+                            <i class="fa-solid fa-triangle-exclamation mr-2"></i>
                             Página no encontrada: ' . esc_html($current_page) . '
                         </div>';
                         }

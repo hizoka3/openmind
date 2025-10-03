@@ -154,24 +154,32 @@
         font-weight: 500;
         color: white;
         transition: all 150ms;
+        box-shadow: none !important;
     }
 
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        background-color: #5568d3;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    }
-
-    .btn-secondary {
+    .btn-primary {
         cursor: pointer;
         border-radius: 0.5rem;
         border: 0;
-        background-color: #e5e7eb;
+        background-color: #667eea;
         padding: 0.625rem 1.25rem;
         font-size: 0.875rem;
-        font-weight: 500;
-        color: #374151;
-        transition: all 150ms;
+        font-weight: 600; /* Aumentado de 500 a 600 */
+        color: white;
+        transition: background-color 200ms ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #5568d3;
+    }
+
+    .btn-primary:active {
+        background-color: #4553b8;
+    }
+
+    .btn-primary:focus {
+        outline: 2px solid #667eea;
+        outline-offset: 2px;
     }
 
     .btn-secondary:hover {

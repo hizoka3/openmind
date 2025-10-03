@@ -4,7 +4,6 @@ module.exports = {
         "./templates/**/*.php",
         "./assets/js/**/*.js",
     ],
-    prefix: 'tw-',
     theme: {
         extend: {
             colors: {

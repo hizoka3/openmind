@@ -19,41 +19,41 @@ $patients = get_users([
 ]);
 ?>
 
-<div class="tw-max-w-6xl tw-mx-auto">
-    <div class="tw-mb-8">
-        <h1 class="tw-text-3xl tw-font-bold tw-text-gray-900 tw-m-0 tw-mb-2">
-            <i class="fa-solid fa-book tw-mr-3 tw-text-primary-500"></i>
+<div class="max-w-6xl mx-auto">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 m-0 mb-2">
+            <i class="fa-solid fa-book mr-3 text-primary-500"></i>
             Bitácora de Pacientes
         </h1>
-        <p class="tw-text-gray-600 tw-m-0">
+        <p class="text-gray-600 m-0">
             Revisa y crea entradas de sesión para tus pacientes
         </p>
     </div>
 
     <?php if (empty($patients)): ?>
-        <div class="tw-text-center tw-py-16 tw-text-gray-400">
-            <div class="tw-text-6xl tw-mb-4">👥</div>
-            <p class="tw-text-lg tw-not-italic tw-text-gray-600">No tienes pacientes asignados.</p>
-            <a href="?view=pacientes" class="tw-inline-flex tw-items-center tw-gap-2 tw-mt-4 tw-px-5 tw-py-2.5 tw-bg-primary-500 tw-text-white tw-rounded-lg tw-text-sm tw-font-medium tw-transition-all hover:tw-bg-primary-600 tw-no-underline">
+        <div class="text-center py-16 text-gray-400">
+            <div class="text-6xl mb-4">👥</div>
+            <p class="text-lg not-italic text-gray-600">No tienes pacientes asignados.</p>
+            <a href="?view=pacientes" class="inline-flex items-center gap-2 mt-4 px-5 py-2.5 bg-primary-500 text-white rounded-lg text-sm font-medium transition-all hover:bg-primary-600 no-underline">
                 <i class="fa-solid fa-user-plus"></i>
                 Agregar Paciente
             </a>
         </div>
     <?php else: ?>
-        <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-3 tw-gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <?php foreach ($patients as $patient):
                 $latest_entry = \Openmind\Repositories\DiaryRepository::getLatestEntry($patient->ID);
                 $total_entries = \Openmind\Repositories\DiaryRepository::countPsychologistEntries($patient->ID);
                 ?>
-                <div class="tw-bg-white tw-border tw-border-gray-200 tw-rounded-xl tw-p-6 tw-transition-all hover:tw-shadow-lg hover:tw--translate-y-1">
+                <div class="bg-white border border-gray-200 rounded-xl p-6 transition-all hover:shadow-lg hover:-translate-y-1">
                     <!-- Header -->
-                    <div class="tw-flex tw-items-start tw-gap-4 tw-mb-4">
-                        <?php echo get_avatar($patient->ID, 60, '', '', ['class' => 'tw-rounded-xl tw-border-2 tw-border-gray-100']); ?>
-                        <div class="tw-flex-1">
-                            <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-m-0 tw-mb-1">
+                    <div class="flex items-start gap-4 mb-4">
+                        <?php echo get_avatar($patient->ID, 60, '', '', ['class' => 'rounded-xl border-2 border-gray-100']); ?>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 m-0 mb-1">
                                 <?php echo esc_html($patient->display_name); ?>
                             </h3>
-                            <p class="tw-text-sm tw-text-gray-500 tw-m-0">
+                            <p class="text-sm text-gray-500 m-0">
                                 <?php echo $total_entries; ?> sesión<?php echo $total_entries !== 1 ? 'es' : ''; ?>
                             </p>
                         </div>
@@ -61,33 +61,33 @@ $patients = get_users([
 
                     <!-- Última entrada -->
                     <?php if ($latest_entry): ?>
-                        <div class="tw-bg-gray-50 tw-rounded-lg tw-p-4 tw-mb-4">
-                            <p class="tw-text-xs tw-text-gray-500 tw-mb-2 tw-m-0">
-                                <i class="fa-solid fa-clock tw-mr-1"></i>
+                        <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                            <p class="text-xs text-gray-500 mb-2 m-0">
+                                <i class="fa-solid fa-clock mr-1"></i>
                                 Última sesión: <?php echo date('d/m/Y', strtotime($latest_entry->created_at)); ?>
                             </p>
-                            <p class="tw-text-sm tw-text-gray-700 tw-m-0 tw-line-clamp-2">
+                            <p class="text-sm text-gray-700 m-0 line-clamp-2">
                                 <?php echo wp_trim_words(strip_tags($latest_entry->content), 15); ?>
                             </p>
                         </div>
                     <?php else: ?>
-                        <div class="tw-bg-yellow-50 tw-rounded-lg tw-p-4 tw-mb-4 tw-text-center">
-                            <p class="tw-text-sm tw-text-yellow-700 tw-m-0">
-                                <i class="fa-solid fa-info-circle tw-mr-1"></i>
+                        <div class="bg-yellow-50 rounded-lg p-4 mb-4 text-center">
+                            <p class="text-sm text-yellow-700 m-0">
+                                <i class="fa-solid fa-info-circle mr-1"></i>
                                 Sin sesiones registradas
                             </p>
                         </div>
                     <?php endif; ?>
 
                     <!-- Acciones -->
-                    <div class="tw-flex tw-gap-2">
+                    <div class="flex gap-2">
                         <a href="?view=bitacora&patient_id=<?php echo $patient->ID; ?>"
-                           class="tw-flex-1 tw-inline-flex tw-items-center tw-justify-center tw-gap-2 tw-px-4 tw-py-2 tw-bg-gray-100 tw-text-gray-700 tw-rounded-lg tw-text-sm tw-font-medium tw-transition-all hover:tw-bg-gray-200 tw-no-underline">
+                           class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium transition-all hover:bg-gray-200 no-underline">
                             <i class="fa-solid fa-book-open"></i>
                             Ver Bitácoras
                         </a>
                         <a href="?view=bitacora-nueva&patient_id=<?php echo $patient->ID; ?>&return=lista"
-                           class="tw-flex-1 tw-inline-flex tw-items-center tw-justify-center tw-gap-2 tw-px-4 tw-py-2 tw-bg-primary-500 tw-text-white tw-rounded-lg tw-text-sm tw-font-medium tw-transition-all hover:tw-bg-primary-600 tw-no-underline">
+                           class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg text-sm font-medium transition-all hover:bg-primary-600 no-underline">
                             <i class="fa-solid fa-plus"></i>
                             Nueva
                         </a>

@@ -18,38 +18,38 @@ $return = sanitize_text_field($_GET['return'] ?? 'lista');
 // Verificar que el paciente existe y pertenece al psicólogo
 $patient_psychologist_id = get_user_meta($patient_id, 'psychologist_id', true);
 if (!$patient || $patient_psychologist_id != $psychologist_id) {
-    echo '<div class="tw-bg-red-50 tw-border tw-border-red-200 tw-rounded-xl tw-p-4 tw-text-red-700 tw-text-center tw-my-6">
-        <i class="fa-solid fa-triangle-exclamation tw-mr-2"></i>
+    echo '<div class="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-center my-6">
+        <i class="fa-solid fa-triangle-exclamation mr-2"></i>
         Paciente no encontrado o no tienes permisos para verlo.
     </div>';
     return;
 }
 ?>
 
-<div class="tw-max-w-5xl tw-mx-auto">
+<div class="max-w-5xl mx-auto">
     <!-- Breadcrumb -->
-    <div class="tw-mb-6">
+    <div class="mb-6">
         <a href="<?php echo $return === 'detalle'
             ? add_query_arg(['view' => 'pacientes', 'patient_id' => $patient_id], home_url('/dashboard-psicologo/'))
             : add_query_arg(['view' => 'bitacora', 'patient_id' => $patient_id], home_url('/dashboard-psicologo/')); ?>"
-           class="tw-inline-flex tw-items-center tw-gap-2 tw-text-primary-600 tw-text-sm tw-font-medium tw-transition-colors hover:tw-text-primary-700 tw-no-underline">
+           class="inline-flex items-center gap-2 text-primary-600 text-sm font-medium transition-colors hover:text-primary-700 no-underline">
             <i class="fa-solid fa-arrow-left"></i>
             Volver
         </a>
     </div>
 
     <!-- Header -->
-    <div class="tw-mb-8">
-        <h1 class="tw-text-3xl tw-font-bold tw-text-gray-900 tw-m-0 tw-mb-2">
-            <i class="fa-solid fa-pen-to-square tw-mr-3 tw-text-primary-500"></i>
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 m-0 mb-2">
+            <i class="fa-solid fa-pen-to-square mr-3 text-primary-500"></i>
             Nueva Entrada de Bitácora
         </h1>
-        <p class="tw-text-gray-600 tw-m-0">
+        <p class="text-gray-600 m-0">
             Registra los detalles de la sesión terapéutica
         </p>
     </div>
 
-    <div class="tw-bg-white tw-rounded-2xl tw-p-8 tw-shadow-sm">
+    <div class="bg-white rounded-2xl p-8 shadow-sm">
         <?php
         $args = [
             'patient_id' => $patient_id,

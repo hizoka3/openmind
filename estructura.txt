@@ -7,10 +7,10 @@
 │   │   │   └── tailwind.css
 │   │   └── style.css
 │   └── js
-│       ├── main.js
-│       └── tailwind-init.js
+│       └── main.js
 ├── composer.json
 ├── composer.lock
+├── create-test-messages.php
 ├── estructura.txt
 ├── flatten.sh
 ├── openmind.php
@@ -44,11 +44,11 @@
 │   ├── dashboard-patient.php
 │   ├── dashboard-psychologist.php
 │   └── pages
+│       ├── mensajeria.php
 │       ├── patient
 │       │   ├── actividades.php
 │       │   ├── bitacora.php
 │       │   ├── diario.php
-│       │   ├── mensajeria.php
 │       │   └── perfil.php
 │       └── psychologist
 │           ├── actividades.php
@@ -57,10 +57,9 @@
 │           ├── bitacora-paciente.php
 │           ├── bitacora.php
 │           ├── inicio.php
-│           ├── mensajeria.php
 │           ├── paciente-detalle.php
 │           ├── pacientes.php
 │           └── perfil.php
 └── test-setup.php
 
-14 directories, 50 files
+14 directories, 49 files
