@@ -1,15 +1,13 @@
-// assets/js/tailwind.config.js
-// Configuración opcional de Tailwind para customizar colores, fuentes, etc.
-// Este archivo se puede inyectar si decides personalizar Tailwind
-
-tailwind.config = {
-    // Prefijo para evitar conflictos con tu CSS existente
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+    content: [
+        "./templates/**/*.php",
+        "./assets/js/**/*.js",
+    ],
     prefix: 'tw-',
-
     theme: {
         extend: {
             colors: {
-                // Colores personalizados de OpenMind
                 primary: {
                     50: '#f5f7ff',
                     100: '#ebf0ff',
@@ -28,14 +26,8 @@ tailwind.config = {
             },
             fontFamily: {
                 sans: ['Inter', 'system-ui', 'sans-serif'],
-            },
-        },
+            }
+        }
     },
-
-    // Importante: NO purgar nada en modo CDN
-    // Si usas Tailwind compilado localmente, descomentar:
-    // content: [
-    //     './templates/**/*.php',
-    //     './assets/js/**/*.js',
-    // ],
+    plugins: []
 }

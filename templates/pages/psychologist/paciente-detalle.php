@@ -1,41 +1,33 @@
-<?php
-// templates/pages/psychologist/paciente-detalle.php
+<?php // templates/pages/psychologist/paciente-detalle.php
 if (!defined('ABSPATH')) exit;
 
 $patient_id = intval($_GET['patient_id'] ?? 0);
 $patient = get_userdata($patient_id);
 
-// Verificar que el paciente existe y pertenece al psicólogo actual
 $psychologist_id = get_user_meta($patient_id, 'psychologist_id', true);
 if (!$patient || $psychologist_id != get_current_user_id()) {
-    echo '<div class="error-message">Paciente no encontrado o no tienes permisos para verlo.</div>';
+    echo '<div class="error-message">
+        <i class="fa-solid fa-triangle-exclamation tw-mr-2"></i>
+        Paciente no encontrado o no tienes permisos para verlo.
+    </div>';
     return;
 }
 
-// Obtener actividades del paciente
 $all_activities = get_posts([
-    'post_type' => 'activity',
-    'meta_query' => [
-        ['key' => 'assigned_to', 'value' => $patient_id, 'compare' => '=']
-    ],
-    'posts_per_page' => -1,
-    'orderby' => 'date',
-    'order' => 'DESC'
+        'post_type' => 'activity',
+        'meta_query' => [['key' => 'assigned_to', 'value' => $patient_id, 'compare' => '=']],
+        'posts_per_page' => -1,
+        'orderby' => 'date',
+        'order' => 'DESC'
 ]);
 
 $completed_activities = array_filter($all_activities, fn($a) => get_post_meta($a->ID, 'completed', true) == 1);
 $pending_activities = array_filter($all_activities, fn($a) => !get_post_meta($a->ID, 'completed', true));
-
-// Obtener entradas de bitácora
 $diary_entries = \Openmind\Repositories\DiaryRepository::getByPatient($patient_id, 5);
-
-// Calcular tasa de completitud
-$completion_rate = count($all_activities) > 0
-    ? round((count($completed_activities) / count($all_activities)) * 100)
-    : 0;
+$completion_rate = count($all_activities) > 0 ? round((count($completed_activities) / count($all_activities)) * 100) : 0;
 ?>
 
-<div class="page-paciente-detalle">
+<div class="tw-max-w-7xl tw-mx-auto">
     <!-- Breadcrumb -->
     <div class="breadcrumb">
         <a href="?view=pacientes">
@@ -55,18 +47,19 @@ $completion_rate = count($all_activities) > 0
                     <?php echo esc_html($patient->user_email); ?>
                 </p>
                 <p class="patient-since">
-                    <i class="fa-solid fa-calendar"></i>
+                    <i class="fa-solid fa-calendar-check"></i>
                     Paciente desde <?php echo date('d/m/Y', strtotime($patient->user_registered)); ?>
                 </p>
             </div>
         </div>
 
         <div class="patient-actions">
-            <a href="<?php echo add_query_arg(['view' => 'mensajeria', 'patient_id' => $patient_id]); ?>" class="btn-primary">
+            <a href="<?php echo add_query_arg(['view' => 'mensajeria', 'patient_id' => $patient_id]); ?>"
+               class="btn-primary tw-inline-flex tw-items-center tw-gap-2">
                 <i class="fa-solid fa-message"></i>
                 Enviar Mensaje
             </a>
-            <button class="btn-secondary" id="assign-new-activity">
+            <button class="btn-secondary tw-inline-flex tw-items-center tw-gap-2" id="assign-new-activity">
                 <i class="fa-solid fa-clipboard-list"></i>
                 Asignar Actividad
             </button>
@@ -74,43 +67,43 @@ $completion_rate = count($all_activities) > 0
     </div>
 
     <!-- Estadísticas -->
-    <div class="stats-grid">
+    <div class="stats-grid tw-mb-8">
         <div class="stat-card">
-            <div class="stat-icon">
+            <div class="stat-icon tw-text-blue-500">
                 <i class="fa-solid fa-clipboard-list"></i>
             </div>
             <div class="stat-info">
-                <h3><?php echo count($all_activities); ?></h3>
+                <h3 class="tw-text-blue-600"><?php echo count($all_activities); ?></h3>
                 <p>Actividades totales</p>
             </div>
         </div>
 
         <div class="stat-card">
-            <div class="stat-icon">
+            <div class="stat-icon tw-text-green-500">
                 <i class="fa-solid fa-check-circle"></i>
             </div>
             <div class="stat-info">
-                <h3><?php echo count($completed_activities); ?></h3>
+                <h3 class="tw-text-green-600"><?php echo count($completed_activities); ?></h3>
                 <p>Completadas</p>
             </div>
         </div>
 
         <div class="stat-card">
-            <div class="stat-icon">
+            <div class="stat-icon tw-text-orange-500">
                 <i class="fa-solid fa-clock"></i>
             </div>
             <div class="stat-info">
-                <h3><?php echo count($pending_activities); ?></h3>
+                <h3 class="tw-text-orange-600"><?php echo count($pending_activities); ?></h3>
                 <p>Pendientes</p>
             </div>
         </div>
 
         <div class="stat-card">
-            <div class="stat-icon">
+            <div class="stat-icon tw-text-purple-500">
                 <i class="fa-solid fa-chart-line"></i>
             </div>
             <div class="stat-info">
-                <h3><?php echo $completion_rate; ?>%</h3>
+                <h3 class="tw-text-purple-600"><?php echo $completion_rate; ?>%</h3>
                 <p>Tasa de completitud</p>
             </div>
         </div>
@@ -142,17 +135,21 @@ $completion_rate = count($all_activities) > 0
 
             <?php if (empty($all_activities)): ?>
                 <div class="empty-state">
-                    <p>No hay actividades asignadas a este paciente.</p>
-                    <button class="btn-secondary" id="assign-first-activity">
+                    <div class="tw-text-6xl tw-mb-4">📋</div>
+                    <p class="tw-text-lg tw-mb-4">No hay actividades asignadas a este paciente.</p>
+                    <button class="btn-secondary tw-inline-flex tw-items-center tw-gap-2" id="assign-first-activity">
                         <i class="fa-solid fa-plus"></i>
                         Asignar Primera Actividad
                     </button>
                 </div>
             <?php else: ?>
-                <!-- Actividades Pendientes -->
+                <!-- Pendientes -->
                 <?php if (!empty($pending_activities)): ?>
                     <div class="activities-section">
-                        <h3>Pendientes (<?php echo count($pending_activities); ?>)</h3>
+                        <h3>
+                            <i class="fa-solid fa-hourglass-half tw-mr-2 tw-text-orange-500"></i>
+                            Pendientes (<?php echo count($pending_activities); ?>)
+                        </h3>
                         <div class="activities-list">
                             <?php foreach ($pending_activities as $activity):
                                 $due_date = get_post_meta($activity->ID, 'due_date', true);
@@ -163,7 +160,7 @@ $completion_rate = count($all_activities) > 0
                                         <h4><?php echo esc_html($activity->post_title); ?></h4>
                                         <p><?php echo wp_trim_words($activity->post_content, 20); ?></p>
                                         <?php if ($due_date): ?>
-                                            <span class="due-date">
+                                            <span class="due-date <?php echo $is_overdue ? 'tw-bg-red-100 tw-text-red-700' : ''; ?>">
                                                 <i class="fa-solid fa-calendar"></i>
                                                 Vence: <?php echo date('d/m/Y', strtotime($due_date)); ?>
                                                 <?php if ($is_overdue): ?>
@@ -178,10 +175,13 @@ $completion_rate = count($all_activities) > 0
                     </div>
                 <?php endif; ?>
 
-                <!-- Actividades Completadas -->
+                <!-- Completadas -->
                 <?php if (!empty($completed_activities)): ?>
                     <div class="activities-section">
-                        <h3>Completadas (<?php echo count($completed_activities); ?>)</h3>
+                        <h3>
+                            <i class="fa-solid fa-check-circle tw-mr-2 tw-text-green-500"></i>
+                            Completadas (<?php echo count($completed_activities); ?>)
+                        </h3>
                         <div class="activities-list">
                             <?php foreach ($completed_activities as $activity):
                                 $completed_at = get_post_meta($activity->ID, 'completed_at', true);
@@ -189,11 +189,12 @@ $completion_rate = count($all_activities) > 0
                                 <div class="activity-item completed">
                                     <div class="activity-content">
                                         <h4>
-                                            <i class="fa-solid fa-check-circle"></i>
+                                            <i class="fa-solid fa-check-circle tw-text-green-500"></i>
                                             <?php echo esc_html($activity->post_title); ?>
                                         </h4>
                                         <?php if ($completed_at): ?>
                                             <span class="completed-date">
+                                                <i class="fa-solid fa-calendar-check"></i>
                                                 Completada el <?php echo date('d/m/Y', strtotime($completed_at)); ?>
                                             </span>
                                         <?php endif; ?>
@@ -214,20 +215,16 @@ $completion_rate = count($all_activities) > 0
 
             <?php if (empty($diary_entries)): ?>
                 <div class="empty-state">
-                    <p>El paciente aún no ha escrito entradas en su bitácora.</p>
+                    <div class="tw-text-6xl tw-mb-4">📖</div>
+                    <p class="tw-text-lg">El paciente aún no ha escrito entradas en su bitácora.</p>
                 </div>
             <?php else: ?>
                 <div class="diary-entries">
                     <?php
                     $mood_emojis = [
-                        'feliz' => '😊',
-                        'triste' => '😢',
-                        'ansioso' => '😰',
-                        'neutral' => '😐',
-                        'enojado' => '😠',
-                        'calmado' => '😌'
+                            'feliz' => '😊', 'triste' => '😢', 'ansioso' => '😰',
+                            'neutral' => '😐', 'enojado' => '😠', 'calmado' => '😌'
                     ];
-
                     foreach ($diary_entries as $entry): ?>
                         <div class="diary-entry">
                             <div class="entry-header">
@@ -239,6 +236,7 @@ $completion_rate = count($all_activities) > 0
                                         </span>
                                     <?php endif; ?>
                                     <span class="entry-date">
+                                        <i class="fa-solid fa-clock tw-mr-1"></i>
                                         <?php echo date('d/m/Y H:i', strtotime($entry->created_at)); ?>
                                     </span>
                                 </div>
@@ -250,9 +248,13 @@ $completion_rate = count($all_activities) > 0
                     <?php endforeach; ?>
                 </div>
 
-                <a href="?view=bitacora&patient_id=<?php echo $patient_id; ?>" class="btn-text">
-                    Ver todas las entradas →
-                </a>
+                <div class="tw-mt-6 tw-text-center">
+                    <a href="?view=bitacora&patient_id=<?php echo $patient_id; ?>"
+                       class="tw-inline-flex tw-items-center tw-gap-2 tw-text-primary-600 tw-font-medium hover:tw-text-primary-700 tw-transition-colors">
+                        Ver todas las entradas
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
             <?php endif; ?>
         </div>
 
@@ -260,45 +262,41 @@ $completion_rate = count($all_activities) > 0
         <div class="tab-pane" id="tab-mensajes">
             <div class="section-header">
                 <h2>Conversación</h2>
-                <a href="<?php echo add_query_arg(['view' => 'mensajeria', 'patient_id' => $patient_id]); ?>" class="btn-secondary">
+                <a href="<?php echo add_query_arg(['view' => 'mensajeria', 'patient_id' => $patient_id]); ?>"
+                   class="btn-secondary tw-inline-flex tw-items-center tw-gap-2">
                     <i class="fa-solid fa-comments"></i>
                     Abrir Chat Completo
                 </a>
             </div>
 
             <div class="messages-preview">
-                <p class="help-text">Ve a la sección de Mensajería para ver el historial completo y enviar mensajes.</p>
+                <i class="fa-solid fa-comments tw-text-6xl tw-text-gray-300 tw-mb-4"></i>
+                <p class="help-text tw-text-base">
+                    Ve a la sección de Mensajería para ver el historial completo y enviar mensajes.
+                </p>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // Tabs functionality
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const tabName = this.dataset.tab;
 
-            // Update buttons
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
 
-            // Update content
             document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
             document.getElementById('tab-' + tabName).classList.add('active');
         });
     });
 
-    // Asignar actividad buttons
-    document.getElementById('assign-new-activity')?.addEventListener('click', () => {
-        if (typeof OpenmindApp !== 'undefined') {
-            alert('Esta funcionalidad se implementará próximamente');
-        }
-    });
-
-    document.getElementById('assign-first-activity')?.addEventListener('click', () => {
-        if (typeof OpenmindApp !== 'undefined') {
-            alert('Esta funcionalidad se implementará próximamente');
-        }
+    ['assign-new-activity', 'assign-first-activity'].forEach(id => {
+        document.getElementById(id)?.addEventListener('click', () => {
+            if (typeof OpenmindApp !== 'undefined') {
+                OpenmindApp.showNotification('Funcionalidad en desarrollo', 'info');
+            }
+        });
     });
 </script>

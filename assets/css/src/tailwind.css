@@ -1,0 +1,193 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================
+   ESTILOS CUSTOM DE OPENMIND
+   ========================================== */
+
+/* Layout principal */
+.openmind-dashboard {
+    @apply tw-flex tw-min-h-screen tw-bg-gray-50;
+}
+
+.dashboard-main {
+    @apply tw-flex-1 tw-flex tw-flex-col;
+}
+
+/* Sidebar */
+.openmind-sidebar {
+    @apply tw-w-64 tw-bg-gray-800 tw-text-white tw-flex tw-flex-col tw-sticky tw-top-0 tw-h-screen;
+}
+
+.sidebar-header {
+    @apply tw-p-8 tw-text-center tw-border-b tw-border-gray-700;
+}
+
+.user-avatar img {
+    @apply tw-rounded-full tw-border-4 tw-border-primary-500 tw-mx-auto;
+}
+
+.sidebar-header h3 {
+    @apply tw-mt-4 tw-text-lg tw-font-semibold tw-text-white;
+}
+
+.user-role {
+    @apply tw-text-sm tw-text-gray-400 tw-mt-1;
+}
+
+/* Menu Items */
+.sidebar-menu {
+    @apply tw-flex-1 tw-py-6;
+}
+
+.menu-item {
+    @apply tw-flex tw-items-center tw-gap-3 tw-px-6 tw-py-3 tw-text-gray-400 tw-transition-all tw-border-l-4 tw-border-transparent;
+}
+
+.menu-item:hover {
+    @apply tw-bg-gray-700/50 tw-text-white;
+}
+
+.menu-item.active {
+    @apply tw-bg-primary-500/20 tw-border-primary-500 tw-text-white;
+}
+
+.menu-icon {
+    @apply tw-text-xl tw-w-6;
+}
+
+.menu-label {
+    @apply tw-text-sm tw-font-medium;
+}
+
+/* Sidebar Footer */
+.sidebar-footer {
+    @apply tw-p-6 tw-border-t tw-border-gray-700;
+}
+
+.btn-logout {
+    @apply tw-block tw-w-full tw-py-3 tw-bg-red-500/20 tw-text-red-400 tw-text-center tw-rounded-lg tw-transition-colors tw-font-medium;
+}
+
+.btn-logout:hover {
+    @apply tw-bg-red-500/30;
+}
+
+/* Header */
+.openmind-header {
+    @apply tw-bg-white tw-p-6 tw-border-b tw-border-gray-200;
+}
+
+.header-content {
+    @apply tw-flex tw-justify-between tw-items-center;
+}
+
+.openmind-header h1 {
+    @apply tw-text-2xl tw-font-bold tw-text-gray-800 tw-m-0;
+}
+
+.header-actions {
+    @apply tw-flex tw-items-center tw-gap-4;
+}
+
+/* Dashboard Content */
+.dashboard-content {
+    @apply tw-p-8 tw-max-w-7xl;
+}
+
+/* Buttons */
+.btn-primary {
+    @apply tw-px-5 tw-py-2.5 tw-bg-primary-500 tw-text-white tw-rounded-lg tw-border-0 tw-cursor-pointer tw-text-sm tw-font-medium tw-transition-all;
+}
+
+.btn-primary:hover {
+    @apply tw-bg-primary-600 tw--translate-y-0.5 tw-shadow-lg;
+}
+
+.btn-secondary {
+    @apply tw-px-5 tw-py-2.5 tw-bg-gray-200 tw-text-gray-700 tw-rounded-lg tw-border-0 tw-cursor-pointer tw-text-sm tw-font-medium tw-transition-all;
+}
+
+.btn-secondary:hover {
+    @apply tw-bg-gray-300;
+}
+
+.btn-icon {
+    @apply tw-p-2 tw-bg-transparent tw-border-0 tw-cursor-pointer tw-transition-all tw-rounded-lg;
+}
+
+.btn-icon:hover {
+    @apply tw-bg-gray-100;
+}
+
+/* Stats Grid */
+.stats-grid {
+    @apply tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-3 tw-gap-6;
+}
+
+.stat-card {
+    @apply tw-bg-white tw-p-6 tw-rounded-xl tw-shadow-sm tw-flex tw-items-center tw-gap-5 tw-transition-all;
+}
+
+.stat-card:hover {
+    @apply tw--translate-y-1 tw-shadow-md;
+}
+
+.stat-icon {
+    @apply tw-text-4xl tw-w-16 tw-h-16 tw-flex tw-items-center tw-justify-center tw-bg-gray-50 tw-rounded-xl;
+}
+
+.stat-info h3 {
+    @apply tw-text-3xl tw-font-bold tw-text-gray-800 tw-m-0;
+}
+
+.stat-info p {
+    @apply tw-text-sm tw-text-gray-500 tw-mt-1 tw-m-0;
+}
+
+/* Tables */
+.openmind-table {
+    @apply tw-w-full tw-bg-white tw-rounded-xl tw-overflow-hidden tw-shadow-sm;
+}
+
+.openmind-table thead {
+    @apply tw-bg-gray-50;
+}
+
+.openmind-table th {
+    @apply tw-px-4 tw-py-3 tw-text-left tw-font-semibold tw-text-gray-700 tw-text-sm;
+}
+
+.openmind-table td {
+    @apply tw-px-4 tw-py-4 tw-border-t tw-border-gray-100;
+}
+
+/* Cards */
+.activity-card {
+    @apply tw-bg-white tw-border tw-border-gray-200 tw-rounded-xl tw-p-6 tw-transition-all;
+}
+
+.activity-card:hover {
+    @apply tw-shadow-md tw--translate-y-0.5;
+}
+
+/* Empty States */
+.empty-state {
+    @apply tw-text-center tw-py-16 tw-text-gray-400 tw-italic;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .openmind-dashboard {
+        @apply tw-flex-col;
+    }
+
+    .openmind-sidebar {
+        @apply tw-w-full tw-h-auto tw-relative;
+    }
+
+    .stats-grid {
+        @apply tw-grid-cols-1;
+    }
+}

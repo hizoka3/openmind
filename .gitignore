@@ -65,4 +65,6 @@ php_errorlog
 
 # Plugin deployment (ZIP files for WordPress.org)
 *.zip
-kame-erp-integration-*.zip
+
+assets/css/style.css
+assets/css/style.css.map

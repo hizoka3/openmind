@@ -1,0 +1,16 @@
+{
+    "name": "openmind-plugin",
+    "version": "1.0.0",
+    "description": "Plugin WordPress para gestión de pacientes y psicólogos",
+    "scripts": {
+        "build:css": "tailwindcss -i ./assets/css/src/tailwind.css -o ./assets/css/style.css --minify",
+        "watch:css": "tailwindcss -i ./assets/css/src/tailwind.css -o ./assets/css/style.css --watch",
+        "dev": "npm run watch:css"
+    },
+    "keywords": ["wordpress", "plugin", "tailwind"],
+    "author": "Pez web",
+    "license": "MIT",
+    "devDependencies": {
+        "tailwindcss": "^3.4.1"
+    }
+}

@@ -4,7 +4,8 @@
 │   ├── css
 │   │   └── style.css
 │   └── js
-│       └── main.js
+│       ├── main.js
+│       └── tailwind.config.js
 ├── composer.json
 ├── composer.lock
 ├── estructura.txt
@@ -13,28 +14,42 @@
 ├── src
 │   ├── Controllers
 │   │   ├── ActivityController.php
+│   │   ├── AuthController.php
 │   │   ├── DiaryController.php
 │   │   ├── MessageController.php
 │   │   └── PatientController.php
 │   ├── Core
 │   │   ├── Installer.php
 │   │   └── Plugin.php
-│   └── Repositories
-│       ├── DiaryRepository.php
-│       └── MessageRepository.php
+│   ├── Repositories
+│   │   ├── DiaryRepository.php
+│   │   └── MessageRepository.php
+│   └── helpers.php
 ├── templates
 │   ├── components
 │   │   ├── activity-card.php
-│   │   ├── components
-│   │   │   └── diary-list.php
+│   │   ├── diary-list.php
 │   │   ├── header.php
 │   │   ├── patient-card.php
+│   │   ├── sidebar-patient.php
 │   │   └── sidebar-psychologist.php
 │   ├── dashboard-patient.php
 │   ├── dashboard-psychologist.php
 │   └── pages
+│       ├── patient
+│       │   ├── actividades.php
+│       │   ├── bitacora.php
+│       │   ├── diario.php
+│       │   ├── mensajeria.php
+│       │   └── perfil.php
 │       └── psychologist
-│           └── inicio.php
+│           ├── actividades.php
+│           ├── bitacora.php
+│           ├── inicio.php
+│           ├── mensajeria.php
+│           ├── paciente-detalle.php
+│           ├── pacientes.php
+│           └── perfil.php
 └── test-setup.php
 
-13 directories, 25 files
+13 directories, 40 files

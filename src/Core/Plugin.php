@@ -64,7 +64,7 @@ class Plugin {
         add_action('wp_enqueue_scripts', function() {
             if (!is_user_logged_in()) return;
 
-            // Font Awesome 6.5.1 (Free)
+            // Font Awesome
             wp_enqueue_style(
                 'font-awesome',
                 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',
@@ -72,18 +72,22 @@ class Plugin {
                 '6.5.1'
             );
 
-            // Tailwind CSS 3.4.1 (CDN con JIT)
-            wp_enqueue_script(
-                'tailwind-cdn',
-                'https://cdn.tailwindcss.com',
-                [],
-                '3.4.1',
-                false
+            // CSS compilado (incluye Tailwind + custom styles)
+            wp_enqueue_style(
+                'openmind',
+                OPENMIND_URL . 'assets/css/style.css',
+                ['font-awesome'],
+                OPENMIND_VERSION
             );
 
-            // Estilos y scripts del plugin
-            wp_enqueue_style('openmind', OPENMIND_URL . 'assets/css/style.css', ['font-awesome'], OPENMIND_VERSION);
-            wp_enqueue_script('openmind', OPENMIND_URL . 'assets/js/main.js', ['jquery'], OPENMIND_VERSION, true);
+            // JavaScript
+            wp_enqueue_script(
+                'openmind',
+                OPENMIND_URL . 'assets/js/main.js',
+                ['jquery'],
+                OPENMIND_VERSION,
+                true
+            );
 
             wp_localize_script('openmind', 'openmindData', [
                 'ajaxUrl' => admin_url('admin-ajax.php'),
