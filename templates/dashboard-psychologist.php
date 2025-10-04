@@ -23,11 +23,13 @@ get_header();
                 $view_files = [
                         'inicio' => 'inicio.php',
                         'pacientes' => 'pacientes.php',
+                        'paciente-detalle' => 'paciente-detalle.php',
                         'actividades' => 'actividades.php',
-                        'mensajeria' => 'mensajeria.php',  // NUEVO
+                        'mensajeria' => 'mensajeria.php',
                         'bitacora' => 'bitacora.php',
                         'bitacora-nueva' => 'bitacora-nueva.php',
                         'bitacora-editar' => 'bitacora-editar.php',
+                        'diario-detalle' => 'diario-detalle.php',
                         'perfil' => 'perfil.php'
                 ];
 

@@ -7,7 +7,7 @@ $base_url = get_permalink();
 
 $menu_items = [
         'actividades' => ['label' => 'Actividades', 'icon' => '📋', 'badge' => false],
-        'mensajeria' => ['label' => 'Mensajería', 'icon' => '💬', 'badge' => 'messages'], // NUEVO
+        'mensajeria' => ['label' => 'Mensajería', 'icon' => '💬', 'badge' => 'messages'],
         'bitacora' => ['label' => 'Bitácora', 'icon' => '📖', 'badge' => false],
         'diario' => ['label' => 'Diario de vida', 'icon' => '✍️', 'badge' => false],
         'perfil' => ['label' => 'Mi perfil', 'icon' => '👤', 'badge' => false]

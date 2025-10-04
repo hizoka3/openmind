@@ -1,6 +1,6 @@
 <?php
 // templates/dashboard-patient.php
-if (!current_user_can('view_activities')) wp_die('Acceso denegado');
+if (!current_user_can('patient')) wp_die('Acceso denegado');
 
 $user_id = get_current_user_id();
 $current_page = $_GET['view'] ?? 'actividades';
@@ -26,7 +26,7 @@ get_header();
                         'bitacora' => 'bitacora.php',
                         'diario' => 'diario.php',
                         'diario-nuevo' => 'diario-nuevo.php',
-                        'diario-detalle' => 'diario-detalle.php',  // NUEVO
+                        'diario-detalle' => 'diario-detalle.php',
                         'perfil' => 'perfil.php'
                 ];
 
@@ -44,9 +44,9 @@ get_header();
                             include $general_path;
                         } else {
                             echo '<div class="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-center my-6">
-                        <i class="fa-solid fa-triangle-exclamation mr-2"></i>
-                        Página no encontrada: ' . esc_html($current_page) . '
-                    </div>';
+                            <i class="fa-solid fa-triangle-exclamation mr-2"></i>
+                            Página no encontrada: ' . esc_html($current_page) . '
+                        </div>';
                         }
                     }
                 } else {

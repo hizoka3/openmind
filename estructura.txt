@@ -8,6 +8,7 @@
 │   │   └── style.css
 │   └── js
 │       └── main.js
+├── build-deploy.sh
 ├── composer.json
 ├── composer.lock
 ├── create-test-messages.php
@@ -16,6 +17,11 @@
 ├── openmind.php
 ├── package-lock.json
 ├── package.json
+├── releases
+│   ├── openmind-v1.0.1.zip
+│   ├── openmind-v1.0.2.zip
+│   ├── openmind-v1.0.4.zip
+│   └── openmind-v1.0.5.zip
 ├── src
 │   ├── Controllers
 │   │   ├── ActivityController.php
@@ -37,6 +43,7 @@
 │   │   ├── bitacora-form.php
 │   │   ├── bitacora-list.php
 │   │   ├── diary-list.php
+│   │   ├── diary-timeline.php
 │   │   ├── header.php
 │   │   ├── patient-card.php
 │   │   ├── sidebar-patient.php
@@ -48,6 +55,8 @@
 │       ├── patient
 │       │   ├── actividades.php
 │       │   ├── bitacora.php
+│       │   ├── diario-detalle.php
+│       │   ├── diario-nuevo.php
 │       │   ├── diario.php
 │       │   └── perfil.php
 │       └── psychologist
@@ -62,4 +71,4 @@
 │           └── perfil.php
 └── test-setup.php
 
-14 directories, 49 files
+15 directories, 57 files

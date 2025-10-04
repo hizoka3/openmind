@@ -1,4 +1,4 @@
-<?php
+<?php // templates/pages/patient/diario-detalle.php
 if (!defined('ABSPATH')) exit;
 
 $patient_id = intval($_GET['patient_id'] ?? 0);
@@ -284,89 +284,40 @@ $completion_rate = count($all_activities) > 0 ? round((count($completed_activiti
                 </div>
 
                 <?php
-                $shared_count = \Openmind\Repositories\DiaryRepository::countRecentSharedByPsychologist($psychologist_id);
+                $shared_count = \Openmind\Repositories\DiaryRepository::countRecentSharedByPsychologist(get_current_user_id());
                 if ($shared_count > 0):
                     ?>
                     <span class="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold">
-                <i class="fa-solid fa-bell"></i>
-                <?php echo $shared_count; ?> nueva<?php echo $shared_count > 1 ? 's' : ''; ?> (últimos 7 días)
-            </span>
+                        <i class="fa-solid fa-bell"></i>
+                        <?php echo $shared_count; ?> nueva<?php echo $shared_count > 1 ? 's' : ''; ?> (últimos 7 días)
+                    </span>
                 <?php endif; ?>
             </div>
 
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6 rounded-lg">
+                <div class="flex items-start gap-3">
+                    <i class="fa-solid fa-info-circle text-blue-600 text-xl mt-1"></i>
+                    <div class="flex-1">
+                        <p class="text-sm font-semibold text-blue-900 m-0 mb-1">
+                            Solo entradas compartidas
+                        </p>
+                        <p class="text-sm text-blue-800 m-0">
+                            Solo puedes ver las entradas que <?php echo esc_html($patient->display_name); ?> ha decidido compartir contigo.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             <?php
-            $shared_entries = \Openmind\Repositories\DiaryRepository::getSharedByPatient($patient_id, 10);
-
-            if (empty($shared_entries)): ?>
-                <div class="text-center py-16">
-                    <div class="text-6xl mb-4">📖</div>
-                    <p class="text-lg text-gray-600 m-0 mb-2">
-                        El paciente no ha compartido entradas de su diario aún.
-                    </p>
-                    <p class="text-sm text-gray-500 m-0">
-                        Las entradas aparecerán aquí cuando el paciente decida compartirlas.
-                    </p>
-                </div>
-            <?php else: ?>
-                <div class="space-y-6">
-                    <?php
-                    $mood_emojis = [
-                            'feliz' => '😊', 'triste' => '😢', 'ansioso' => '😰',
-                            'neutral' => '😐', 'enojado' => '😠', 'calmado' => '😌'
-                    ];
-
-                    foreach ($shared_entries as $entry):
-                        $is_recent = strtotime($entry->created_at) > strtotime('-7 days');
-                        ?>
-                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-6 transition-all hover:shadow-md <?php echo $is_recent ? 'ring-2 ring-blue-400' : ''; ?>">
-                            <div class="mb-4">
-                                <div class="flex justify-between items-start flex-wrap gap-3">
-                                    <div class="flex gap-3 items-center flex-wrap">
-                                        <?php if ($entry->mood): ?>
-                                            <span class="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full text-sm font-medium">
-                                        <span class="text-lg"><?php echo $mood_emojis[$entry->mood] ?? ''; ?></span>
-                                        <?php echo esc_html(ucfirst($entry->mood)); ?>
-                                    </span>
-                                        <?php endif; ?>
-
-                                        <span class="text-sm text-blue-600 font-medium">
-                                    <i class="fa-solid fa-calendar mr-1"></i>
-                                    <?php echo date('d/m/Y H:i', strtotime($entry->created_at)); ?>
-                                </span>
-                                    </div>
-
-                                    <div class="flex gap-2">
-                                <span class="inline-flex items-center gap-1 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-semibold">
-                                    <i class="fa-solid fa-share-nodes"></i>
-                                    Compartido
-                                </span>
-
-                                        <?php if ($is_recent): ?>
-                                            <span class="inline-flex items-center gap-1 text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full font-semibold animate-pulse">
-                                        <i class="fa-solid fa-sparkles"></i>
-                                        Nuevo
-                                    </span>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="text-gray-800 leading-relaxed">
-                                <?php echo wp_kses_post(wpautop($entry->content)); ?>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-
-                <!-- Info adicional -->
-                <div class="mt-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
-                    <p class="text-sm text-gray-600 m-0">
-                        <i class="fa-solid fa-lightbulb text-yellow-500 mr-2"></i>
-                        <strong>Nota:</strong> Estas son las últimas 10 entradas compartidas.
-                        El paciente puede compartir y descompartir entradas en cualquier momento desde su panel.
-                    </p>
-                </div>
-            <?php endif; ?>
+            // Usar componente reutilizable
+            $args = [
+                    'user_id' => $patient_id,
+                    'show_shared_only' => true,
+                    'is_psychologist' => true,
+                    'per_page' => 10
+            ];
+            include OPENMIND_PATH . 'templates/components/diary-list.php';
+            ?>
         </div>
 
         <!-- Tab Mensajes -->

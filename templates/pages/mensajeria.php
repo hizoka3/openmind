@@ -1,4 +1,4 @@
-<?php
+<?php // templates/pages/mensajeria.php
 /**
  * Template unificado de mensajería
  * Funciona para psicólogos y pacientes
