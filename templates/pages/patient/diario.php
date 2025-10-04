@@ -1,5 +1,4 @@
-<?php
-// templates/pages/patient/diario.php
+<?php // templates/pages/patient/diario.php
 if (!defined('ABSPATH')) exit;
 
 $user_id = get_current_user_id();
@@ -16,17 +15,22 @@ $total_pages = ceil($total_entries / $per_page);
 
 $psychologist_id = get_user_meta($user_id, 'psychologist_id', true);
 $psychologist = $psychologist_id ? get_userdata($psychologist_id) : null;
+
+$mood_emojis = [
+        'feliz' => '😊', 'triste' => '😢', 'ansioso' => '😰',
+        'neutral' => '😐', 'enojado' => '😠', 'calmado' => '😌'
+];
 ?>
 
-<div class="max-w-5xl mx-auto">
+<div class="max-w-6xl mx-auto">
     <!-- Header -->
     <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900 m-0 mb-2">
-            <i class="fa-solid fa-pen-to-square mr-3 text-purple-500"></i>
+            <i class="fa-solid fa-book-open mr-3 text-purple-500"></i>
             Mi Diario Personal
         </h1>
         <p class="text-gray-600 m-0">
-            Espacio privado para tus pensamientos y emociones
+            Tu espacio privado para registrar pensamientos y emociones día a día
         </p>
     </div>
 
@@ -39,7 +43,7 @@ $psychologist = $psychologist_id ? get_userdata($psychologist_id) : null;
                     Privado por defecto
                 </p>
                 <p class="text-sm text-purple-800 m-0">
-                    Tus entradas son privadas. Puedes elegir compartir entradas específicas con
+                    Tus entradas son privadas. Puedes compartir entradas específicas con
                     <?php echo $psychologist ? '<strong>' . esc_html($psychologist->display_name) . '</strong>' : 'tu psicólogo'; ?>.
                 </p>
             </div>
@@ -47,7 +51,7 @@ $psychologist = $psychologist_id ? get_userdata($psychologist_id) : null;
     </div>
 
     <!-- Botón Nueva Entrada -->
-    <div class="mb-6">
+    <div class="mb-8">
         <a
                 href="<?php echo add_query_arg('view', 'diario-nuevo', home_url('/dashboard-paciente/')); ?>"
                 class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg border-0 text-sm font-semibold transition-all hover:from-purple-600 hover:to-pink-600 hover:-translate-y-0.5 hover:shadow-lg shadow-none no-underline">
@@ -56,7 +60,7 @@ $psychologist = $psychologist_id ? get_userdata($psychologist_id) : null;
         </a>
     </div>
 
-    <!-- Lista de Entradas -->
+    <!-- Timeline de Entradas -->
     <?php if (empty($entries)): ?>
         <div class="text-center py-16">
             <div class="text-6xl mb-4">✍️</div>
@@ -71,68 +75,111 @@ $psychologist = $psychologist_id ? get_userdata($psychologist_id) : null;
             </a>
         </div>
     <?php else: ?>
-        <div class="space-y-6">
+        <div class="space-y-4">
             <?php
-            $mood_emojis = [
-                    'feliz' => '😊', 'triste' => '😢', 'ansioso' => '😰',
-                    'neutral' => '😐', 'enojado' => '😠', 'calmado' => '😌'
-            ];
+            $last_date = '';
 
             foreach ($entries as $entry):
                 $is_shared = $entry->is_private == 0;
+                $entry_date = date('Y-m-d', strtotime($entry->created_at));
+                $show_date_separator = $entry_date !== $last_date;
+                $last_date = $entry_date;
+
+                // Preview corto (150 caracteres)
+                $preview = wp_trim_words(strip_tags($entry->content), 25, '...');
                 ?>
-                <div class="bg-white border-2 <?php echo $is_shared ? 'border-green-200 bg-green-50' : 'border-gray-200'; ?> rounded-xl p-6 transition-all hover:shadow-md">
-                    <!-- Header -->
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="flex gap-3 items-center flex-wrap">
-                            <?php if ($entry->mood): ?>
-                                <span class="inline-flex items-center gap-2 bg-purple-100 text-purple-700 px-3 py-1.5 rounded-full text-sm font-medium">
-                                    <span class="text-lg"><?php echo $mood_emojis[$entry->mood] ?? ''; ?></span>
-                                    <?php echo esc_html(ucfirst($entry->mood)); ?>
-                                </span>
-                            <?php endif; ?>
 
-                            <span class="text-sm text-gray-500">
-                                <i class="fa-solid fa-calendar mr-1"></i>
-                                <?php echo date('d/m/Y H:i', strtotime($entry->created_at)); ?>
-                            </span>
+                <?php if ($show_date_separator): ?>
+                <!-- Separador de Fecha -->
+                <div class="flex items-center gap-4 mt-8 mb-4">
+                    <div class="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent flex-1"></div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-gray-900">
+                            <?php echo date('d', strtotime($entry->created_at)); ?>
                         </div>
-
-                        <!-- Badge Estado -->
-                        <?php if ($is_shared): ?>
-                            <span class="inline-flex items-center gap-1.5 bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
-                                <i class="fa-solid fa-share-nodes"></i>
-                                Compartido
-                            </span>
-                        <?php else: ?>
-                            <span class="inline-flex items-center gap-1.5 bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-semibold">
-                                <i class="fa-solid fa-lock"></i>
-                                Privado
-                            </span>
-                        <?php endif; ?>
+                        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            <?php echo date('M Y', strtotime($entry->created_at)); ?>
+                        </div>
                     </div>
+                    <div class="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent flex-1"></div>
+                </div>
+            <?php endif; ?>
 
-                    <!-- Contenido -->
-                    <div class="text-gray-700 leading-relaxed mb-4">
-                        <?php echo wp_kses_post(wpautop($entry->content)); ?>
-                    </div>
+                <!-- Entry Card Horizontal -->
+                <div class="group relative">
+                    <!-- Línea de Timeline -->
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b <?php echo $is_shared ? 'from-green-400 to-green-500' : 'from-purple-400 to-purple-500'; ?> rounded-full"></div>
 
-                    <!-- Acciones -->
-                    <div class="flex justify-between items-center pt-4 border-t border-gray-200">
-                        <button
-                                class="toggle-share-btn inline-flex items-center gap-2 px-4 py-2 <?php echo $is_shared ? 'bg-gray-200 text-gray-700 hover:bg-gray-300' : 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:from-blue-600 hover:to-indigo-600'; ?> rounded-lg border-0 cursor-pointer text-sm font-medium transition-all shadow-none"
-                                data-entry-id="<?php echo $entry->id; ?>"
-                                data-is-shared="<?php echo $is_shared ? '1' : '0'; ?>">
-                            <i class="fa-solid <?php echo $is_shared ? 'fa-lock' : 'fa-share-nodes'; ?>"></i>
-                            <?php echo $is_shared ? 'Mover a Privado' : 'Compartir con ' . ($psychologist ? $psychologist->display_name : 'Psicólogo'); ?>
-                        </button>
+                    <!-- Card -->
+                    <div class="ml-6 bg-white border-2 <?php echo $is_shared ? 'border-green-100 hover:border-green-200' : 'border-gray-100 hover:border-gray-200'; ?> rounded-xl p-5 transition-all hover:shadow-lg">
+                        <div class="flex gap-4">
+                            <!-- Left: Time & Mood -->
+                            <div class="flex-shrink-0 text-center">
+                                <div class="text-2xl font-bold text-gray-900">
+                                    <?php echo date('H:i', strtotime($entry->created_at)); ?>
+                                </div>
+                                <?php if ($entry->mood): ?>
+                                    <div class="mt-2 text-4xl">
+                                        <?php echo $mood_emojis[$entry->mood] ?? ''; ?>
+                                    </div>
+                                    <div class="text-xs font-medium text-gray-600 mt-1">
+                                        <?php echo esc_html(ucfirst($entry->mood)); ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
 
-                        <button
-                                class="delete-diary-entry inline-flex items-center gap-1 px-3 py-2 text-red-600 bg-red-50 rounded-lg border-0 cursor-pointer text-sm font-medium transition-colors hover:bg-red-100 shadow-none"
-                                data-entry-id="<?php echo $entry->id; ?>">
-                            <i class="fa-solid fa-trash"></i>
-                            Eliminar
-                        </button>
+                            <!-- Center: Content Preview -->
+                            <div class="flex-1 min-w-0">
+                                <!-- Preview Text -->
+                                <p class="text-gray-700 leading-relaxed m-0 mb-3">
+                                    <?php echo esc_html($preview); ?>
+                                </p>
+
+                                <!-- Actions -->
+                                <div class="flex items-center gap-3 flex-wrap">
+                                    <a
+                                            href="<?php echo add_query_arg(['view' => 'diario-detalle', 'entry_id' => $entry->id], home_url('/dashboard-paciente/')); ?>"
+                                            class="inline-flex items-center gap-1 text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors no-underline">
+                                        <i class="fa-solid fa-book-open"></i>
+                                        Leer entrada completa
+                                    </a>
+
+                                    <span class="text-gray-300">•</span>
+
+                                    <button
+                                            class="toggle-share-btn inline-flex items-center gap-1 text-sm font-medium <?php echo $is_shared ? 'text-gray-600 hover:text-gray-700' : 'text-blue-600 hover:text-blue-700'; ?> transition-colors border-0 bg-transparent cursor-pointer p-0 shadow-none"
+                                            data-entry-id="<?php echo $entry->id; ?>"
+                                            data-is-shared="<?php echo $is_shared ? '1' : '0'; ?>">
+                                        <i class="fa-solid <?php echo $is_shared ? 'fa-lock' : 'fa-share-nodes'; ?>"></i>
+                                        <?php echo $is_shared ? 'Mover a privado' : 'Compartir'; ?>
+                                    </button>
+
+                                    <span class="text-gray-300">•</span>
+
+                                    <button
+                                            class="delete-diary-entry inline-flex items-center gap-1 text-sm font-medium text-red-600 hover:text-red-700 transition-colors border-0 bg-transparent cursor-pointer p-0 shadow-none"
+                                            data-entry-id="<?php echo $entry->id; ?>">
+                                        <i class="fa-solid fa-trash"></i>
+                                        Eliminar
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Right: Badge Estado -->
+                            <div class="flex-shrink-0">
+                                <?php if ($is_shared): ?>
+                                    <span class="inline-flex items-center gap-1.5 bg-green-100 text-green-700 px-3 py-1.5 rounded-full text-xs font-semibold">
+                                        <i class="fa-solid fa-share-nodes"></i>
+                                        Compartido
+                                    </span>
+                                <?php else: ?>
+                                    <span class="inline-flex items-center gap-1.5 bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full text-xs font-semibold">
+                                        <i class="fa-solid fa-lock"></i>
+                                        Privado
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -230,7 +277,7 @@ $psychologist = $psychologist_id ? get_userdata($psychologist_id) : null;
                 if (!confirm('¿Eliminar esta entrada? Esta acción no se puede deshacer.')) return;
 
                 const entryId = this.getAttribute('data-entry-id');
-                const entryCard = this.closest('.bg-white');
+                const entryCard = this.closest('.group');
 
                 const formData = new FormData();
                 formData.append('action', 'openmind_delete_diary');
@@ -249,7 +296,7 @@ $psychologist = $psychologist_id ? get_userdata($psychologist_id) : null;
                         entryCard.style.transform = 'translateX(-20px)';
                         setTimeout(() => {
                             entryCard.remove();
-                            const remainingEntries = document.querySelectorAll('.bg-white.border-2');
+                            const remainingEntries = document.querySelectorAll('.group');
                             if (remainingEntries.length === 0) {
                                 location.reload();
                             }

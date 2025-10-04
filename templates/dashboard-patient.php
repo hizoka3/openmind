@@ -25,7 +25,8 @@ get_header();
                         'mensajeria' => 'mensajeria.php',
                         'bitacora' => 'bitacora.php',
                         'diario' => 'diario.php',
-                        'diario-nuevo' => 'diario-nuevo.php',  // NUEVO
+                        'diario-nuevo' => 'diario-nuevo.php',
+                        'diario-detalle' => 'diario-detalle.php',  // NUEVO
                         'perfil' => 'perfil.php'
                 ];
 

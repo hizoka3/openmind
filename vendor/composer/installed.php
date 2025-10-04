@@ -3,7 +3,7 @@
         'name' => 'openmind/plugin',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'b7b20817aca9c3c417559cebdd5d0f60d42bd4cf',
+        'reference' => '4a7956aa09def98fd8f2b865021f5acbf1be3a99',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'openmind/plugin' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'b7b20817aca9c3c417559cebdd5d0f60d42bd4cf',
+            'reference' => '4a7956aa09def98fd8f2b865021f5acbf1be3a99',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
