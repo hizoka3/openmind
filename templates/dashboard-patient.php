@@ -22,9 +22,10 @@ get_header();
                 // Mapeo de vistas a archivos
                 $view_files = [
                         'actividades' => 'actividades.php',
-                        'mensajeria' => 'mensajeria.php',  // NUEVO
+                        'mensajeria' => 'mensajeria.php',
                         'bitacora' => 'bitacora.php',
                         'diario' => 'diario.php',
+                        'diario-nuevo' => 'diario-nuevo.php',  // NUEVO
                         'perfil' => 'perfil.php'
                 ];
 
@@ -42,9 +43,9 @@ get_header();
                             include $general_path;
                         } else {
                             echo '<div class="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-center my-6">
-                            <i class="fa-solid fa-triangle-exclamation mr-2"></i>
-                            Página no encontrada: ' . esc_html($current_page) . '
-                        </div>';
+                        <i class="fa-solid fa-triangle-exclamation mr-2"></i>
+                        Página no encontrada: ' . esc_html($current_page) . '
+                    </div>';
                         }
                     }
                 } else {

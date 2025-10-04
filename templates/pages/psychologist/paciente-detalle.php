@@ -274,31 +274,38 @@ $completion_rate = count($all_activities) > 0 ? round((count($completed_activiti
 
         <!-- Tab Diario de vida -->
         <div class="tab-pane" id="tab-diario" style="display: none;">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-gray-900 m-0">Diario Personal del Paciente</h2>
-                <span class="text-sm text-red-600 font-medium">
-                    <i class="fa-solid fa-lock mr-1"></i>
-                    Contenido privado del paciente
-                </span>
-            </div>
-
-            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-lg">
-                <div class="flex items-start">
-                    <i class="fa-solid fa-info-circle text-yellow-600 mr-3 mt-1"></i>
-                    <div>
-                        <h4 class="text-sm font-semibold text-yellow-800 m-0 mb-1">Nota sobre privacidad</h4>
-                        <p class="text-sm text-yellow-700 m-0">
-                            El diario personal es un espacio privado del paciente. Solo tú como psicólogo tienes acceso para mejor seguimiento terapéutico.
-                            Estas entradas NO son visibles en la bitácora compartida.
-                        </p>
-                    </div>
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900 m-0 mb-2">Diario Compartido</h2>
+                    <p class="text-sm text-gray-500 m-0">
+                        <i class="fa-solid fa-info-circle mr-1"></i>
+                        Solo las entradas que <?php echo esc_html($patient->display_name); ?> ha decidido compartir contigo
+                    </p>
                 </div>
+
+                <?php
+                $shared_count = \Openmind\Repositories\DiaryRepository::countRecentSharedByPsychologist($psychologist_id);
+                if ($shared_count > 0):
+                    ?>
+                    <span class="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold">
+                <i class="fa-solid fa-bell"></i>
+                <?php echo $shared_count; ?> nueva<?php echo $shared_count > 1 ? 's' : ''; ?> (últimos 7 días)
+            </span>
+                <?php endif; ?>
             </div>
 
-            <?php if (empty($private_diary_entries)): ?>
-                <div class="text-center py-16 text-gray-400">
-                    <div class="text-6xl mb-4">✍️</div>
-                    <p class="text-lg not-italic text-gray-600">El paciente aún no ha escrito en su diario personal.</p>
+            <?php
+            $shared_entries = \Openmind\Repositories\DiaryRepository::getSharedByPatient($patient_id, 10);
+
+            if (empty($shared_entries)): ?>
+                <div class="text-center py-16">
+                    <div class="text-6xl mb-4">📖</div>
+                    <p class="text-lg text-gray-600 m-0 mb-2">
+                        El paciente no ha compartido entradas de su diario aún.
+                    </p>
+                    <p class="text-sm text-gray-500 m-0">
+                        Las entradas aparecerán aquí cuando el paciente decida compartirlas.
+                    </p>
                 </div>
             <?php else: ?>
                 <div class="space-y-6">
@@ -307,31 +314,57 @@ $completion_rate = count($all_activities) > 0 ? round((count($completed_activiti
                             'feliz' => '😊', 'triste' => '😢', 'ansioso' => '😰',
                             'neutral' => '😐', 'enojado' => '😠', 'calmado' => '😌'
                     ];
-                    foreach ($private_diary_entries as $entry): ?>
-                        <div class="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-6 transition-all hover:shadow-sm">
+
+                    foreach ($shared_entries as $entry):
+                        $is_recent = strtotime($entry->created_at) > strtotime('-7 days');
+                        ?>
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-6 transition-all hover:shadow-md <?php echo $is_recent ? 'ring-2 ring-blue-400' : ''; ?>">
                             <div class="mb-4">
-                                <div class="flex gap-3 items-center flex-wrap">
-                                    <?php if ($entry->mood): ?>
-                                        <span class="inline-flex items-center gap-2 bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-medium">
-                                            <?php echo $mood_emojis[$entry->mood] ?? ''; ?>
-                                            <?php echo esc_html(ucfirst($entry->mood)); ?>
-                                        </span>
-                                    <?php endif; ?>
-                                    <span class="text-sm text-purple-600">
-                                        <i class="fa-solid fa-clock mr-1"></i>
-                                        <?php echo date('d/m/Y H:i', strtotime($entry->created_at)); ?>
+                                <div class="flex justify-between items-start flex-wrap gap-3">
+                                    <div class="flex gap-3 items-center flex-wrap">
+                                        <?php if ($entry->mood): ?>
+                                            <span class="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full text-sm font-medium">
+                                        <span class="text-lg"><?php echo $mood_emojis[$entry->mood] ?? ''; ?></span>
+                                        <?php echo esc_html(ucfirst($entry->mood)); ?>
                                     </span>
-                                    <span class="inline-flex items-center gap-1 text-xs bg-purple-200 text-purple-800 px-2 py-1 rounded-full font-medium">
-                                        <i class="fa-solid fa-lock"></i>
-                                        Privado
+                                        <?php endif; ?>
+
+                                        <span class="text-sm text-blue-600 font-medium">
+                                    <i class="fa-solid fa-calendar mr-1"></i>
+                                    <?php echo date('d/m/Y H:i', strtotime($entry->created_at)); ?>
+                                </span>
+                                    </div>
+
+                                    <div class="flex gap-2">
+                                <span class="inline-flex items-center gap-1 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-semibold">
+                                    <i class="fa-solid fa-share-nodes"></i>
+                                    Compartido
+                                </span>
+
+                                        <?php if ($is_recent): ?>
+                                            <span class="inline-flex items-center gap-1 text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full font-semibold animate-pulse">
+                                        <i class="fa-solid fa-sparkles"></i>
+                                        Nuevo
                                     </span>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                             </div>
+
                             <div class="text-gray-800 leading-relaxed">
                                 <?php echo wp_kses_post(wpautop($entry->content)); ?>
                             </div>
                         </div>
                     <?php endforeach; ?>
+                </div>
+
+                <!-- Info adicional -->
+                <div class="mt-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <p class="text-sm text-gray-600 m-0">
+                        <i class="fa-solid fa-lightbulb text-yellow-500 mr-2"></i>
+                        <strong>Nota:</strong> Estas son las últimas 10 entradas compartidas.
+                        El paciente puede compartir y descompartir entradas en cualquier momento desde su panel.
+                    </p>
                 </div>
             <?php endif; ?>
         </div>

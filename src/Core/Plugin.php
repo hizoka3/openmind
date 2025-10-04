@@ -8,7 +8,7 @@ class Plugin {
         self::loadHooks();
         self::loadAssets();
         self::loadControllers();
-        self::registerFormActions(); // NUEVO
+        self::registerFormActions();
     }
 
     private static function loadHelpers(): void {
@@ -27,16 +27,21 @@ class Plugin {
      * Registrar acciones para formularios (admin-post.php)
      */
     private static function registerFormActions(): void {
-        // Guardar bitácora del psicólogo
+        // Bitácora psicólogo
         add_action('admin_post_openmind_save_psychologist_diary', [
             '\Openmind\Controllers\DiaryController',
             'savePsychologistDiary'
         ]);
 
-        // Actualizar bitácora del psicólogo
         add_action('admin_post_openmind_update_psychologist_diary', [
             '\Openmind\Controllers\DiaryController',
             'updatePsychologistDiary'
+        ]);
+
+        // NUEVO: Diario paciente
+        add_action('admin_post_openmind_save_patient_diary', [
+            '\Openmind\Controllers\DiaryController',
+            'savePatientDiary'
         ]);
     }
 
@@ -82,7 +87,6 @@ class Plugin {
         add_action('wp_enqueue_scripts', function() {
             if (!is_user_logged_in()) return;
 
-            // Font Awesome
             wp_enqueue_style(
                 'font-awesome',
                 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',
@@ -90,7 +94,6 @@ class Plugin {
                 '6.5.1'
             );
 
-            // CSS compilado (incluye Tailwind + custom styles)
             wp_enqueue_style(
                 'openmind',
                 OPENMIND_URL . 'assets/css/style.css',
@@ -98,7 +101,6 @@ class Plugin {
                 OPENMIND_VERSION
             );
 
-            // JavaScript
             wp_enqueue_script(
                 'openmind',
                 OPENMIND_URL . 'assets/js/main.js',

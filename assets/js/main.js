@@ -1195,3 +1195,46 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+// ==========================================
+// BADGE DE DIARIOS COMPARTIDOS (PSICÓLOGO)
+// ==========================================
+
+async function updateDiaryBadge() {
+    const badge = document.getElementById('diary-badge');
+    if (!badge) return;
+
+    const formData = new FormData();
+    formData.append('action', 'openmind_get_shared_count');
+    formData.append('nonce', openmindData.nonce);
+
+    try {
+        const response = await fetch(openmindData.ajaxUrl, {
+            method: 'POST',
+            body: formData
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            if (data.data.count > 0) {
+                badge.textContent = data.data.count;
+                badge.style.display = 'inline-flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+    } catch (error) {
+        console.error('Error updating diary badge:', error);
+    }
+}
+
+// Iniciar polling de badges (solo en dashboard)
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.querySelector('.openmind-sidebar')) {
+        // Actualizar badges inmediatamente
+        updateDiaryBadge();
+
+        // Actualizar cada 30 segundos
+        setInterval(updateDiaryBadge, 30000);
+    }
+});
