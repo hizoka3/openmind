@@ -12,8 +12,8 @@ $current_page = max(1, intval($_GET['paged'] ?? 1));
 $offset = ($current_page - 1) * $per_page;
 
 // Obtener bitácoras escritas por el psicólogo
-$entries = \Openmind\Repositories\DiaryRepository::getPsychologistEntries($user_id, $per_page, $offset);
-$total_entries = \Openmind\Repositories\DiaryRepository::countPsychologistEntries($user_id);
+$entries = \Openmind\Repositories\SessionNoteRepository::getByPatient($user_id, $per_page, $offset);
+$total_entries = \Openmind\Repositories\SessionNoteRepository::countByPatient($user_id);
 
 $base_url = add_query_arg(['view' => 'bitacora'], home_url('/dashboard-paciente/'));
 ?>
@@ -43,40 +43,17 @@ $base_url = add_query_arg(['view' => 'bitacora'], home_url('/dashboard-paciente/
         </div>
     <?php endif; ?>
 
-    <!-- Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-book text-white text-xl"></i>
-                </div>
-                <div>
-                    <p class="text-sm text-blue-700 m-0">Total Sesiones</p>
-                    <p class="text-3xl font-bold text-blue-900 m-0"><?php echo $total_entries; ?></p>
-                </div>
-            </div>
+    <?php if (empty($entries)): ?>
+        <div class="text-center py-16 text-gray-400">
+            <div class="text-6xl mb-4">📖</div>
+            <p class="text-lg not-italic text-gray-600">
+                Aún no hay sesiones registradas.
+            </p>
+            <p class="text-sm text-gray-500 mt-2">
+                Las entradas aparecerán aquí después de cada sesión con tu psicólogo/a.
+            </p>
         </div>
-
-        <?php
-        $latest_entry = \Openmind\Repositories\DiaryRepository::getLatestEntry($user_id);
-        ?>
-        <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl border border-purple-200">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-calendar text-white text-xl"></i>
-                </div>
-                <div>
-                    <p class="text-sm text-purple-700 m-0">Última Sesión</p>
-                    <p class="text-lg font-bold text-purple-900 m-0">
-                        <?php echo $latest_entry ? date('d/m/Y', strtotime($latest_entry->created_at)) : 'N/A'; ?>
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Lista de Bitácoras -->
-    <div class="bg-white rounded-2xl p-8 shadow-sm">
+    <?php else: ?>
         <?php
         $args = [
                 'patient_id' => $user_id,
@@ -84,11 +61,11 @@ $base_url = add_query_arg(['view' => 'bitacora'], home_url('/dashboard-paciente/
                 'total' => $total_entries,
                 'per_page' => $per_page,
                 'current_page' => $current_page,
-                'show_actions' => false, // El paciente NO puede editar/eliminar
+                'show_actions' => false,
                 'context' => 'patient',
                 'base_url' => $base_url
         ];
         include OPENMIND_PATH . 'templates/components/bitacora-list.php';
         ?>
-    </div>
+    <?php endif; ?>
 </div>

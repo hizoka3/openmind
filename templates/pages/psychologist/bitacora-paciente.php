@@ -1,9 +1,5 @@
 <?php
-/**
- * Vista completa de bitácoras de un paciente específico
- * URL: ?view=bitacora&patient_id=123
- */
-
+// templates/pages/psychologist/bitacora-paciente.php
 if (!defined('ABSPATH')) exit;
 
 if (!current_user_can('manage_patients')) {
@@ -30,15 +26,15 @@ $current_page = max(1, intval($_GET['paged'] ?? 1));
 $offset = ($current_page - 1) * $per_page;
 
 // Obtener bitácoras
-$entries = \Openmind\Repositories\DiaryRepository::getPsychologistEntries($patient_id, $per_page, $offset);
-$total_entries = \Openmind\Repositories\DiaryRepository::countPsychologistEntries($patient_id);
+$entries = \Openmind\Repositories\SessionNoteRepository::getByPatient($patient_id, $per_page, $offset);
+$total_entries = \Openmind\Repositories\SessionNoteRepository::countByPatient($patient_id);
 
 // Stats
 $all_activities = get_posts([
-    'post_type' => 'activity',
-    'meta_query' => [['key' => 'assigned_to', 'value' => $patient_id, 'compare' => '=']],
-    'posts_per_page' => -1,
-    'fields' => 'ids'
+        'post_type' => 'activity',
+        'meta_query' => [['key' => 'assigned_to', 'value' => $patient_id, 'compare' => '=']],
+        'posts_per_page' => -1,
+        'fields' => 'ids'
 ]);
 
 $completed_activities = count(array_filter($all_activities, function($id) {
@@ -67,79 +63,37 @@ $base_url = add_query_arg(['view' => 'bitacora', 'patient_id' => $patient_id], h
                         <i class="fa-solid fa-book mr-3 text-primary-500"></i>
                         Bitácora de <?php echo esc_html($patient->display_name); ?>
                     </h1>
-                    <p class="flex items-center gap-2 text-gray-600 text-sm my-1 m-0">
-                        <i class="fa-solid fa-envelope"></i>
-                        <?php echo esc_html($patient->user_email); ?>
-                    </p>
-                    <p class="flex items-center gap-2 text-gray-600 text-sm my-1 m-0">
-                        <i class="fa-solid fa-calendar-check"></i>
-                        Paciente desde <?php echo date('d/m/Y', strtotime($patient->user_registered)); ?>
-                    </p>
+                    <p class="text-gray-500 m-0"><?php echo esc_html($patient->user_email); ?></p>
                 </div>
             </div>
 
-            <a href="?view=bitacora-nueva&patient_id=<?php echo $patient_id; ?>&return=lista"
-               class="inline-flex items-center gap-2 px-6 py-3 bg-primary-500 text-white rounded-lg text-sm font-medium transition-all hover:bg-primary-600 hover:-translate-y-0.5 hover:shadow-lg no-underline">
+            <a href="<?php echo add_query_arg(['view' => 'bitacora-nueva', 'patient_id' => $patient_id, 'return' => 'detalle'], home_url('/dashboard-psicologo/')); ?>"
+               class="inline-flex items-center gap-2 px-5 py-3 bg-primary-500 text-white rounded-xl text-sm font-semibold transition-all hover:bg-primary-600 shadow-sm hover:shadow-md no-underline">
                 <i class="fa-solid fa-plus"></i>
-                Nueva Entrada
+                Nueva entrada
             </a>
         </div>
-    </div>
 
-    <!-- Quick Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-book text-white text-xl"></i>
-                </div>
-                <div>
-                    <p class="text-sm text-blue-700 m-0">Total Sesiones</p>
-                    <p class="text-3xl font-bold text-blue-900 m-0"><?php echo $total_entries; ?></p>
-                </div>
+        <!-- Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-100">
+            <div class="text-center">
+                <div class="text-3xl font-bold text-primary-600"><?php echo $total_entries; ?></div>
+                <div class="text-sm text-gray-500 mt-1">Sesiones registradas</div>
             </div>
-        </div>
-
-        <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-check-circle text-white text-xl"></i>
-                </div>
-                <div>
-                    <p class="text-sm text-green-700 m-0">Actividades Completadas</p>
-                    <p class="text-3xl font-bold text-green-900 m-0"><?php echo $completed_activities; ?></p>
-                </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-green-600"><?php echo $completed_activities; ?></div>
+                <div class="text-sm text-gray-500 mt-1">Actividades completadas</div>
             </div>
-        </div>
-
-        <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl border border-purple-200">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center">
-                    <i class="fa-solid fa-clipboard-list text-white text-xl"></i>
-                </div>
-                <div>
-                    <p class="text-sm text-purple-700 m-0">Actividades Totales</p>
-                    <p class="text-3xl font-bold text-purple-900 m-0"><?php echo count($all_activities); ?></p>
-                </div>
+            <div class="text-center">
+                <div class="text-3xl font-bold text-blue-600"><?php echo count($all_activities); ?></div>
+                <div class="text-sm text-gray-500 mt-1">Actividades totales</div>
             </div>
         </div>
     </div>
 
-    <!-- Lista de Bitácoras -->
-    <div class="bg-white rounded-2xl p-8 shadow-sm">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold text-gray-900 m-0">
-                Registro de Sesiones
-            </h2>
-            <span class="text-sm text-gray-500">
-                <i class="fa-solid fa-calendar-days mr-1"></i>
-                <?php echo $total_entries; ?> entrada<?php echo $total_entries !== 1 ? 's' : ''; ?> total<?php echo $total_entries !== 1 ? 'es' : ''; ?>
-            </span>
-        </div>
-
-        <?php
-        // Usar componente reutilizable
-        $args = [
+    <!-- Lista de bitácoras -->
+    <?php
+    $args = [
             'patient_id' => $patient_id,
             'entries' => $entries,
             'total' => $total_entries,
@@ -148,8 +102,7 @@ $base_url = add_query_arg(['view' => 'bitacora', 'patient_id' => $patient_id], h
             'show_actions' => true,
             'context' => 'psychologist',
             'base_url' => $base_url
-        ];
-        include OPENMIND_PATH . 'templates/components/bitacora-list.php';
-        ?>
-    </div>
+    ];
+    include OPENMIND_PATH . 'templates/components/bitacora-list.php';
+    ?>
 </div>

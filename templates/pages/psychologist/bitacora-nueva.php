@@ -1,9 +1,5 @@
 <?php
-/**
- * Formulario para crear nueva bitácora
- * URL: ?view=bitacora-nueva&patient_id=123&return=lista|detalle
- */
-
+// templates/pages/psychologist/bitacora-nueva.php
 if (!defined('ABSPATH')) exit;
 
 if (!current_user_can('manage_patients')) {
@@ -30,8 +26,8 @@ if (!$patient || $patient_psychologist_id != $psychologist_id) {
     <!-- Breadcrumb -->
     <div class="mb-6">
         <a href="<?php echo $return === 'detalle'
-            ? add_query_arg(['view' => 'pacientes', 'patient_id' => $patient_id], home_url('/dashboard-psicologo/'))
-            : add_query_arg(['view' => 'bitacora', 'patient_id' => $patient_id], home_url('/dashboard-psicologo/')); ?>"
+                ? add_query_arg(['view' => 'pacientes', 'patient_id' => $patient_id], home_url('/dashboard-psicologo/'))
+                : add_query_arg(['view' => 'bitacora', 'patient_id' => $patient_id], home_url('/dashboard-psicologo/')); ?>"
            class="inline-flex items-center gap-2 text-primary-600 text-sm font-medium transition-colors hover:text-primary-700 no-underline">
             <i class="fa-solid fa-arrow-left"></i>
             Volver
@@ -45,17 +41,17 @@ if (!$patient || $patient_psychologist_id != $psychologist_id) {
             Nueva Entrada de Bitácora
         </h1>
         <p class="text-gray-600 m-0">
-            Registra los detalles de la sesión terapéutica
+            Registra los detalles de la sesión terapéutica con <?php echo esc_html($patient->display_name); ?>
         </p>
     </div>
 
     <div class="bg-white rounded-2xl p-8 shadow-sm">
         <?php
         $args = [
-            'patient_id' => $patient_id,
-            'patient_name' => $patient->display_name,
-            'return' => $return,
-            'form_action' => 'create'
+                'patient_id' => $patient_id,
+                'patient_name' => $patient->display_name,
+                'return' => $return,
+                'form_action' => 'create'
         ];
         include OPENMIND_PATH . 'templates/components/bitacora-form.php';
         ?>

@@ -20,25 +20,24 @@ class Plugin {
         \Openmind\Controllers\MessageController::init();
         \Openmind\Controllers\PatientController::init();
         \Openmind\Controllers\DiaryController::init();
+        \Openmind\Controllers\SessionNoteController::init();
+        \Openmind\Controllers\AttachmentController::init();
         \Openmind\Controllers\AuthController::init();
     }
 
-    /**
-     * Registrar acciones para formularios (admin-post.php)
-     */
     private static function registerFormActions(): void {
-        // Bitácora psicólogo
-        add_action('admin_post_openmind_save_psychologist_diary', [
-            '\Openmind\Controllers\DiaryController',
-            'savePsychologistDiary'
+        // Session Notes (Bitácora)
+        add_action('admin_post_openmind_save_session_note', [
+            '\Openmind\Controllers\SessionNoteController',
+            'save'
         ]);
 
-        add_action('admin_post_openmind_update_psychologist_diary', [
-            '\Openmind\Controllers\DiaryController',
-            'updatePsychologistDiary'
+        add_action('admin_post_openmind_update_session_note', [
+            '\Openmind\Controllers\SessionNoteController',
+            'update'
         ]);
 
-        // NUEVO: Diario paciente
+        // Diario paciente
         add_action('admin_post_openmind_save_patient_diary', [
             '\Openmind\Controllers\DiaryController',
             'savePatientDiary'
@@ -71,70 +70,34 @@ class Plugin {
         return $template;
     }
 
-    public static function redirectAfterLogin(string $redirect, string $request, $user): string {
-        if (!isset($user->roles)) return $redirect;
-
-        if (in_array('psychologist', $user->roles)) {
-            return home_url('/dashboard-psicologo');
+    public static function redirectAfterLogin($redirect_to, $request, $user) {
+        if (isset($user->roles) && is_array($user->roles)) {
+            if (in_array('psychologist', $user->roles)) {
+                return home_url('/dashboard-psicologo/');
+            }
+            if (in_array('patient', $user->roles)) {
+                return home_url('/dashboard-paciente/');
+            }
         }
-        if (in_array('patient', $user->roles)) {
-            return home_url('/dashboard-paciente');
-        }
-        return $redirect;
-    }
-
-    private static function loadAssets(): void {
-        add_action('wp_enqueue_scripts', function() {
-            if (!is_user_logged_in()) return;
-
-            wp_enqueue_style(
-                'font-awesome',
-                'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',
-                [],
-                '6.5.1'
-            );
-
-            wp_enqueue_style(
-                'openmind',
-                OPENMIND_URL . 'assets/css/style.css',
-                ['font-awesome'],
-                OPENMIND_VERSION
-            );
-
-            wp_enqueue_script(
-                'openmind',
-                OPENMIND_URL . 'assets/js/main.js',
-                ['jquery'],
-                OPENMIND_VERSION,
-                true
-            );
-
-            wp_localize_script('openmind', 'openmindData', [
-                'ajaxUrl' => admin_url('admin-ajax.php'),
-                'nonce' => wp_create_nonce('openmind_nonce'),
-                'userId' => get_current_user_id()
-            ]);
-        });
+        return $redirect_to;
     }
 
     public static function registerRoles(): void {
-        if (get_role('psychologist')) return;
+        if (!get_role('psychologist')) {
+            add_role('psychologist', 'Psicólogo', [
+                'read' => true,
+                'manage_patients' => true,
+                'view_activities' => true
+            ]);
+        }
 
-        add_role('psychologist', 'Psicólogo', [
-            'read' => true,
-            'edit_posts' => false,
-            'delete_posts' => false,
-            'manage_patients' => true,
-            'manage_activities' => true
-        ]);
-
-        add_role('patient', 'Paciente', [
-            'read' => true,
-            'edit_posts' => false,
-            'delete_posts' => false,
-            'view_activities' => true,
-            'write_diary' => true
-        ]);
+        if (!get_role('patient')) {
+            add_role('patient', 'Paciente', [
+                'read' => true,
+                'view_activities' => true,
+                'write_diary' => true
+            ]);
+        }
     }
 
     public static function registerPostTypes(): void {
@@ -145,10 +108,25 @@ class Plugin {
             ],
             'public' => false,
             'show_ui' => true,
-            'show_in_menu' => false,
+            'show_in_menu' => true,
             'capability_type' => 'post',
-            'supports' => ['title', 'editor', 'author'],
-            'has_archive' => false
+            'supports' => ['title', 'editor'],
+            'menu_icon' => 'dashicons-clipboard'
         ]);
+    }
+
+    private static function loadAssets(): void {
+        add_action('wp_enqueue_scripts', function() {
+            if (is_page(['dashboard-psicologo', 'dashboard-paciente'])) {
+                wp_enqueue_style('openmind-styles', OPENMIND_URL . 'assets/css/style.css', [], OPENMIND_VERSION);
+                wp_enqueue_script('openmind-main', OPENMIND_URL . 'assets/js/main.js', ['jquery'], OPENMIND_VERSION, true);
+
+                wp_localize_script('openmind-main', 'openmindData', [
+                    'ajaxUrl' => admin_url('admin-ajax.php'),
+                    'nonce' => wp_create_nonce('openmind_nonce'),
+                    'userId' => get_current_user_id()
+                ]);
+            }
+        });
     }
 }

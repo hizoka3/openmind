@@ -214,7 +214,7 @@ $completion_rate = count($all_activities) > 0 ? round((count($completed_activiti
 
         <!-- Tab Bitácora -->
         <div class="tab-pane" id="tab-bitacora" style="display: none;">
-            <div class="flex justify-between items-center mb-6">
+            <div class="flex items-center justify-between mb-6">
                 <h2 class="text-2xl font-bold text-gray-900 m-0">Bitácora del Paciente</h2>
                 <div class="flex gap-3">
                     <a href="?view=bitacora&patient_id=<?php echo $patient_id; ?>"
@@ -244,8 +244,8 @@ $completion_rate = count($all_activities) > 0 ? round((count($completed_activiti
 
             <?php
             // Obtener solo las últimas 5 entradas para preview
-            $preview_entries = \Openmind\Repositories\DiaryRepository::getPsychologistEntries($patient_id, 5, 0);
-            $total_entries = \Openmind\Repositories\DiaryRepository::countPsychologistEntries($patient_id);
+            $preview_entries = \Openmind\Repositories\SessionNoteRepository::getByPatient($patient_id, 5, 0);
+            $total_entries = \Openmind\Repositories\SessionNoteRepository::countByPatient($patient_id);
 
             // Usar componente reutilizable
             $args = [

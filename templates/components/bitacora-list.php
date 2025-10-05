@@ -1,16 +1,15 @@
 <?php
+// templates/components/bitacora-list.php
 /**
- * Componente reutilizable para mostrar lista de bitácoras
- *
  * @param array $args {
- *     @type int    $patient_id      ID del paciente
- *     @type array  $entries         Array de entradas
- *     @type int    $total           Total de entradas (para paginación)
- *     @type int    $per_page        Entradas por página
- *     @type int    $current_page    Página actual
- *     @type bool   $show_actions    Mostrar botones editar/eliminar
- *     @type string $context         'psychologist' o 'patient-detail'
- *     @type string $base_url        URL base para paginación
+ *     @type int    $patient_id
+ *     @type array  $entries
+ *     @type int    $total
+ *     @type int    $per_page
+ *     @type int    $current_page
+ *     @type bool   $show_actions
+ *     @type string $context ('psychologist' | 'patient')
+ *     @type string $base_url
  * }
  */
 
@@ -24,12 +23,12 @@ $context = $args['context'] ?? 'psychologist';
 $base_url = $args['base_url'] ?? '';
 
 $mood_emojis = [
-    'feliz' => '😊',
-    'triste' => '😢',
-    'ansioso' => '😰',
-    'neutral' => '😐',
-    'enojado' => '😠',
-    'calmado' => '😌'
+        'feliz' => '😊',
+        'triste' => '😢',
+        'ansioso' => '😰',
+        'neutral' => '😐',
+        'enojado' => '😠',
+        'calmado' => '😌'
 ];
 
 $total_pages = ceil($total / $per_page);
@@ -42,162 +41,157 @@ $total_pages = ceil($total / $per_page);
     </div>
 <?php else: ?>
     <div class="space-y-6">
-        <?php foreach ($entries as $entry): ?>
+        <?php foreach ($entries as $entry):
+            $attachments = \Openmind\Repositories\AttachmentRepository::getByEntry('session_note', $entry->id);
+            ?>
             <div class="bg-white border border-gray-200 rounded-xl p-6 transition-all hover:shadow-md">
                 <!-- Header -->
                 <div class="flex justify-between items-start mb-4">
                     <div class="flex gap-3 items-center flex-wrap">
-                        <?php if ($entry->mood): ?>
-                            <span class="inline-flex items-center gap-2 bg-primary-50 text-primary-700 px-3 py-1 rounded-full text-sm font-medium">
-                                <?php echo $mood_emojis[$entry->mood] ?? ''; ?>
-                                <?php echo esc_html(ucfirst($entry->mood)); ?>
+                        <span class="inline-flex items-center gap-2 bg-primary-50 text-primary-700 px-3 py-1 rounded-full text-sm font-semibold">
+                            Sesión #<?php echo $entry->session_number; ?>
+                        </span>
+
+                        <?php if ($entry->mood_assessment): ?>
+                            <span class="inline-flex items-center gap-2 bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-sm font-medium">
+                                <?php echo $mood_emojis[$entry->mood_assessment] ?? '😐'; ?>
+                                <?php echo ucfirst($entry->mood_assessment); ?>
                             </span>
                         <?php endif; ?>
 
                         <span class="text-sm text-gray-500">
-                            <i class="fa-solid fa-clock mr-1"></i>
-                            <?php echo date('d/m/Y H:i', strtotime($entry->created_at)); ?>
+                            <i class="fa-solid fa-calendar mr-1"></i>
+                            <?php echo date('d/m/Y', strtotime($entry->created_at)); ?>
                         </span>
-
-                        <?php if (isset($entry->author_name) && $context === 'patient'): ?>
-                            <span class="text-sm text-gray-600">
-                                <i class="fa-solid fa-user-doctor mr-1"></i>
-                                Por: <?php echo esc_html($entry->author_name); ?>
-                            </span>
-                        <?php endif; ?>
                     </div>
 
                     <?php if ($show_actions): ?>
                         <div class="flex gap-2">
-                            <a href="?view=bitacora-editar&entry_id=<?php echo $entry->id; ?>&patient_id=<?php echo $patient_id; ?>"
-                               class="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg transition-colors hover:bg-blue-100 no-underline"
+                            <a href="<?php echo add_query_arg(['view' => 'bitacora-editar', 'note_id' => $entry->id, 'patient_id' => $patient_id, 'return' => $context === 'patient-detail' ? 'detalle' : 'lista'], home_url('/dashboard-psicologo/')); ?>"
+                               class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors no-underline"
                                title="Editar">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                                Editar
+                                <i class="fa-solid fa-pen"></i>
                             </a>
-                            <button type="button"
-                                    class="delete-diary-entry inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-red-600 bg-red-50 rounded-lg transition-colors hover:bg-red-100 border-0 cursor-pointer"
-                                    data-entry-id="<?php echo $entry->id; ?>"
+                            <button onclick="deleteSessionNote(<?php echo $entry->id; ?>, this)"
+                                    class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors border-0 bg-transparent cursor-pointer"
                                     title="Eliminar">
                                 <i class="fa-solid fa-trash"></i>
-                                Eliminar
                             </button>
                         </div>
                     <?php endif; ?>
                 </div>
 
                 <!-- Contenido -->
-                <div class="text-gray-700 leading-relaxed">
-                    <?php echo wp_kses_post(wpautop($entry->content)); ?>
+                <div class="prose prose-sm max-w-none mb-4">
+                    <?php echo wp_kses_post($entry->content); ?>
                 </div>
 
-                <?php if (isset($entry->updated_at) && $entry->updated_at !== $entry->created_at): ?>
-                    <div class="mt-4 pt-4 border-t border-gray-100">
-                        <span class="text-xs text-gray-400 italic">
-                            <i class="fa-solid fa-clock-rotate-left mr-1"></i>
-                            Editado: <?php echo date('d/m/Y H:i', strtotime($entry->updated_at)); ?>
-                        </span>
+                <!-- Próximos pasos -->
+                <?php if (!empty($entry->next_steps)): ?>
+                    <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg mb-4">
+                        <p class="text-xs font-semibold text-green-800 mb-2 uppercase tracking-wide">Próximos pasos</p>
+                        <div class="text-sm text-green-900">
+                            <?php echo nl2br(esc_html($entry->next_steps)); ?>
+                        </div>
                     </div>
                 <?php endif; ?>
+
+                <!-- Imágenes adjuntas -->
+                <?php if (!empty($attachments)): ?>
+                    <div class="border-t pt-4">
+                        <p class="text-xs font-semibold text-gray-600 mb-3 uppercase tracking-wide">
+                            <i class="fa-solid fa-paperclip mr-1"></i>
+                            Adjuntos (<?php echo count($attachments); ?>)
+                        </p>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <?php foreach ($attachments as $att): ?>
+                                <a href="<?php echo esc_url($att->file_path); ?>"
+                                   target="_blank"
+                                   class="block group relative">
+                                    <img src="<?php echo esc_url($att->file_path); ?>"
+                                         alt="Adjunto"
+                                         class="w-full h-32 object-cover rounded-lg transition-transform group-hover:scale-105">
+                                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all rounded-lg"></div>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <!-- Footer -->
+                <div class="flex items-center gap-4 mt-4 pt-4 border-t text-xs text-gray-500">
+                    <?php if ($context === 'psychologist'): ?>
+                        <span>
+                            <i class="fa-solid fa-user-doctor mr-1"></i>
+                            <?php echo esc_html($entry->psychologist_name); ?>
+                        </span>
+                    <?php endif; ?>
+
+                    <?php if ($entry->created_at !== $entry->updated_at): ?>
+                        <span>
+                            <i class="fa-solid fa-clock-rotate-left mr-1"></i>
+                            Editado el <?php echo date('d/m/Y H:i', strtotime($entry->updated_at)); ?>
+                        </span>
+                    <?php endif; ?>
+                </div>
             </div>
         <?php endforeach; ?>
     </div>
 
     <!-- Paginación -->
     <?php if ($total_pages > 1): ?>
-        <div class="mt-8 flex justify-center items-center gap-2">
+        <div class="flex justify-center items-center gap-2 mt-8">
             <?php if ($current_page > 1): ?>
                 <a href="<?php echo add_query_arg('paged', $current_page - 1, $base_url); ?>"
-                   class="inline-flex items-center gap-1 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 no-underline">
-                    <i class="fa-solid fa-chevron-left"></i>
-                    Anterior
+                   class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors no-underline">
+                    ← Anterior
                 </a>
             <?php endif; ?>
 
-            <div class="flex gap-1">
-                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                    <?php if ($i === $current_page): ?>
-                        <span class="inline-flex items-center justify-center w-10 h-10 bg-primary-500 text-white rounded-lg text-sm font-medium">
-                            <?php echo $i; ?>
-                        </span>
-                    <?php elseif ($i === 1 || $i === $total_pages || abs($i - $current_page) <= 2): ?>
-                        <a href="<?php echo add_query_arg('paged', $i, $base_url); ?>"
-                           class="inline-flex items-center justify-center w-10 h-10 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 no-underline">
-                            <?php echo $i; ?>
-                        </a>
-                    <?php elseif (abs($i - $current_page) === 3): ?>
-                        <span class="inline-flex items-center justify-center w-10 h-10 text-gray-400">
-                            ...
-                        </span>
-                    <?php endif; ?>
-                <?php endfor; ?>
-            </div>
+            <span class="text-sm text-gray-600">
+                Página <?php echo $current_page; ?> de <?php echo $total_pages; ?>
+            </span>
 
             <?php if ($current_page < $total_pages): ?>
                 <a href="<?php echo add_query_arg('paged', $current_page + 1, $base_url); ?>"
-                   class="inline-flex items-center gap-1 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 no-underline">
-                    Siguiente
-                    <i class="fa-solid fa-chevron-right"></i>
+                   class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors no-underline">
+                    Siguiente →
                 </a>
             <?php endif; ?>
-        </div>
-
-        <div class="mt-4 text-center text-sm text-gray-500">
-            Mostrando <?php echo (($current_page - 1) * $per_page) + 1; ?>
-            - <?php echo min($current_page * $per_page, $total); ?>
-            de <?php echo $total; ?> entradas
         </div>
     <?php endif; ?>
 <?php endif; ?>
 
 <script>
-    // Manejo de eliminación
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.delete-diary-entry').forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                if (!confirm('¿Estás seguro de eliminar esta entrada? Esta acción no se puede deshacer.')) {
-                    return;
+    function deleteSessionNote(noteId, button) {
+        if (!confirm('¿Estás seguro de eliminar esta entrada de bitácora?')) return;
+
+        button.disabled = true;
+        button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+        fetch(openmindData.ajaxUrl, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: new URLSearchParams({
+                action: 'openmind_delete_session_note',
+                nonce: openmindData.nonce,
+                note_id: noteId
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    button.closest('.bg-white').remove();
+                } else {
+                    alert(data.data.message || 'Error al eliminar');
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fa-solid fa-trash"></i>';
                 }
-
-                const entryId = this.getAttribute('data-entry-id');
-                const entryCard = this.closest('.bg-white');
-
-                const formData = new FormData();
-                formData.append('action', 'openmind_delete_diary');
-                formData.append('nonce', openmindData.nonce);
-                formData.append('entry_id', entryId);
-
-                fetch(openmindData.ajaxUrl, {
-                    method: 'POST',
-                    body: formData
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            entryCard.style.opacity = '0';
-                            entryCard.style.transform = 'translateX(-20px)';
-                            setTimeout(() => {
-                                entryCard.remove();
-
-                                // Verificar si quedan entradas
-                                const remainingEntries = document.querySelectorAll('.bg-white.border.border-gray-200');
-                                if (remainingEntries.length === 0) {
-                                    location.reload();
-                                }
-                            }, 300);
-
-                            if (typeof OpenmindApp !== 'undefined') {
-                                OpenmindApp.showNotification('Entrada eliminada correctamente', 'success');
-                            }
-                        } else {
-                            alert(data.data?.message || 'Error al eliminar la entrada');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Error al eliminar la entrada');
-                    });
+            })
+            .catch(() => {
+                alert('Error de conexión');
+                button.disabled = false;
+                button.innerHTML = '<i class="fa-solid fa-trash"></i>';
             });
-        });
-    });
+    }
 </script>

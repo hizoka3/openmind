@@ -42,8 +42,8 @@ $patients = get_users([
     <?php else: ?>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <?php foreach ($patients as $patient):
-                $latest_entry = \Openmind\Repositories\DiaryRepository::getLatestEntry($patient->ID);
-                $total_entries = \Openmind\Repositories\DiaryRepository::countPsychologistEntries($patient->ID);
+                $latest_entry = \Openmind\Repositories\SessionNoteRepository::getLatest($patient->ID);
+                $total_entries = \Openmind\Repositories\SessionNoteRepository::countByPatient($patient->ID);
                 ?>
                 <div class="bg-white border border-gray-200 rounded-xl p-6 transition-all hover:shadow-lg hover:-translate-y-1">
                     <!-- Header -->
@@ -61,35 +61,23 @@ $patients = get_users([
 
                     <!-- Última entrada -->
                     <?php if ($latest_entry): ?>
-                        <div class="bg-gray-50 rounded-lg p-4 mb-4">
-                            <p class="text-xs text-gray-500 mb-2 m-0">
-                                <i class="fa-solid fa-clock mr-1"></i>
-                                Última sesión: <?php echo date('d/m/Y', strtotime($latest_entry->created_at)); ?>
-                            </p>
-                            <p class="text-sm text-gray-700 m-0 line-clamp-2">
-                                <?php echo wp_trim_words(strip_tags($latest_entry->content), 15); ?>
-                            </p>
-                        </div>
-                    <?php else: ?>
-                        <div class="bg-yellow-50 rounded-lg p-4 mb-4 text-center">
-                            <p class="text-sm text-yellow-700 m-0">
-                                <i class="fa-solid fa-info-circle mr-1"></i>
-                                Sin sesiones registradas
+                        <div class="bg-gray-50 rounded-lg p-3 mb-4">
+                            <p class="text-xs text-gray-500 mb-1">Última sesión:</p>
+                            <p class="text-sm text-gray-700 m-0">
+                                <?php echo date('d/m/Y', strtotime($latest_entry->created_at)); ?>
                             </p>
                         </div>
                     <?php endif; ?>
 
                     <!-- Acciones -->
                     <div class="flex gap-2">
-                        <a href="?view=bitacora&patient_id=<?php echo $patient->ID; ?>"
-                           class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium transition-all hover:bg-gray-200 no-underline">
-                            <i class="fa-solid fa-book-open"></i>
-                            Ver Bitácoras
+                        <a href="<?php echo add_query_arg(['view' => 'bitacora', 'patient_id' => $patient->ID], home_url('/dashboard-psicologo/')); ?>"
+                           class="flex-1 text-center px-4 py-2 bg-primary-50 text-primary-600 rounded-lg text-sm font-medium transition-all hover:bg-primary-100 no-underline">
+                            Ver bitácora
                         </a>
-                        <a href="?view=bitacora-nueva&patient_id=<?php echo $patient->ID; ?>&return=lista"
-                           class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg text-sm font-medium transition-all hover:bg-primary-600 no-underline">
+                        <a href="<?php echo add_query_arg(['view' => 'bitacora-nueva', 'patient_id' => $patient->ID, 'return' => 'lista'], home_url('/dashboard-psicologo/')); ?>"
+                           class="px-4 py-2 bg-primary-500 text-white rounded-lg text-sm font-medium transition-all hover:bg-primary-600 no-underline">
                             <i class="fa-solid fa-plus"></i>
-                            Nueva
                         </a>
                     </div>
                 </div>

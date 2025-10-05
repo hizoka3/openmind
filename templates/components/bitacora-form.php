@@ -1,13 +1,12 @@
 <?php
+// templates/components/bitacora-form.php
 /**
- * Componente formulario de bitácora
- *
  * @param array $args {
- *     @type int     $patient_id    ID del paciente
- *     @type string  $patient_name  Nombre del paciente
- *     @type object  $entry         Entrada a editar (opcional)
- *     @type string  $return        'lista' o 'detalle'
- *     @type string  $form_action   'create' o 'update'
+ *     @type int    $patient_id
+ *     @type string $patient_name
+ *     @type object $entry (opcional - para editar)
+ *     @type string $return ('lista' | 'detalle')
+ *     @type string $form_action ('create' | 'update')
  * }
  */
 
@@ -17,127 +16,201 @@ $entry = $args['entry'] ?? null;
 $return = $args['return'] ?? 'lista';
 $form_action = $args['form_action'] ?? 'create';
 
-$mood_options = [
-    'feliz' => ['emoji' => '😊', 'label' => 'Feliz'],
-    'triste' => ['emoji' => '😢', 'label' => 'Triste'],
-    'ansioso' => ['emoji' => '😰', 'label' => 'Ansioso'],
-    'neutral' => ['emoji' => '😐', 'label' => 'Neutral'],
-    'enojado' => ['emoji' => '😠', 'label' => 'Enojado'],
-    'calmado' => ['emoji' => '😌', 'label' => 'Calmado']
-];
+$is_edit = $form_action === 'update';
+$action = $is_edit ? 'openmind_update_session_note' : 'openmind_save_session_note';
+$nonce_action = $is_edit ? 'update_session_note' : 'save_session_note';
 
-$ajax_action = $form_action === 'update' ? 'openmind_update_psychologist_diary' : 'openmind_save_psychologist_diary';
-$nonce_action = $form_action === 'update' ? 'update_psychologist_diary' : 'save_psychologist_diary';
+$content = $entry->content ?? '';
+$mood = $entry->mood_assessment ?? '';
+$next_steps = $entry->next_steps ?? '';
+$note_id = $entry->id ?? 0;
+
+// Obtener attachments existentes
+$attachments = $is_edit
+        ? \Openmind\Repositories\AttachmentRepository::getByEntry('session_note', $note_id)
+        : [];
+
+$mood_options = [
+        '' => 'Seleccionar...',
+        'feliz' => '😊 Feliz',
+        'triste' => '😢 Triste',
+        'ansioso' => '😰 Ansioso/a',
+        'neutral' => '😐 Neutral',
+        'enojado' => '😠 Enojado/a',
+        'calmado' => '😌 Calmado/a'
+];
 ?>
 
-<div class="max-w-4xl mx-auto">
-    <form method="post" action="<?php echo admin_url('admin-post.php'); ?>" id="bitacora-form">
-        <input type="hidden" name="action" value="<?php echo $ajax_action; ?>">
-        <?php wp_nonce_field($nonce_action, 'openmind_diary_nonce'); ?>
-        <input type="hidden" name="patient_id" value="<?php echo $patient_id; ?>">
-        <input type="hidden" name="return" value="<?php echo $return; ?>">
-        <?php if ($entry): ?>
-            <input type="hidden" name="entry_id" value="<?php echo $entry->id; ?>">
+<style>
+    /* Fix para el editor dentro del dashboard */
+    .wp-editor-wrap {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .wp-editor-container {
+        border: none !important;
+    }
+
+    .mce-toolbar-grp {
+        background: #f9fafb !important;
+        border-bottom: 1px solid #e5e7eb !important;
+    }
+
+    .mce-ico {
+        color: #374151 !important;
+    }
+
+    .mce-btn:hover {
+        background: #e5e7eb !important;
+    }
+</style>
+
+<form method="POST" action="<?php echo admin_url('admin-post.php'); ?>" enctype="multipart/form-data">
+    <?php wp_nonce_field($nonce_action, 'openmind_session_note_nonce'); ?>
+    <input type="hidden" name="action" value="<?php echo esc_attr($action); ?>">
+    <input type="hidden" name="patient_id" value="<?php echo $patient_id; ?>">
+    <input type="hidden" name="return" value="<?php echo esc_attr($return); ?>">
+    <?php if ($is_edit): ?>
+        <input type="hidden" name="note_id" value="<?php echo $note_id; ?>">
+    <?php endif; ?>
+
+    <!-- Info del paciente -->
+    <div class="bg-gray-50 rounded-lg p-4 mb-6">
+        <p class="text-sm text-gray-600 m-0">
+            <strong>Paciente:</strong> <?php echo esc_html($patient_name); ?>
+        </p>
+        <?php if ($is_edit): ?>
+            <p class="text-sm text-gray-600 m-0 mt-1">
+                <strong>Sesión:</strong> #<?php echo $entry->session_number; ?>
+            </p>
         <?php endif; ?>
+    </div>
 
-        <!-- Patient Info -->
-        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6 rounded-lg">
-            <div class="flex items-center">
-                <i class="fa-solid fa-user text-blue-600 mr-3 text-xl"></i>
-                <div>
-                    <p class="text-sm font-medium text-blue-800 m-0">Bitácora para:</p>
-                    <p class="text-base font-semibold text-blue-900 m-0"><?php echo esc_html($patient_name); ?></p>
-                </div>
-            </div>
+    <!-- Contenido -->
+    <div class="mb-6">
+        <label class="block text-sm font-semibold text-gray-700 mb-2">
+            Contenido de la sesión *
+        </label>
+        <div class="border border-gray-300 rounded-lg overflow-hidden">
+            <?php
+            $editor_settings = [
+                    'textarea_name' => 'content',
+                    'textarea_rows' => 15,
+                    'media_buttons' => true,
+                    'teeny' => false,
+                    'quicktags' => true,
+                    'tinymce' => [
+                            'toolbar1' => 'formatselect,bold,italic,underline,strikethrough,bullist,numlist,blockquote,alignleft,aligncenter,alignright,link,unlink,wp_adv',
+                            'toolbar2' => 'forecolor,backcolor,pastetext,removeformat,charmap,outdent,indent,undo,redo,wp_help',
+                            'content_css' => OPENMIND_URL . 'assets/css/editor-style.css',
+                            'height' => 400,
+                            'menubar' => false,
+                            'statusbar' => true,
+                            'resize' => true,
+                            'branding' => false,
+                            'elementpath' => false
+                    ]
+            ];
+            wp_editor($content, 'session_content', $editor_settings);
+            ?>
         </div>
+        <p class="text-xs text-gray-500 mt-2">Describe lo trabajado en la sesión, observaciones y avances del paciente.</p>
+    </div>
 
-        <!-- Mood Selector -->
-        <div class="mb-6">
-            <label class="block text-sm font-semibold text-gray-700 mb-3">
-                <i class="fa-solid fa-face-smile mr-2"></i>
-                Estado de ánimo observado
-            </label>
-            <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
-                <?php foreach ($mood_options as $value => $mood): ?>
-                    <label class="cursor-pointer">
-                        <input type="radio"
-                               name="mood"
-                               value="<?php echo $value; ?>"
-                               class="peer sr-only"
-                            <?php echo ($entry && $entry->mood === $value) ? 'checked' : ''; ?>>
-                        <div class="flex flex-col items-center gap-2 p-3 border-2 border-gray-200 rounded-lg transition-all peer-checked:border-primary-500 peer-checked:bg-primary-50 hover:border-gray-300">
-                            <span class="text-3xl"><?php echo $mood['emoji']; ?></span>
-                            <span class="text-xs font-medium text-gray-700 peer-checked:text-primary-700">
-                                <?php echo $mood['label']; ?>
-                            </span>
-                        </div>
-                    </label>
+    <!-- Estado anímico -->
+    <div class="mb-6">
+        <label class="block text-sm font-semibold text-gray-700 mb-2">
+            Estado anímico observado
+        </label>
+        <select name="mood" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+            <?php foreach ($mood_options as $value => $label): ?>
+                <option value="<?php echo esc_attr($value); ?>" <?php selected($mood, $value); ?>>
+                    <?php echo esc_html($label); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+
+    <!-- Próximos pasos -->
+    <div class="mb-6">
+        <label class="block text-sm font-semibold text-gray-700 mb-2">
+            Próximos pasos / Plan de acción
+        </label>
+        <textarea name="next_steps" rows="4"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  placeholder="Tareas, objetivos o plan para la próxima sesión..."><?php echo esc_textarea($next_steps); ?></textarea>
+    </div>
+
+    <!-- Imágenes -->
+    <div class="mb-6">
+        <label class="block text-sm font-semibold text-gray-700 mb-2">
+            Adjuntar imágenes (máximo 5)
+        </label>
+
+        <!-- Imágenes existentes -->
+        <?php if (!empty($attachments)): ?>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-4">
+                <?php foreach ($attachments as $att): ?>
+                    <div class="relative group">
+                        <img src="<?php echo esc_url($att->file_path); ?>"
+                             alt="Adjunto"
+                             class="w-full h-32 object-cover rounded-lg">
+                        <button type="button"
+                                class="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                data-attachment-id="<?php echo $att->id; ?>"
+                                onclick="deleteAttachment(<?php echo $att->id; ?>, this)">
+                            ×
+                        </button>
+                    </div>
                 <?php endforeach; ?>
             </div>
-        </div>
+        <?php endif; ?>
 
-        <!-- WYSIWYG Editor -->
-        <div class="mb-6">
-            <label class="block text-sm font-semibold text-gray-700 mb-3">
-                <i class="fa-solid fa-pen-to-square mr-2"></i>
-                Contenido de la sesión <span class="text-red-500">*</span>
-            </label>
-            <div class="bg-white border border-gray-300 rounded-lg overflow-hidden">
-                <?php
-                wp_editor(
-                    $entry ? $entry->content : '',
-                    'diary_content',
-                    [
-                        'textarea_name' => 'content',
-                        'media_buttons' => false,
-                        'textarea_rows' => 12,
-                        'teeny' => false,
-                        'quicktags' => true,
-                        'tinymce' => [
-                            'toolbar1' => 'formatselect,bold,italic,underline,bullist,numlist,link,blockquote,hr,removeformat',
-                            'toolbar2' => '',
-                        ]
-                    ]
-                );
-                ?>
-            </div>
-            <p class="text-xs text-gray-500 mt-2">
-                <i class="fa-solid fa-info-circle mr-1"></i>
-                Esta información será visible para el paciente en su bitácora
-            </p>
-        </div>
+        <!-- Upload nuevo -->
+        <input type="file"
+               name="attachments[]"
+               accept="image/jpeg,image/png,image/webp"
+               multiple
+               class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100">
+        <p class="text-xs text-gray-500 mt-2">JPG, PNG o WebP. Máximo 5MB por imagen.</p>
+    </div>
 
-        <!-- Form Actions -->
-        <div class="flex justify-between items-center pt-6 border-t border-gray-200">
-            <a href="<?php echo $return === 'detalle'
+    <!-- Botones -->
+    <div class="flex gap-3 justify-end pt-6 border-t">
+        <a href="<?php echo $return === 'detalle'
                 ? add_query_arg(['view' => 'pacientes', 'patient_id' => $patient_id], home_url('/dashboard-psicologo/'))
                 : add_query_arg(['view' => 'bitacora', 'patient_id' => $patient_id], home_url('/dashboard-psicologo/')); ?>"
-               class="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-200 text-gray-700 rounded-lg border-0 text-sm font-medium transition-all hover:bg-gray-300 no-underline">
-                <i class="fa-solid fa-xmark"></i>
-                Cancelar
-            </a>
-
-            <button type="submit"
-                    class="inline-flex items-center gap-2 px-6 py-2.5 bg-primary-500 text-white rounded-lg border-0 cursor-pointer text-sm font-medium transition-all hover:bg-primary-600 hover:-translate-y-0.5 hover:shadow-lg">
-                <i class="fa-solid fa-save"></i>
-                <?php echo $form_action === 'update' ? 'Actualizar Entrada' : 'Guardar Entrada'; ?>
-            </button>
-        </div>
-    </form>
-</div>
+           class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium transition-all hover:bg-gray-50 no-underline">
+            Cancelar
+        </a>
+        <button type="submit"
+                class="px-6 py-2.5 bg-primary-500 text-white rounded-lg text-sm font-semibold transition-all hover:bg-primary-600 shadow-sm hover:shadow-md">
+            <?php echo $is_edit ? 'Actualizar bitácora' : 'Guardar bitácora'; ?>
+        </button>
+    </div>
+</form>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.getElementById('bitacora-form');
+    function deleteAttachment(attachmentId, button) {
+        if (!confirm('¿Eliminar esta imagen?')) return;
 
-        form.addEventListener('submit', function(e) {
-            const content = tinymce.get('diary_content').getContent();
-
-            if (!content.trim()) {
-                e.preventDefault();
-                alert('Por favor escribe el contenido de la sesión');
-                return false;
-            }
-        });
-    });
+        fetch(openmindData.ajaxUrl, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: new URLSearchParams({
+                action: 'openmind_delete_attachment',
+                nonce: openmindData.nonce,
+                attachment_id: attachmentId
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    button.closest('.relative').remove();
+                } else {
+                    alert(data.data.message || 'Error al eliminar');
+                }
+            });
+    }
 </script>
