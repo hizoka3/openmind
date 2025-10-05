@@ -40,12 +40,15 @@ class ImageUploadService {
             return ['error' => 'Error al guardar archivo'];
         }
 
-        $relative_path = str_replace(ABSPATH, '/', $file_path);
+        // Generar URL correcta
+        $upload_dir = wp_upload_dir();
+        $relative_path = str_replace($upload_dir['basedir'], '', $file_path);
+        $file_url = $upload_dir['baseurl'] . $relative_path;
 
         return [
             'success' => true,
             'file_name' => $file_name,
-            'file_path' => $relative_path,
+            'file_path' => $file_url,
             'file_type' => $file['type'],
             'file_size' => filesize($file_path)
         ];

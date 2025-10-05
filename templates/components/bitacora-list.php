@@ -1,17 +1,5 @@
 <?php
 // templates/components/bitacora-list.php
-/**
- * @param array $args {
- *     @type int    $patient_id
- *     @type array  $entries
- *     @type int    $total
- *     @type int    $per_page
- *     @type int    $current_page
- *     @type bool   $show_actions
- *     @type string $context ('psychologist' | 'patient')
- *     @type string $base_url
- * }
- */
 
 $patient_id = $args['patient_id'] ?? 0;
 $entries = $args['entries'] ?? [];
@@ -40,101 +28,116 @@ $total_pages = ceil($total / $per_page);
         <p class="text-lg not-italic text-gray-600">Aún no hay entradas de bitácora.</p>
     </div>
 <?php else: ?>
-    <div class="space-y-6">
-        <?php foreach ($entries as $entry):
-            $attachments = \Openmind\Repositories\AttachmentRepository::getByEntry('session_note', $entry->id);
-            ?>
-            <div class="bg-white border border-gray-200 rounded-xl p-6 transition-all hover:shadow-md">
-                <!-- Header -->
-                <div class="flex justify-between items-start mb-4">
-                    <div class="flex gap-3 items-center flex-wrap">
-                        <span class="inline-flex items-center gap-2 bg-primary-50 text-primary-700 px-3 py-1 rounded-full text-sm font-semibold">
-                            Sesión #<?php echo $entry->session_number; ?>
-                        </span>
+    <div class="space-y-4">
+        <?php
+        $last_date = '';
+        foreach ($entries as $entry):
+            $entry_date = date('Y-m-d', strtotime($entry->created_at));
+            $show_date_separator = $entry_date !== $last_date;
+            $last_date = $entry_date;
 
-                        <?php if ($entry->mood_assessment): ?>
-                            <span class="inline-flex items-center gap-2 bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-sm font-medium">
-                                <?php echo $mood_emojis[$entry->mood_assessment] ?? '😐'; ?>
-                                <?php echo ucfirst($entry->mood_assessment); ?>
+            $attachments = \Openmind\Repositories\AttachmentRepository::getByEntry('session_note', $entry->id);
+            $has_attachments = !empty($attachments);
+
+            // URL de detalle
+            if ($context === 'patient') {
+                $detail_url = add_query_arg(['view' => 'bitacora-detalle', 'note_id' => $entry->id], home_url('/dashboard-paciente/'));
+            } else {
+                $detail_url = add_query_arg(['view' => 'bitacora-detalle', 'note_id' => $entry->id, 'patient_id' => $patient_id], home_url('/dashboard-psicologo/'));
+            }
+
+            $preview = wp_trim_words(strip_tags($entry->content), 30, '...');
+            ?>
+
+            <?php if ($show_date_separator): ?>
+            <div class="flex items-center gap-4 mt-8 mb-4 first:mt-0">
+                <div class="h-px bg-gradient-to-r from-transparent via-primary-300 to-transparent flex-1"></div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-gray-900">
+                        <?php echo date('d', strtotime($entry->created_at)); ?>
+                    </div>
+                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <?php echo date('M Y', strtotime($entry->created_at)); ?>
+                    </div>
+                </div>
+                <div class="h-px bg-gradient-to-r from-transparent via-primary-300 to-transparent flex-1"></div>
+            </div>
+        <?php endif; ?>
+
+            <div class="group relative">
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary-400 to-primary-500 rounded-full"></div>
+
+                <div class="ml-6 bg-white border-2 border-primary-100 rounded-xl p-5 transition-all hover:shadow-md hover:border-primary-200 cursor-pointer"
+                     onclick="window.location.href='<?php echo esc_url($detail_url); ?>'">
+
+                    <!-- Header con fecha y hora predominante -->
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="inline-flex items-center gap-2 bg-primary-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                                    Sesión #<?php echo $entry->session_number; ?>
+                                </span>
+
+                                <?php if ($entry->mood_assessment): ?>
+                                    <span class="text-2xl">
+                                        <?php echo $mood_emojis[$entry->mood_assessment] ?? '😐'; ?>
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="text-2xl font-bold text-primary-600">
+                                <?php echo date('H:i', strtotime($entry->created_at)); ?>
+                            </div>
+                            <div class="text-sm text-gray-500">
+                                <?php echo date('l, d \d\e F \d\e Y', strtotime($entry->created_at)); ?>
+                            </div>
+                        </div>
+
+                        <?php if ($show_actions): ?>
+                            <div class="flex gap-2" onclick="event.stopPropagation()">
+                                <a href="<?php echo add_query_arg(['view' => 'bitacora-editar', 'note_id' => $entry->id, 'patient_id' => $patient_id, 'return' => $context === 'patient-detail' ? 'detalle' : 'lista'], home_url('/dashboard-psicologo/')); ?>"
+                                   class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors no-underline"
+                                   title="Editar">
+                                    <i class="fa-solid fa-pen"></i>
+                                </a>
+                                <button onclick="deleteSessionNote(<?php echo $entry->id; ?>, this)"
+                                        class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors border-0 bg-transparent cursor-pointer"
+                                        title="Eliminar">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- Preview del contenido -->
+                    <div class="text-gray-600 mb-3">
+                        <?php echo esc_html($preview); ?>
+                    </div>
+
+                    <!-- Footer con indicadores -->
+                    <div class="flex items-center gap-4 text-xs text-gray-500">
+                        <?php if ($has_attachments): ?>
+                            <span class="flex items-center gap-1">
+                                <i class="fa-solid fa-paperclip"></i>
+                                <?php echo count($attachments); ?> adjunto<?php echo count($attachments) > 1 ? 's' : ''; ?>
                             </span>
                         <?php endif; ?>
 
-                        <span class="text-sm text-gray-500">
-                            <i class="fa-solid fa-calendar mr-1"></i>
-                            <?php echo date('d/m/Y', strtotime($entry->created_at)); ?>
+                        <?php if (!empty($entry->next_steps)): ?>
+                            <span class="flex items-center gap-1">
+                                <i class="fa-solid fa-list-check"></i>
+                                Próximos pasos
+                            </span>
+                        <?php endif; ?>
+
+                        <span class="ml-auto flex items-center gap-1 text-primary-600">
+                            Ver detalles
+                            <i class="fa-solid fa-arrow-right"></i>
                         </span>
                     </div>
-
-                    <?php if ($show_actions): ?>
-                        <div class="flex gap-2">
-                            <a href="<?php echo add_query_arg(['view' => 'bitacora-editar', 'note_id' => $entry->id, 'patient_id' => $patient_id, 'return' => $context === 'patient-detail' ? 'detalle' : 'lista'], home_url('/dashboard-psicologo/')); ?>"
-                               class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors no-underline"
-                               title="Editar">
-                                <i class="fa-solid fa-pen"></i>
-                            </a>
-                            <button onclick="deleteSessionNote(<?php echo $entry->id; ?>, this)"
-                                    class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors border-0 bg-transparent cursor-pointer"
-                                    title="Eliminar">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
-                    <?php endif; ?>
-                </div>
-
-                <!-- Contenido -->
-                <div class="prose prose-sm max-w-none mb-4">
-                    <?php echo wp_kses_post($entry->content); ?>
-                </div>
-
-                <!-- Próximos pasos -->
-                <?php if (!empty($entry->next_steps)): ?>
-                    <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg mb-4">
-                        <p class="text-xs font-semibold text-green-800 mb-2 uppercase tracking-wide">Próximos pasos</p>
-                        <div class="text-sm text-green-900">
-                            <?php echo nl2br(esc_html($entry->next_steps)); ?>
-                        </div>
-                    </div>
-                <?php endif; ?>
-
-                <!-- Imágenes adjuntas -->
-                <?php if (!empty($attachments)): ?>
-                    <div class="border-t pt-4">
-                        <p class="text-xs font-semibold text-gray-600 mb-3 uppercase tracking-wide">
-                            <i class="fa-solid fa-paperclip mr-1"></i>
-                            Adjuntos (<?php echo count($attachments); ?>)
-                        </p>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                            <?php foreach ($attachments as $att): ?>
-                                <a href="<?php echo esc_url($att->file_path); ?>"
-                                   target="_blank"
-                                   class="block group relative">
-                                    <img src="<?php echo esc_url($att->file_path); ?>"
-                                         alt="Adjunto"
-                                         class="w-full h-32 object-cover rounded-lg transition-transform group-hover:scale-105">
-                                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all rounded-lg"></div>
-                                </a>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                <?php endif; ?>
-
-                <!-- Footer -->
-                <div class="flex items-center gap-4 mt-4 pt-4 border-t text-xs text-gray-500">
-                    <?php if ($context === 'psychologist'): ?>
-                        <span>
-                            <i class="fa-solid fa-user-doctor mr-1"></i>
-                            <?php echo esc_html($entry->psychologist_name); ?>
-                        </span>
-                    <?php endif; ?>
-
-                    <?php if ($entry->created_at !== $entry->updated_at): ?>
-                        <span>
-                            <i class="fa-solid fa-clock-rotate-left mr-1"></i>
-                            Editado el <?php echo date('d/m/Y H:i', strtotime($entry->updated_at)); ?>
-                        </span>
-                    <?php endif; ?>
                 </div>
             </div>
+
         <?php endforeach; ?>
     </div>
 
@@ -181,7 +184,7 @@ $total_pages = ceil($total / $per_page);
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    button.closest('.bg-white').remove();
+                    button.closest('.group').remove();
                 } else {
                     alert(data.data.message || 'Error al eliminar');
                     button.disabled = false;

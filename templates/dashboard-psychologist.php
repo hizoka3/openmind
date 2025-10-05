@@ -29,6 +29,7 @@ get_header();
                         'bitacora' => 'bitacora.php',
                         'bitacora-nueva' => 'bitacora-nueva.php',
                         'bitacora-editar' => 'bitacora-editar.php',
+                        'bitacora-detalle' => 'bitacora-detalle.php',
                         'diario-detalle' => 'diario-detalle.php',
                         'perfil' => 'perfil.php'
                 ];
@@ -47,9 +48,9 @@ get_header();
                             include $general_path;
                         } else {
                             echo '<div class="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-center my-6">
-                            <i class="fa-solid fa-triangle-exclamation mr-2"></i>
-                            Página no encontrada: ' . esc_html($current_page) . '
-                        </div>';
+                        <i class="fa-solid fa-triangle-exclamation mr-2"></i>
+                        Página no encontrada: ' . esc_html($current_page) . '
+                    </div>';
                         }
                     }
                 } else {

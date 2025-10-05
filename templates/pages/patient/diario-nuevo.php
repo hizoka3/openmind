@@ -1,4 +1,4 @@
-<?php
+<?php // templates/pages/patient/diario-nuevo.php
 /**
  * Formulario para crear nueva entrada de diario personal
  * URL: ?view=diario-nuevo
@@ -37,7 +37,7 @@ $psychologist = $psychologist_id ? get_userdata($psychologist_id) : null;
     </div>
 
     <div class="bg-white rounded-2xl p-8 shadow-sm">
-        <form method="post" action="<?php echo admin_url('admin-post.php'); ?>" id="diario-form">
+        <form method="post" action="<?php echo admin_url('admin-post.php'); ?>" enctype="multipart/form-data" id="diario-form">
             <input type="hidden" name="action" value="openmind_save_patient_diary">
             <?php wp_nonce_field('save_patient_diary', 'openmind_diary_nonce'); ?>
 
@@ -57,38 +57,16 @@ $psychologist = $psychologist_id ? get_userdata($psychologist_id) : null;
             </div>
 
             <!-- Mood Selector -->
-            <div class="mb-6">
-                <label class="block text-sm font-semibold text-gray-700 mb-3">
-                    <i class="fa-solid fa-face-smile mr-2"></i>
-                    ¿Cómo te sientes hoy?
-                </label>
-                <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
-                    <?php
-                    $mood_options = [
-                        'feliz' => ['emoji' => '😊', 'label' => 'Feliz'],
-                        'triste' => ['emoji' => '😢', 'label' => 'Triste'],
-                        'ansioso' => ['emoji' => '😰', 'label' => 'Ansioso'],
-                        'neutral' => ['emoji' => '😐', 'label' => 'Neutral'],
-                        'enojado' => ['emoji' => '😠', 'label' => 'Enojado'],
-                        'calmado' => ['emoji' => '😌', 'label' => 'Calmado']
-                    ];
-
-                    foreach ($mood_options as $value => $mood): ?>
-                        <label class="cursor-pointer">
-                            <input type="radio"
-                                   name="mood"
-                                   value="<?php echo $value; ?>"
-                                   class="peer sr-only">
-                            <div class="flex flex-col items-center gap-2 p-3 border-2 border-gray-200 rounded-lg transition-all peer-checked:border-purple-500 peer-checked:bg-purple-50 hover:border-gray-300">
-                                <span class="text-3xl"><?php echo $mood['emoji']; ?></span>
-                                <span class="text-xs font-medium text-gray-700 peer-checked:text-purple-700">
-                                    <?php echo $mood['label']; ?>
-                                </span>
-                            </div>
-                        </label>
-                    <?php endforeach; ?>
-                </div>
-            </div>
+            <?php
+            $mood_args = [
+                    'name' => 'mood',
+                    'selected' => '',
+                    'label' => '¿Cómo te sientes hoy?',
+                    'color' => 'purple',
+                    'required' => false
+            ];
+            include OPENMIND_PATH . 'templates/components/mood-selector.php';
+            ?>
 
             <!-- WYSIWYG Editor -->
             <div class="mb-6">
@@ -96,29 +74,46 @@ $psychologist = $psychologist_id ? get_userdata($psychologist_id) : null;
                     <i class="fa-solid fa-pen mr-2"></i>
                     Escribe tus pensamientos <span class="text-red-500">*</span>
                 </label>
-                <div class="bg-white border border-gray-300 rounded-lg overflow-hidden">
+                <div class="border border-gray-300 rounded-lg overflow-hidden">
                     <?php
-                    wp_editor(
-                        '',
-                        'diary_content',
-                        [
+                    $editor_settings = [
                             'textarea_name' => 'content',
+                            'textarea_rows' => 15,
                             'media_buttons' => false,
-                            'textarea_rows' => 12,
                             'teeny' => false,
                             'quicktags' => true,
                             'tinymce' => [
-                                'toolbar1' => 'formatselect,bold,italic,underline,bullist,numlist,link,blockquote,hr,removeformat',
-                                'toolbar2' => '',
+                                    'toolbar1' => 'formatselect,bold,italic,underline,bullist,numlist,link,blockquote,hr,removeformat',
+                                    'toolbar2' => '',
+                                    'content_css' => OPENMIND_URL . 'assets/css/editor-style.css',
+                                    'height' => 400,
+                                    'menubar' => false,
+                                    'statusbar' => true,
+                                    'resize' => true,
+                                    'branding' => false,
+                                    'elementpath' => false
                             ]
-                        ]
-                    );
+                    ];
+                    wp_editor('', 'diary_content', $editor_settings);
                     ?>
                 </div>
                 <p class="text-xs text-gray-500 mt-2">
                     <i class="fa-solid fa-info-circle mr-1"></i>
                     Esta entrada será privada. Solo tú podrás verla a menos que decidas compartirla.
                 </p>
+            </div>
+
+            <!-- Adjuntar imágenes -->
+            <div class="mb-6">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                    Adjuntar imágenes (máximo 5)
+                </label>
+                <input type="file"
+                       name="attachments[]"
+                       accept="image/jpeg,image/png,image/webp"
+                       multiple
+                       class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100">
+                <p class="text-xs text-gray-500 mt-2">JPG, PNG o WebP. Máximo 5MB por imagen.</p>
             </div>
 
             <!-- Form Actions -->
@@ -138,6 +133,31 @@ $psychologist = $psychologist_id ? get_userdata($psychologist_id) : null;
         </form>
     </div>
 </div>
+
+<style>
+    /* Fix para el editor dentro del dashboard */
+    .wp-editor-wrap {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .wp-editor-container {
+        border: none !important;
+    }
+
+    .mce-toolbar-grp {
+        background: #f9fafb !important;
+        border-bottom: 1px solid #e5e7eb !important;
+    }
+
+    .mce-ico {
+        color: #374151 !important;
+    }
+
+    .mce-btn:hover {
+        background: #e5e7eb !important;
+    }
+</style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

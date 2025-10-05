@@ -119,18 +119,16 @@ $mood_options = [
     </div>
 
     <!-- Estado anímico -->
-    <div class="mb-6">
-        <label class="block text-sm font-semibold text-gray-700 mb-2">
-            Estado anímico observado
-        </label>
-        <select name="mood" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
-            <?php foreach ($mood_options as $value => $label): ?>
-                <option value="<?php echo esc_attr($value); ?>" <?php selected($mood, $value); ?>>
-                    <?php echo esc_html($label); ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-    </div>
+    <?php
+    $mood_args = [
+            'name' => 'mood',
+            'selected' => $mood,
+            'label' => 'Estado anímico observado del paciente',
+            'color' => 'primary',
+            'required' => false
+    ];
+    include OPENMIND_PATH . 'templates/components/mood-selector.php';
+    ?>
 
     <!-- Próximos pasos -->
     <div class="mb-6">
