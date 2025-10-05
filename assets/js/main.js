@@ -1116,20 +1116,34 @@ const OpenmindMessages = {
             const data = await response.json();
 
             if (data.success) {
-                const badge = document.getElementById('messages-badge');
-                if (badge) {
-                    if (data.data.count > 0) {
-                        badge.textContent = data.data.count;
-                        badge.style.display = 'inline-flex';
+                const count = data.data.count;
+
+                // Actualizar badge del sidebar
+                const sidebarBadge = document.getElementById('messages-badge');
+                if (sidebarBadge) {
+                    if (count > 0) {
+                        sidebarBadge.textContent = count;
+                        sidebarBadge.style.display = 'inline-flex';
                     } else {
-                        badge.style.display = 'none';
+                        sidebarBadge.style.display = 'none';
+                    }
+                }
+
+                // Actualizar badge del header
+                const headerBadge = document.getElementById('header-messages-badge');
+                if (headerBadge) {
+                    if (count > 0) {
+                        headerBadge.textContent = count;
+                        headerBadge.style.display = 'flex';
+                    } else {
+                        headerBadge.style.display = 'none';
                     }
                 }
             }
         } catch (error) {
             console.error('Error updating badge:', error);
         }
-    },
+    }
 
     startPolling() {
         // Actualizar badge cada 15 segundos

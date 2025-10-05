@@ -21,20 +21,27 @@
 │   ├── openmind-v1.0.1.zip
 │   ├── openmind-v1.0.2.zip
 │   ├── openmind-v1.0.4.zip
-│   └── openmind-v1.0.5.zip
+│   ├── openmind-v1.0.5.zip
+│   └── openmind-v1.0.6.zip
 ├── src
 │   ├── Controllers
 │   │   ├── ActivityController.php
+│   │   ├── AttachmentController.php
 │   │   ├── AuthController.php
 │   │   ├── DiaryController.php
 │   │   ├── MessageController.php
-│   │   └── PatientController.php
+│   │   ├── PatientController.php
+│   │   └── SessionNoteController.php
 │   ├── Core
 │   │   ├── Installer.php
 │   │   └── Plugin.php
 │   ├── Repositories
+│   │   ├── AttachmentRepository.php
 │   │   ├── DiaryRepository.php
-│   │   └── MessageRepository.php
+│   │   ├── MessageRepository.php
+│   │   └── SessionNoteRepository.php
+│   ├── Services
+│   │   └── ImageUploadService.php
 │   └── helpers.php
 ├── tailwind.config.js
 ├── templates
@@ -43,17 +50,19 @@
 │   │   ├── bitacora-form.php
 │   │   ├── bitacora-list.php
 │   │   ├── diary-list.php
-│   │   ├── diary-timeline.php
 │   │   ├── header.php
+│   │   ├── mood-selector.php
 │   │   ├── patient-card.php
 │   │   ├── sidebar-patient.php
 │   │   └── sidebar-psychologist.php
 │   ├── dashboard-patient.php
 │   ├── dashboard-psychologist.php
 │   └── pages
+│       ├── diario-detalle.php
 │       ├── mensajeria.php
 │       ├── patient
 │       │   ├── actividades.php
+│       │   ├── bitacora-detalle.php
 │       │   ├── bitacora.php
 │       │   ├── diario-detalle.php
 │       │   ├── diario-nuevo.php
@@ -61,6 +70,7 @@
 │       │   └── perfil.php
 │       └── psychologist
 │           ├── actividades.php
+│           ├── bitacora-detalle.php
 │           ├── bitacora-editar.php
 │           ├── bitacora-nueva.php
 │           ├── bitacora-paciente.php
@@ -71,4 +81,4 @@
 │           └── perfil.php
 └── test-setup.php
 
-15 directories, 57 files
+16 directories, 66 files

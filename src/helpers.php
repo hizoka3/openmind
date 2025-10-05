@@ -24,8 +24,9 @@ function openmind_get_recent_events(int $psychologist_id, int $limit = 10): arra
         $events[] = [
             'type' => 'message',
             'icon' => '💬',
+            'color' => 'blue',
             'text' => "{$msg->display_name} te envió un mensaje",
-            'time' => human_time_diff(strtotime($msg->created_at), current_time('timestamp')) . ' atrás',
+            'time' => openmind_time_ago($msg->created_at),
             'timestamp' => strtotime($msg->created_at)
         ];
     }
@@ -46,8 +47,9 @@ function openmind_get_recent_events(int $psychologist_id, int $limit = 10): arra
         $events[] = [
             'type' => 'activity',
             'icon' => '✅',
+            'color' => 'green',
             'text' => "{$activity->display_name} completó: {$activity->post_title}",
-            'time' => human_time_diff(strtotime($activity->completed_at), current_time('timestamp')) . ' atrás',
+            'time' => openmind_time_ago($activity->completed_at),
             'timestamp' => strtotime($activity->completed_at)
         ];
     }
@@ -67,8 +69,9 @@ function openmind_get_recent_events(int $psychologist_id, int $limit = 10): arra
         $events[] = [
             'type' => 'diary',
             'icon' => '📝',
+            'color' => 'purple',
             'text' => "{$entry->display_name} escribió en su bitácora",
-            'time' => human_time_diff(strtotime($entry->created_at), current_time('timestamp')) . ' atrás',
+            'time' => openmind_time_ago($entry->created_at),
             'timestamp' => strtotime($entry->created_at)
         ];
     }
@@ -77,6 +80,47 @@ function openmind_get_recent_events(int $psychologist_id, int $limit = 10): arra
     usort($events, fn($a, $b) => $b['timestamp'] <=> $a['timestamp']);
 
     return array_slice($events, 0, $limit);
+}
+
+/**
+ * Calcula tiempo transcurrido de forma correcta (respetando timezone de WP)
+ */
+function openmind_time_ago(string $datetime): string {
+    // La fecha ya viene en hora local de WP gracias a current_time('mysql')
+    $timestamp = strtotime($datetime);
+    $current_time = current_time('timestamp');
+
+    $diff = $current_time - $timestamp;
+
+    // Si es negativo (fecha futura), mostrar "hace un momento"
+    if ($diff < 0) {
+        return 'hace un momento';
+    }
+
+    // Calcular unidades de tiempo
+    $seconds = $diff;
+    $minutes = floor($seconds / 60);
+    $hours = floor($minutes / 60);
+    $days = floor($hours / 24);
+    $weeks = floor($days / 7);
+    $months = floor($days / 30);
+    $years = floor($days / 365);
+
+    if ($seconds < 60) {
+        return 'hace un momento';
+    } elseif ($minutes < 60) {
+        return $minutes === 1 ? 'hace 1 minuto' : "hace {$minutes} minutos";
+    } elseif ($hours < 24) {
+        return $hours === 1 ? 'hace 1 hora' : "hace {$hours} horas";
+    } elseif ($days < 7) {
+        return $days === 1 ? 'hace 1 día' : "hace {$days} días";
+    } elseif ($weeks < 4) {
+        return $weeks === 1 ? 'hace 1 semana' : "hace {$weeks} semanas";
+    } elseif ($months < 12) {
+        return $months === 1 ? 'hace 1 mes' : "hace {$months} meses";
+    } else {
+        return $years === 1 ? 'hace 1 año' : "hace {$years} años";
+    }
 }
 
 /**
@@ -98,7 +142,6 @@ function openmind_template(string $template_path, array $args = []): void {
     $file = OPENMIND_PATH . "templates/{$template_path}.php";
 
     if (file_exists($file)) {
-        // Extraer variables del array $args
         extract($args);
         include $file;
     }

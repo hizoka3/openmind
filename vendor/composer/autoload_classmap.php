@@ -8,12 +8,17 @@ $baseDir = dirname($vendorDir);
 return array(
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
     'Openmind\\Controllers\\ActivityController' => $baseDir . '/src/Controllers/ActivityController.php',
+    'Openmind\\Controllers\\AttachmentController' => $baseDir . '/src/Controllers/AttachmentController.php',
     'Openmind\\Controllers\\AuthController' => $baseDir . '/src/Controllers/AuthController.php',
     'Openmind\\Controllers\\DiaryController' => $baseDir . '/src/Controllers/DiaryController.php',
     'Openmind\\Controllers\\MessageController' => $baseDir . '/src/Controllers/MessageController.php',
     'Openmind\\Controllers\\PatientController' => $baseDir . '/src/Controllers/PatientController.php',
+    'Openmind\\Controllers\\SessionNoteController' => $baseDir . '/src/Controllers/SessionNoteController.php',
     'Openmind\\Core\\Installer' => $baseDir . '/src/Core/Installer.php',
     'Openmind\\Core\\Plugin' => $baseDir . '/src/Core/Plugin.php',
+    'Openmind\\Repositories\\AttachmentRepository' => $baseDir . '/src/Repositories/AttachmentRepository.php',
     'Openmind\\Repositories\\DiaryRepository' => $baseDir . '/src/Repositories/DiaryRepository.php',
     'Openmind\\Repositories\\MessageRepository' => $baseDir . '/src/Repositories/MessageRepository.php',
+    'Openmind\\Repositories\\SessionNoteRepository' => $baseDir . '/src/Repositories/SessionNoteRepository.php',
+    'Openmind\\Services\\ImageUploadService' => $baseDir . '/src/Services/ImageUploadService.php',
 );

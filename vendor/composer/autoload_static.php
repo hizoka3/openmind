@@ -23,14 +23,19 @@ class ComposerStaticInit6d41af1f30d54c9276827afc41c6b883
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Openmind\\Controllers\\ActivityController' => __DIR__ . '/../..' . '/src/Controllers/ActivityController.php',
+        'Openmind\\Controllers\\AttachmentController' => __DIR__ . '/../..' . '/src/Controllers/AttachmentController.php',
         'Openmind\\Controllers\\AuthController' => __DIR__ . '/../..' . '/src/Controllers/AuthController.php',
         'Openmind\\Controllers\\DiaryController' => __DIR__ . '/../..' . '/src/Controllers/DiaryController.php',
         'Openmind\\Controllers\\MessageController' => __DIR__ . '/../..' . '/src/Controllers/MessageController.php',
         'Openmind\\Controllers\\PatientController' => __DIR__ . '/../..' . '/src/Controllers/PatientController.php',
+        'Openmind\\Controllers\\SessionNoteController' => __DIR__ . '/../..' . '/src/Controllers/SessionNoteController.php',
         'Openmind\\Core\\Installer' => __DIR__ . '/../..' . '/src/Core/Installer.php',
         'Openmind\\Core\\Plugin' => __DIR__ . '/../..' . '/src/Core/Plugin.php',
+        'Openmind\\Repositories\\AttachmentRepository' => __DIR__ . '/../..' . '/src/Repositories/AttachmentRepository.php',
         'Openmind\\Repositories\\DiaryRepository' => __DIR__ . '/../..' . '/src/Repositories/DiaryRepository.php',
         'Openmind\\Repositories\\MessageRepository' => __DIR__ . '/../..' . '/src/Repositories/MessageRepository.php',
+        'Openmind\\Repositories\\SessionNoteRepository' => __DIR__ . '/../..' . '/src/Repositories/SessionNoteRepository.php',
+        'Openmind\\Services\\ImageUploadService' => __DIR__ . '/../..' . '/src/Services/ImageUploadService.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
