@@ -512,7 +512,7 @@ const OpenmindApp = {
         const messagesHtml = messages.map(msg => `
             <div class="message ${msg.sender_id == currentUserId ? 'sent' : 'received'}">
                 <div class="message-content">${msg.message}</div>
-                <div class="message-time">${this.formatDate(msg.created_at)}</div>
+                <div class="message-time">${msg.formatted_time}</div>
             </div>
         `).join('');
 
@@ -750,26 +750,6 @@ const OpenmindApp = {
                 setTimeout(() => notification.remove(), 300);
             }, 3000);
         }, 100);
-    },
-
-    formatDate(dateString) {
-        const date = new Date(dateString);
-        const now = new Date();
-        const diff = now - date;
-        const hours = Math.floor(diff / 3600000);
-        const days = Math.floor(diff / 86400000);
-
-        if (hours < 1) return 'Hace un momento';
-        if (hours < 24) return `Hace ${hours}h`;
-        if (days < 7) return `Hace ${days}d`;
-
-        return date.toLocaleDateString('es-ES', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
     }
 };
 
@@ -789,7 +769,6 @@ const OpenmindMessages = {
         this.startPolling();
 
         if (initialUserId) {
-            // Pequeño delay para que cargue la lista primero
             setTimeout(() => this.openConversation(initialUserId), 500);
         }
     },
@@ -848,7 +827,7 @@ const OpenmindMessages = {
                     </div>
                     <p class="text-xs text-gray-500 m-0">
                         <i class="fa-solid fa-clock mr-1"></i>
-                        ${this.formatDate(conv.last_message_at)}
+                        ${conv.formatted_time}
                     </p>
                 </div>
                 ${conv.unread_count > 0 ? `<span class="unread-badge">${conv.unread_count}</span>` : ''}
@@ -862,15 +841,11 @@ const OpenmindMessages = {
     async openConversation(otherUserId) {
         this.currentConversation = otherUserId;
 
-        // Actualizar items activos
         document.querySelectorAll('.conversation-item').forEach(item => {
             item.classList.toggle('active', item.dataset.userId == otherUserId);
         });
 
-        // Cargar mensajes
         await this.loadMessages(otherUserId);
-
-        // Marcar como leídos
         this.markConversationRead(otherUserId);
     },
 
@@ -940,7 +915,7 @@ const OpenmindMessages = {
                 <div class="message-content">${this.escapeHtml(msg.message)}</div>
                 <div class="message-time">
                     <i class="fa-solid fa-clock mr-1"></i>
-                    ${this.formatDate(msg.created_at)}
+                    ${msg.formatted_time}
                 </div>
             </div>
         `).join('');
@@ -952,7 +927,6 @@ const OpenmindMessages = {
             ${this.renderMessageForm(otherUserId)}
         `;
 
-        // Scroll al final
         setTimeout(() => {
             const messagesContainer = document.getElementById('messages-container');
             if (messagesContainer) {
@@ -960,12 +934,10 @@ const OpenmindMessages = {
             }
         }, 100);
 
-        // Bind form
         this.bindMessageForm();
     },
 
     renderMessageForm(otherUserId) {
-        // Verificar si es el psicólogo actual (solo para pacientes)
         const canSendMessages = this.canSendMessagesTo(otherUserId);
 
         if (!canSendMessages) {
@@ -1003,30 +975,22 @@ const OpenmindMessages = {
     `;
     },
 
-// NUEVO MÉTODO: Verificar si puede enviar mensajes
     canSendMessagesTo(otherUserId) {
-        // Si es psicólogo, siempre puede enviar
         if (window.location.href.includes('dashboard-psicologo')) {
             return true;
         }
-
-        // Si es paciente, verificar si es el psicólogo actual
-        // Esta info debe venir del servidor
         return this.isCurrentPsychologist(otherUserId);
     },
 
     isCurrentPsychologist(psychologistId) {
-        // Buscar en la lista de conversaciones si este psicólogo está marcado como actual
         const conversations = document.querySelectorAll('.conversation-item');
 
         for (let conv of conversations) {
             if (conv.dataset.userId == psychologistId) {
-                // Si tiene el atributo data-is-current, es el psicólogo actual
                 return conv.dataset.isCurrent === 'true';
             }
         }
 
-        // Por defecto, permitir (por si hay error)
         return true;
     },
 
@@ -1043,7 +1007,6 @@ const OpenmindMessages = {
 
             if (!message) return;
 
-            // Deshabilitar mientras envía
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 
@@ -1073,7 +1036,6 @@ const OpenmindMessages = {
             }
         });
 
-        // Enter para enviar (Shift+Enter para nueva línea)
         const textarea = form.querySelector('textarea[name="message"]');
         textarea.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -1095,7 +1057,6 @@ const OpenmindMessages = {
                 body: formData
             });
 
-            // Actualizar badge global y lista
             this.updateGlobalBadge();
             this.loadConversations();
         } catch (error) {
@@ -1118,7 +1079,6 @@ const OpenmindMessages = {
             if (data.success) {
                 const count = data.data.count;
 
-                // Actualizar badge del sidebar
                 const sidebarBadge = document.getElementById('messages-badge');
                 if (sidebarBadge) {
                     if (count > 0) {
@@ -1129,7 +1089,6 @@ const OpenmindMessages = {
                     }
                 }
 
-                // Actualizar badge del header
                 const headerBadge = document.getElementById('header-messages-badge');
                 if (headerBadge) {
                     if (count > 0) {
@@ -1143,53 +1102,18 @@ const OpenmindMessages = {
         } catch (error) {
             console.error('Error updating badge:', error);
         }
-    }
+    },
 
     startPolling() {
-        // Actualizar badge cada 15 segundos
         this.pollInterval = setInterval(() => {
             this.updateGlobalBadge();
 
-            // Si hay conversación abierta, recargar lista (para actualizar badges)
             if (document.getElementById('conversations-list')) {
                 this.loadConversations();
             }
         }, 15000);
 
-        // Primera actualización inmediata
         this.updateGlobalBadge();
-    },
-
-    formatDate(dateString) {
-        const date = new Date(dateString);
-        const now = new Date();
-
-        // Calcular diferencia en días
-        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const startOfMessageDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-        const diffDays = Math.floor((startOfToday - startOfMessageDay) / 86400000);
-
-        // Formatear hora
-        const timeStr = date.toLocaleTimeString('es-ES', {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false
-        });
-
-        if (diffDays === 0) {
-            return `Hoy ${timeStr}`;
-        } else if (diffDays === 1) {
-            return `Ayer ${timeStr}`;
-        } else {
-            return date.toLocaleDateString('es-ES', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-            });
-        }
     },
 
     escapeHtml(text) {
@@ -1199,10 +1123,8 @@ const OpenmindMessages = {
     }
 };
 
-// Iniciar polling en todas las páginas
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof OpenmindMessages !== 'undefined' && typeof openmindData !== 'undefined') {
-        // Solo iniciar polling si estamos en dashboard
         if (document.querySelector('.openmind-dashboard')) {
             OpenmindMessages.updateGlobalBadge();
             OpenmindMessages.startPolling();
@@ -1242,13 +1164,9 @@ async function updateDiaryBadge() {
     }
 }
 
-// Iniciar polling de badges (solo en dashboard)
 document.addEventListener('DOMContentLoaded', function() {
     if (document.querySelector('.openmind-sidebar')) {
-        // Actualizar badges inmediatamente
         updateDiaryBadge();
-
-        // Actualizar cada 30 segundos
         setInterval(updateDiaryBadge, 30000);
     }
 });

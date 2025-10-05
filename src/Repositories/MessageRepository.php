@@ -11,9 +11,10 @@ class MessageRepository {
             [
                 'sender_id' => $sender_id,
                 'receiver_id' => $receiver_id,
-                'message' => $message
+                'message' => $message,
+                'created_at' => current_time('mysql')
             ],
-            ['%d', '%d', '%s']
+            ['%d', '%d', '%s', '%s']
         );
 
         return $wpdb->insert_id;
@@ -60,13 +61,6 @@ class MessageRepository {
         ", $user_id));
     }
 
-    // ========================================
-    // NUEVOS MÉTODOS
-    // ========================================
-
-    /**
-     * Contar mensajes no leídos de un usuario específico
-     */
     public static function getUnreadCountByUser(int $receiver_id, int $sender_id): int {
         global $wpdb;
 
@@ -77,16 +71,11 @@ class MessageRepository {
         ", $receiver_id, $sender_id));
     }
 
-    /**
-     * Obtener todas las conversaciones de un paciente
-     */
     public static function getPatientConversations(int $patient_id): array {
         global $wpdb;
 
-        // Obtener psicólogo actual
         $current_psychologist_id = get_user_meta($patient_id, 'psychologist_id', true);
 
-        // Query simplificada y corregida
         $results = $wpdb->get_results($wpdb->prepare("
         SELECT 
             CASE 
@@ -100,15 +89,11 @@ class MessageRepository {
         ORDER BY last_message_at DESC
     ", $patient_id, $patient_id, $patient_id));
 
-        // Enriquecer con datos del usuario y contar no leídos
         foreach ($results as $conv) {
             $user = get_userdata($conv->psychologist_id);
             $conv->display_name = $user ? $user->display_name : 'Usuario desconocido';
-
-            // NUEVO: Marcar si es el psicólogo actual
             $conv->is_current = ($conv->psychologist_id == $current_psychologist_id);
 
-            // Contar no leídos de esta conversación
             $conv->unread_count = (int) $wpdb->get_var($wpdb->prepare("
             SELECT COUNT(*) 
             FROM {$wpdb->prefix}openmind_messages
@@ -121,13 +106,9 @@ class MessageRepository {
         return $results;
     }
 
-    /**
-     * Obtener todas las conversaciones de un psicólogo
-     */
     public static function getPsychologistConversations(int $psychologist_id): array {
         global $wpdb;
 
-        // Query simplificada y corregida
         $results = $wpdb->get_results($wpdb->prepare("
         SELECT 
             CASE 
@@ -141,12 +122,10 @@ class MessageRepository {
         ORDER BY last_message_at DESC
     ", $psychologist_id, $psychologist_id, $psychologist_id));
 
-        // Enriquecer con datos del usuario y contar no leídos
         foreach ($results as $conv) {
             $user = get_userdata($conv->patient_id);
             $conv->display_name = $user ? $user->display_name : 'Usuario desconocido';
 
-            // Contar no leídos de esta conversación
             $conv->unread_count = (int) $wpdb->get_var($wpdb->prepare("
             SELECT COUNT(*) 
             FROM {$wpdb->prefix}openmind_messages
@@ -159,9 +138,6 @@ class MessageRepository {
         return $results;
     }
 
-    /**
-     * Marcar toda una conversación como leída
-     */
     public static function markConversationAsRead(int $receiver_id, int $sender_id): bool {
         global $wpdb;
 
@@ -178,9 +154,6 @@ class MessageRepository {
             ) !== false;
     }
 
-    /**
-     * Obtener mensajes paginados (50 por defecto)
-     */
     public static function getConversationPaginated(int $user1, int $user2, int $limit = 50, int $offset = 0): array {
         global $wpdb;
 
@@ -196,9 +169,6 @@ class MessageRepository {
         ", $user1, $user2, $user2, $user1, $limit, $offset));
     }
 
-    /**
-     * Contar total de mensajes en una conversación
-     */
     public static function getConversationCount(int $user1, int $user2): int {
         global $wpdb;
 

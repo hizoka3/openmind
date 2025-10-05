@@ -86,8 +86,9 @@ function openmind_get_recent_events(int $psychologist_id, int $limit = 10): arra
  * Calcula tiempo transcurrido de forma correcta (respetando timezone de WP)
  */
 function openmind_time_ago(string $datetime): string {
-    // La fecha ya viene en hora local de WP gracias a current_time('mysql')
-    $timestamp = strtotime($datetime);
+    // Convertir de GMT a hora local de WordPress
+    $local_datetime = get_date_from_gmt($datetime);
+    $timestamp = strtotime($local_datetime);
     $current_time = current_time('timestamp');
 
     $diff = $current_time - $timestamp;

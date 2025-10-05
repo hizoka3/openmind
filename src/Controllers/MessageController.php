@@ -9,8 +9,6 @@ class MessageController {
         add_action('wp_ajax_openmind_send_message', [self::class, 'sendMessage']);
         add_action('wp_ajax_openmind_get_messages', [self::class, 'getMessages']);
         add_action('wp_ajax_openmind_mark_read', [self::class, 'markAsRead']);
-
-        // NUEVOS endpoints
         add_action('wp_ajax_openmind_get_unread_count', [self::class, 'getUnreadCount']);
         add_action('wp_ajax_openmind_get_conversations', [self::class, 'getConversations']);
         add_action('wp_ajax_openmind_mark_conversation_read', [self::class, 'markConversationRead']);
@@ -27,8 +25,8 @@ class MessageController {
             wp_send_json_error(['message' => 'Datos inválidos'], 400);
         }
 
-        // NUEVO: Validación especial para pacientes
-        if (current_user_can('view_activities')) { // Es paciente
+        // Validación especial para pacientes
+        if (current_user_can('view_activities')) {
             $current_psychologist_id = get_user_meta($sender_id, 'psychologist_id', true);
 
             if ($receiver_id != $current_psychologist_id) {
@@ -56,9 +54,6 @@ class MessageController {
         wp_send_json_error(['message' => 'Error al enviar mensaje'], 500);
     }
 
-    /**
-     * MODIFICADO: Ahora con paginación y marca como leído automáticamente
-     */
     public static function getMessages(): void {
         check_ajax_referer('openmind_nonce', 'nonce');
 
@@ -76,13 +71,18 @@ class MessageController {
             wp_send_json_error(['message' => 'Sin permisos'], 403);
         }
 
-        // Obtener mensajes paginados (ORDER BY DESC en query)
+        // Obtener mensajes paginados
         $messages = MessageRepository::getConversationPaginated($user_id, $other_user_id, $per_page, $offset);
+
+        // Formatear fechas para cada mensaje
+        foreach ($messages as $msg) {
+            $msg->formatted_time = openmind_time_ago($msg->created_at);
+        }
 
         // Marcar conversación como leída al abrir
         MessageRepository::markConversationAsRead($user_id, $other_user_id);
 
-        // Invertir array para mostrar cronológicamente (más viejo arriba)
+        // Invertir array para mostrar cronológicamente
         wp_send_json_success([
             'messages' => array_reverse($messages),
             'has_more' => count($messages) === $per_page
@@ -108,13 +108,6 @@ class MessageController {
         wp_send_json_error(['message' => 'Error al marcar mensaje'], 500);
     }
 
-    // ========================================
-    // NUEVOS ENDPOINTS
-    // ========================================
-
-    /**
-     * Obtener total de mensajes no leídos (para badge global)
-     */
     public static function getUnreadCount(): void {
         check_ajax_referer('openmind_nonce', 'nonce');
 
@@ -124,9 +117,6 @@ class MessageController {
         wp_send_json_success(['count' => $count]);
     }
 
-    /**
-     * Obtener lista de conversaciones (con no leídos por conversación)
-     */
     public static function getConversations(): void {
         check_ajax_referer('openmind_nonce', 'nonce');
 
@@ -137,12 +127,14 @@ class MessageController {
             ? MessageRepository::getPsychologistConversations($user_id)
             : MessageRepository::getPatientConversations($user_id);
 
+        // Formatear fechas para cada conversación
+        foreach ($conversations as $conv) {
+            $conv->formatted_time = openmind_time_ago($conv->last_message_at);
+        }
+
         wp_send_json_success(['conversations' => $conversations]);
     }
 
-    /**
-     * Marcar toda una conversación como leída
-     */
     public static function markConversationRead(): void {
         check_ajax_referer('openmind_nonce', 'nonce');
 
@@ -158,14 +150,6 @@ class MessageController {
         wp_send_json_success(['message' => 'Conversación marcada como leída']);
     }
 
-    // ========================================
-    // HELPERS
-    // ========================================
-
-    /**
-     * Verificar si existe relación psicólogo-paciente
-     * Permite mensajes en AMBAS direcciones
-     */
     private static function hasRelationship(int $user1, int $user2): bool {
         global $wpdb;
 
@@ -181,7 +165,6 @@ class MessageController {
         }
 
         // También verificar en historial de mensajes
-        // (permite chatear con psicólogo anterior si ya existe conversación)
         $has_history = $wpdb->get_var($wpdb->prepare("
             SELECT COUNT(*) FROM {$wpdb->prefix}openmind_messages
             WHERE (sender_id = %d AND receiver_id = %d)
