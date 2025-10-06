@@ -8,23 +8,26 @@ module.exports = {
         extend: {
             colors: {
                 primary: {
-                    50: '#f5f7ff',
-                    100: '#ebf0ff',
-                    200: '#d6e0ff',
+                    50: '#FFFADA', //
+                    100: '#F2F0E4', //
+                    200: '#e8d490',
                     300: '#b3c5ff',
-                    400: '#8099ff',
-                    500: '#667eea',
-                    600: '#5568d3',
+                    400: '#8C9E5E', //
+                    500: '#8C9E5E', //
+                    600: '#E8D48F', //
                     700: '#4553b8',
-                    800: '#374299',
+                    800: '#333333', //
                     900: '#2d367a',
                 },
                 secondary: {
                     500: '#764ba2',
+                },
+                "dark-gray": {
+                    300: "#333333"
                 }
             },
             fontFamily: {
-                sans: ['Inter', 'system-ui', 'sans-serif'],
+                sans: ['Lexend', 'system-ui', 'sans-serif'],
             }
         }
     },

@@ -12,10 +12,6 @@ get_header();
         <?php include OPENMIND_PATH . 'templates/components/sidebar-psychologist.php'; ?>
 
         <div class="dashboard-main">
-            <?php
-            $role = 'psychologist';
-            include OPENMIND_PATH . 'templates/components/header.php';
-            ?>
 
             <div class="dashboard-content">
                 <?php

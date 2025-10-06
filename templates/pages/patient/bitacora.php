@@ -30,11 +30,11 @@ $base_url = add_query_arg(['view' => 'bitacora'], home_url('/dashboard-paciente/
     </div>
 
     <?php if ($psychologist): ?>
-        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6 rounded-lg">
+        <div class="bg-primary-50 border-l-4 border-primary-100 p-4 mb-6 rounded-lg">
             <div class="flex items-start">
-                <i class="fa-solid fa-info-circle text-blue-600 mr-3 mt-1"></i>
+                <i class="fa-solid fa-info-circle text-primary-600 mr-3 mt-1"></i>
                 <div>
-                    <p class="text-sm text-blue-800 m-0">
+                    <p class="text-sm text-primary-500 m-0">
                         <strong>Tu psicólogo/a <?php echo esc_html($psychologist->display_name); ?></strong> registra aquí
                         el contenido y avances de cada sesión terapéutica.
                     </p>

@@ -12,10 +12,6 @@ get_header();
         <?php include OPENMIND_PATH . 'templates/components/sidebar-patient.php'; ?>
 
         <div class="dashboard-main">
-            <?php
-            $role = 'patient';
-            include OPENMIND_PATH . 'templates/components/header.php';
-            ?>
 
             <div class="dashboard-content">
                 <?php

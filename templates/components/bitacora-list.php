@@ -141,7 +141,7 @@ $dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
                                             </span>
                                         <?php endif; ?>
 
-                                        <span class="text-xs font-semibold text-primary-600 flex items-center gap-1 ml-auto">
+                                        <span class="text-xs font-semibold text-primary-500 flex items-center gap-1 ml-auto">
                                             Ver detalles →
                                         </span>
                                     </div>

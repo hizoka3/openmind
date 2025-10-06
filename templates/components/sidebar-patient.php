@@ -27,7 +27,7 @@ $menu_items = [
         <?php foreach ($menu_items as $view => $item): ?>
             <a href="<?php echo esc_url(add_query_arg('view', $view, $base_url)); ?>"
                class="menu-item <?php echo $current_view === $view ? 'active' : ''; ?>">
-                <span class="menu-icon"><?php echo $item['icon']; ?></span>
+                <!--<span class="menu-icon"><?php /*echo $item['icon']; */?></span>-->
                 <span class="menu-label"><?php echo esc_html($item['label']); ?></span>
 
                 <?php if ($item['badge'] === 'messages'): ?>
