@@ -13,6 +13,7 @@ class AuthController {
         // Endpoints privados (requieren autenticación)
         add_action('wp_ajax_openmind_change_password', [self::class, 'changePassword']);
         add_action('wp_ajax_openmind_update_profile', [self::class, 'updateProfile']);
+        add_action('wp_ajax_openmind_upload_avatar', [self::class, 'uploadAvatar']);
     }
 
     public static function login(): void {
@@ -197,5 +198,127 @@ class AuthController {
         }
 
         wp_send_json_success(['message' => 'Perfil actualizado exitosamente']);
+    }
+
+    public static function forgotPassword(): void {
+        check_ajax_referer('openmind_auth', 'nonce');
+
+        $email = sanitize_email($_POST['email'] ?? '');
+
+        if (empty($email) || !is_email($email)) {
+            wp_send_json_error(['message' => 'Email inválido'], 400);
+        }
+
+        // Buscar usuario por email
+        $user = get_user_by('email', $email);
+
+        if (!$user) {
+            // Por seguridad, no revelar si el email existe o no
+            wp_send_json_success(['message' => 'Si el correo existe, recibirás un enlace de recuperación']);
+        }
+
+        // Generar token de recuperación
+        $reset_key = get_password_reset_key($user);
+
+        if (is_wp_error($reset_key)) {
+            wp_send_json_error(['message' => 'Error al generar enlace de recuperación'], 500);
+        }
+
+        // Crear URL de reset
+        $reset_url = network_site_url("wp-login.php?action=rp&key=$reset_key&login=" . rawurlencode($user->user_login), 'login');
+
+        // Enviar email
+        $subject = 'Recuperar contraseña - OpenMind';
+        $message = sprintf(
+            "Hola %s,\n\nRecibimos una solicitud para restablecer tu contraseña.\n\nHaz clic en el siguiente enlace para crear una nueva contraseña:\n%s\n\nEste enlace expirará en 24 horas.\n\nSi no solicitaste esto, puedes ignorar este correo.\n\n--\nEquipo OpenMind",
+            $user->display_name,
+            $reset_url
+        );
+
+        $sent = wp_mail($email, $subject, $message);
+
+        if ($sent) {
+            wp_send_json_success(['message' => 'Si el correo existe, recibirás un enlace de recuperación']);
+        } else {
+            wp_send_json_error(['message' => 'Error al enviar el correo'], 500);
+        }
+    }
+
+    public static function uploadAvatar(): void {
+        check_ajax_referer('openmind_nonce', 'nonce');
+
+        $user_id = get_current_user_id();
+
+        if (!isset($_FILES['avatar'])) {
+            wp_send_json_error(['message' => 'No se recibió ninguna imagen'], 400);
+        }
+
+        $file = $_FILES['avatar'];
+
+        // Validar tipo de archivo
+        $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        if (!in_array($file['type'], $allowed_types)) {
+            wp_send_json_error(['message' => 'Tipo de archivo no permitido. Solo JPG, PNG, GIF o WebP'], 400);
+        }
+
+        // Validar tamaño (2MB max)
+        if ($file['size'] > 2 * 1024 * 1024) {
+            wp_send_json_error(['message' => 'La imagen no puede superar 2MB'], 400);
+        }
+
+        // Verificar errores de subida
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            wp_send_json_error(['message' => 'Error al subir el archivo'], 500);
+        }
+
+        // Usar la función de WordPress para manejar la subida
+        require_once(ABSPATH . 'wp-admin/includes/file.php');
+        require_once(ABSPATH . 'wp-admin/includes/image.php');
+        require_once(ABSPATH . 'wp-admin/includes/media.php');
+
+        // Configurar el archivo
+        $upload_overrides = [
+            'test_form' => false,
+            'mimes' => [
+                'jpg|jpeg|jpe' => 'image/jpeg',
+                'png' => 'image/png',
+                'gif' => 'image/gif',
+                'webp' => 'image/webp'
+            ]
+        ];
+
+        // Subir archivo
+        $uploaded_file = wp_handle_upload($file, $upload_overrides);
+
+        if (isset($uploaded_file['error'])) {
+            wp_send_json_error(['message' => $uploaded_file['error']], 500);
+        }
+
+        // Crear attachment en la biblioteca de medios
+        $attachment = [
+            'post_mime_type' => $uploaded_file['type'],
+            'post_title' => 'Avatar - ' . get_userdata($user_id)->display_name,
+            'post_content' => '',
+            'post_status' => 'inherit'
+        ];
+
+        $attachment_id = wp_insert_attachment($attachment, $uploaded_file['file']);
+
+        if (is_wp_error($attachment_id)) {
+            wp_send_json_error(['message' => 'Error al crear attachment'], 500);
+        }
+
+        // Generar metadata del attachment
+        $attachment_data = wp_generate_attachment_metadata($attachment_id, $uploaded_file['file']);
+        wp_update_attachment_metadata($attachment_id, $attachment_data);
+
+        // Guardar el ID del avatar en user meta
+        update_user_meta($user_id, 'openmind_avatar_id', $attachment_id);
+
+        wp_send_json_success([
+            'message' => 'Avatar actualizado correctamente',
+            'avatar_url' => wp_get_attachment_url($attachment_id),
+            'attachment_id' => $attachment_id
+        ]);
     }
 }

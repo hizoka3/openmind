@@ -58,6 +58,7 @@ class Plugin {
         add_action('init', [self::class, 'registerPostTypes']);
         add_filter('template_include', [self::class, 'loadTemplate']);
         add_filter('login_redirect', [self::class, 'redirectAfterLogin'], 10, 3);
+        add_filter('get_avatar_url', [self::class, 'customAvatarUrl'], 10, 3);
     }
 
     public static function loadTemplate(string $template): string {
@@ -131,5 +132,37 @@ class Plugin {
                 ]);
             }
         });
+    }
+
+    public static function customAvatarUrl(string $url, $id_or_email, array $args): string {
+        // Obtener user ID
+        $user_id = null;
+
+        if (is_numeric($id_or_email)) {
+            $user_id = (int) $id_or_email;
+        } elseif (is_object($id_or_email) && isset($id_or_email->user_id)) {
+            $user_id = (int) $id_or_email->user_id;
+        } elseif (is_string($id_or_email)) {
+            $user = get_user_by('email', $id_or_email);
+            if ($user) {
+                $user_id = $user->ID;
+            }
+        }
+
+        if (!$user_id) {
+            return $url;
+        }
+
+        // Buscar avatar custom
+        $avatar_id = get_user_meta($user_id, 'openmind_avatar_id', true);
+
+        if ($avatar_id) {
+            $avatar_url = wp_get_attachment_url($avatar_id);
+            if ($avatar_url) {
+                return $avatar_url;
+            }
+        }
+
+        return $url;
     }
 }
