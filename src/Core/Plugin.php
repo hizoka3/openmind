@@ -61,6 +61,9 @@ class Plugin {
     }
 
     public static function loadTemplate(string $template): string {
+        if (is_page('auth')) {
+            return OPENMIND_PATH . 'templates/auth.php';
+        }
         if (is_page('dashboard-psicologo') && current_user_can('manage_patients')) {
             return OPENMIND_PATH . 'templates/dashboard-psychologist.php';
         }
@@ -117,7 +120,7 @@ class Plugin {
 
     private static function loadAssets(): void {
         add_action('wp_enqueue_scripts', function() {
-            if (is_page(['dashboard-psicologo', 'dashboard-paciente'])) {
+            if (is_page(['dashboard-psicologo', 'dashboard-paciente', 'auth'])) {
                 wp_enqueue_style('openmind-styles', OPENMIND_URL . 'assets/css/style.css', [], OPENMIND_VERSION);
                 wp_enqueue_script('openmind-main', OPENMIND_URL . 'assets/js/main.js', ['jquery'], OPENMIND_VERSION, true);
 

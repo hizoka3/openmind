@@ -4,32 +4,43 @@ namespace Openmind\Controllers;
 class ActivityController {
 
     public static function init(): void {
-        add_action('wp_ajax_openmind_complete_activity', [self::class, 'completeActivity']);
+        add_action('wp_ajax_complete_activity', [self::class, 'ajaxCompleteActivity']);
         add_action('wp_ajax_openmind_create_activity', [self::class, 'createActivity']);
         add_action('wp_ajax_openmind_assign_activity', [self::class, 'assignActivity']);
+
     }
 
-    public static function completeActivity(): void {
+    public static function ajaxCompleteActivity(): void {
         check_ajax_referer('openmind_nonce', 'nonce');
 
         if (!current_user_can('view_activities')) {
-            wp_send_json_error(['message' => 'Sin permisos'], 403);
+            wp_send_json_error('Sin permisos', 403);
         }
 
-        $activity_id = intval($_POST['activity_id'] ?? 0);
-        $user_id = get_current_user_id();
+        $activity_id = absint($_POST['activity_id'] ?? 0);
 
+        if (!$activity_id) {
+            wp_send_json_error('ID inválido');
+        }
+
+        $activity = get_post($activity_id);
+
+        if (!$activity || $activity->post_type !== 'activity') {
+            wp_send_json_error('Actividad no encontrada');
+        }
+
+        // Verificar que sea asignada al usuario actual
         $assigned_to = get_post_meta($activity_id, 'assigned_to', true);
-        if ($assigned_to != $user_id) {
-            wp_send_json_error(['message' => 'Esta actividad no te pertenece'], 403);
+        if ($assigned_to != get_current_user_id()) {
+            wp_send_json_error('No puedes completar esta actividad');
         }
 
-        update_post_meta($activity_id, 'completed', 1);
+        // Marcar como completada
+        update_post_meta($activity_id, 'completed', '1');
         update_post_meta($activity_id, 'completed_at', current_time('mysql'));
-        update_user_meta($user_id, 'last_activity_date', current_time('mysql'));
 
         wp_send_json_success([
-            'message' => 'Actividad completada',
+            'message' => '¡Actividad completada! 🎉',
             'activity_id' => $activity_id
         ]);
     }

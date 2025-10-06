@@ -3,6 +3,31 @@
 @tailwind utilities;
 
 /* ==========================================
+   RESET DE ESTILOS DEL TEMA
+   ========================================== */
+
+@layer base {
+    /* Reset de botones solo en páginas de OpenMind */
+    .openmind-dashboard button,
+    .openmind-dashboard input[type="button"],
+    .openmind-dashboard input[type="submit"],
+    #forgot-password-modal button,
+    #auth-toast button,
+    .auth-tab,
+    #login-form button,
+    #register-form button,
+    #forgot-password-form button {
+        background-color: transparent !important;
+        color: inherit !important;
+        font-size: inherit !important;
+        font-weight: inherit !important;
+        padding: 0 !important;
+        border: 0 !important;
+        transition: none !important;
+    }
+}
+
+/* ==========================================
    COMPONENTES CUSTOM (No Tailwind)
    ========================================== */
 
@@ -143,7 +168,7 @@
         padding: 2rem;
     }
 
-    /* Buttons Base */
+    /* Buttons */
     .btn-primary {
         cursor: pointer;
         border-radius: 0.5rem;
@@ -151,22 +176,10 @@
         background-color: #667eea;
         padding: 0.625rem 1.25rem;
         font-size: 0.875rem;
-        font-weight: 500;
-        color: white;
-        transition: all 150ms;
-        box-shadow: none !important;
-    }
-
-    .btn-primary {
-        cursor: pointer;
-        border-radius: 0.5rem;
-        border: 0;
-        background-color: #667eea;
-        padding: 0.625rem 1.25rem;
-        font-size: 0.875rem;
-        font-weight: 600; /* Aumentado de 500 a 600 */
+        font-weight: 600;
         color: white;
         transition: background-color 200ms ease;
+        box-shadow: none !important;
     }
 
     .btn-primary:hover {
@@ -307,10 +320,7 @@
         color: #9ca3af;
     }
 
-    /* ==========================================
-       MENSAJERÍA - Usando CSS Vanilla
-       ========================================== */
-
+    /* Mensajería */
     .messages-layout {
         display: grid;
         grid-template-columns: 1fr;

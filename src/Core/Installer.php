@@ -157,7 +157,8 @@ class Installer {
     private static function createPages(): void {
         $pages = [
             'dashboard-psicologo' => 'Dashboard Psicólogo',
-            'dashboard-paciente' => 'Dashboard Paciente'
+            'dashboard-paciente' => 'Dashboard Paciente',
+            'auth' => 'Acceso'
         ];
 
         foreach ($pages as $slug => $title) {

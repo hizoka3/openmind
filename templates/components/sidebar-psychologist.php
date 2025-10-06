@@ -36,7 +36,7 @@ $menu_items = [
                 <?php if ($item['badge'] === 'messages'): ?>
                     <span class="unread-badge" id="messages-badge" style="display:none;">0</span>
                 <?php elseif ($item['badge'] === 'diary'): ?>
-                    <span class="unread-badge" id="diary-badge" style="display:none;">0</span>
+                    <!--<span class="unread-badge" id="diary-badge" style="display:none;">0</span>-->
                 <?php endif; ?>
             </a>
         <?php endforeach; ?>

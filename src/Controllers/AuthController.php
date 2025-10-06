@@ -1,11 +1,134 @@
-<?php // src/Controllers/AuthController.php
+<?php
+// src/Controllers/AuthController.php
 namespace Openmind\Controllers;
 
 class AuthController {
 
     public static function init(): void {
+        // Endpoints públicos (sin autenticación)
+        add_action('wp_ajax_nopriv_openmind_login', [self::class, 'login']);
+        add_action('wp_ajax_nopriv_openmind_register', [self::class, 'register']);
+        add_action('wp_ajax_nopriv_openmind_forgot_password', [self::class, 'forgotPassword']);
+
+        // Endpoints privados (requieren autenticación)
         add_action('wp_ajax_openmind_change_password', [self::class, 'changePassword']);
         add_action('wp_ajax_openmind_update_profile', [self::class, 'updateProfile']);
+    }
+
+    public static function login(): void {
+        check_ajax_referer('openmind_auth', 'nonce');
+
+        $email = sanitize_email($_POST['email'] ?? '');
+        $password = $_POST['password'] ?? '';
+        $remember = isset($_POST['remember']);
+
+        if (empty($email) || empty($password)) {
+            wp_send_json_error(['message' => 'Email y contraseña son requeridos'], 400);
+        }
+
+        // Buscar usuario por email
+        $user = get_user_by('email', $email);
+
+        if (!$user) {
+            wp_send_json_error(['message' => 'Credenciales incorrectas'], 401);
+        }
+
+        // Verificar contraseña
+        if (!wp_check_password($password, $user->user_pass, $user->ID)) {
+            wp_send_json_error(['message' => 'Credenciales incorrectas'], 401);
+        }
+
+        // Login exitoso
+        wp_set_current_user($user->ID);
+        wp_set_auth_cookie($user->ID, $remember);
+
+        // Determinar redirect según rol
+        $redirect_url = in_array('psychologist', $user->roles)
+            ? home_url('/dashboard-psicologo/')
+            : home_url('/dashboard-paciente/');
+
+        wp_send_json_success([
+            'message' => '¡Bienvenido!',
+            'redirect_url' => $redirect_url,
+            'user' => [
+                'id' => $user->ID,
+                'name' => $user->display_name,
+                'email' => $user->user_email,
+                'role' => $user->roles[0]
+            ]
+        ]);
+    }
+
+    public static function register(): void {
+        check_ajax_referer('openmind_auth', 'nonce');
+
+        $name = sanitize_text_field($_POST['name'] ?? '');
+        $email = sanitize_email($_POST['email'] ?? '');
+        $password = $_POST['password'] ?? '';
+
+        // Validaciones
+        if (empty($name) || empty($email) || empty($password)) {
+            wp_send_json_error(['message' => 'Todos los campos son requeridos'], 400);
+        }
+
+        if (!is_email($email)) {
+            wp_send_json_error(['message' => 'Email inválido'], 400);
+        }
+
+        if (strlen($password) < 8) {
+            wp_send_json_error(['message' => 'La contraseña debe tener al menos 8 caracteres'], 400);
+        }
+
+        // Verificar si el email ya existe
+        if (email_exists($email)) {
+            wp_send_json_error(['message' => 'Este email ya está registrado'], 400);
+        }
+
+        // Generar username único
+        $username = sanitize_user(strtolower(str_replace(' ', '', $name)));
+        if (username_exists($username)) {
+            $username .= '_' . wp_rand(100, 999);
+        }
+
+        // Crear usuario paciente
+        $user_id = wp_insert_user([
+            'user_login' => $username,
+            'user_email' => $email,
+            'user_pass' => $password,
+            'display_name' => $name,
+            'role' => 'patient',
+            'show_admin_bar_front' => false
+        ]);
+
+        if (is_wp_error($user_id)) {
+            wp_send_json_error(['message' => $user_id->get_error_message()], 500);
+        }
+
+        // Login automático después del registro
+        wp_set_current_user($user_id);
+        wp_set_auth_cookie($user_id, true);
+
+        // Email de bienvenida
+        wp_mail(
+            $email,
+            'Bienvenido a OpenMind',
+            sprintf(
+                "¡Hola %s!\n\nTu cuenta ha sido creada exitosamente.\n\nPuedes acceder a tu panel en: %s\n\n¡Bienvenido a OpenMind!",
+                $name,
+                home_url('/dashboard-paciente/')
+            )
+        );
+
+        wp_send_json_success([
+            'message' => '¡Cuenta creada exitosamente!',
+            'redirect_url' => home_url('/dashboard-paciente/'),
+            'user' => [
+                'id' => $user_id,
+                'name' => $name,
+                'email' => $email,
+                'role' => 'patient'
+            ]
+        ]);
     }
 
     public static function changePassword(): void {
@@ -32,7 +155,7 @@ class AuthController {
         // Cambiar contraseña
         wp_set_password($new_password, $user_id);
 
-        // Enviar email de confirmación
+        // Email de confirmación
         wp_mail(
             $user->user_email,
             'Contraseña cambiada - OpenMind',
