@@ -37,7 +37,11 @@ if ($psychologist) {
             'label' => 'Mi psicólogo',
             'content' => '
             <div class="flex items-center gap-3 p-3 bg-primary-50 rounded-lg border border-primary-100">
-                ' . get_avatar($psychologist->ID, 48, '', '', ['class' => 'rounded-full border-2 border-primary-200']) . '
+                <div>
+                    <div class="w-16 h-16 border-2 border-primary-200 rounded-full aspect-square">
+                    ' . get_avatar($psychologist->ID, 48, '', '') . '
+                    </div>
+                </div>
                 <div>
                     <p class="font-semibold text-gray-900 m-0">' . esc_html($psychologist->display_name) . '</p>
                     <p class="text-sm text-gray-600 m-0">Psicólogo asignado</p>
