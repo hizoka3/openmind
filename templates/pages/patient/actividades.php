@@ -25,7 +25,7 @@ $completed = array_filter($activities, fn($a) => get_post_meta($a->ID, 'complete
 
     <!-- Tabs estilo consistente con paciente-detalle.php -->
     <div class="flex gap-2 border-b-2 border-gray-200 mb-8 overflow-x-auto">
-        <button class="tab-activity flex items-center gap-2 px-6 py-3 bg-transparent border-0 border-b-4 border-primary-600 cursor-pointer text-sm font-medium text-primary-600 transition-all whitespace-nowrap rounded-t-lg"
+        <button class="tab-activity active flex items-center gap-2 px-6 py-3 bg-transparent border-0 border-b-4 border-primary-600 cursor-pointer text-sm font-medium text-primary-600 transition-all whitespace-nowrap rounded-t-lg"
                 data-filter="pending">
             <i class="fa-solid fa-hourglass-half"></i>
             Pendientes
@@ -84,16 +84,14 @@ $completed = array_filter($activities, fn($a) => get_post_meta($a->ID, 'complete
 
                 // Toggle border-bottom y colores
                 if (isActive) {
-                    t.classList.remove('border-transparent', 'text-gray-500');
-                    t.classList.add('border-primary-600', 'text-primary-600');
+                    t.classList.add('active');
 
                     // Cambiar color del badge
                     const badge = t.querySelector('span');
-                    badge.classList.remove('bg-gray-300', 'text-gray-700');
-                    badge.classList.add('bg-primary-600', 'text-white');
+                    badge.classList.remove('bg-gray-300', 'text-gray-700')
+                    badge.classList.add('bg-primary-600', 'text-white')
                 } else {
-                    t.classList.remove('border-primary-600', 'text-primary-600');
-                    t.classList.add('border-transparent', 'text-gray-500');
+                    t.classList.remove('active');
 
                     // Cambiar color del badge
                     const badge = t.querySelector('span');

@@ -17,7 +17,10 @@ $menu_items = [
 <aside class="openmind-sidebar">
     <div class="sidebar-header">
         <div class="user-avatar">
-            <?php echo get_avatar($current_user->ID, 80); ?>
+            <img id="avatar-preview"
+                 src="<?php echo esc_url(get_avatar_url($current_user->ID, ['size' => 80])); ?>"
+                 alt="Avatar"
+                 class="w-32 h-32 rounded-full border-4 border-primary-100 object-cover">
         </div>
         <h3><?php echo esc_html($current_user->display_name); ?></h3>
         <p class="user-role">Paciente</p>

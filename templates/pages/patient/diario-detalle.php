@@ -106,7 +106,7 @@ $mood_emojis = [
         <div class="flex justify-between items-center pt-6 border-t border-gray-200 mt-6">
             <div class="flex gap-3">
                 <button
-                    class="toggle-share-btn inline-flex items-center gap-2 px-4 py-2 <?php echo $is_shared ? 'bg-gray-200 text-gray-700 hover:bg-gray-300' : 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:from-blue-600 hover:to-indigo-600'; ?> rounded-lg border-0 cursor-pointer text-sm font-medium transition-all shadow-none"
+                    class="toggle-share-btn inline-flex items-center gap-2 px-4 py-2 <?php echo $is_shared ? 'bg-gray-200 text-gray-700 hover:bg-gray-300' : 'bg-primary-500 text-white'; ?> rounded-lg border-0 cursor-pointer text-sm font-medium transition-all shadow-none"
                     data-entry-id="<?php echo $entry->id; ?>"
                     data-is-shared="<?php echo $is_shared ? '1' : '0'; ?>">
                     <i class="fa-solid <?php echo $is_shared ? 'fa-lock' : 'fa-share-nodes'; ?>"></i>

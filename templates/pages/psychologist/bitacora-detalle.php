@@ -45,7 +45,7 @@ $back_url = $patient_id
     <!-- Breadcrumb -->
     <div class="mb-6">
         <a href="<?php echo esc_url($back_url); ?>"
-           class="inline-flex items-center gap-2 text-primary-600 text-sm font-medium transition-colors hover:text-primary-700 no-underline">
+           class="inline-flex items-center gap-2 text-primary-500 text-sm font-medium transition-colors hover:text-primary-700 no-underline">
             <i class="fa-solid fa-arrow-left"></i>
             Volver a Bitácora
         </a>

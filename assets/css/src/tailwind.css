@@ -19,13 +19,9 @@
     #login-form button,
     #register-form button,
     #forgot-password-form button {
-        background-color: transparent !important;
-        color: inherit !important;
         font-size: inherit !important;
         font-weight: inherit !important;
-        padding: 0 !important;
-        border: 0 !important;
-        transition: none !important;
+        box-shadow: none !important;
     }
 }
 
@@ -192,17 +188,17 @@
         cursor: pointer;
         border-radius: 0.5rem;
         border: 0;
-        background-color: #667eea;
         padding: 0.625rem 1.25rem;
         font-size: 0.875rem;
         font-weight: 600;
-        color: white;
         transition: background-color 200ms ease;
         box-shadow: none !important;
+        text-shadow: none !important;
+        @apply !bg-primary-500 !text-white;
     }
 
     .btn-primary:hover {
-        background-color: #5568d3;
+        @apply bg-primary-600;
     }
 
     .btn-primary:active {
@@ -337,6 +333,10 @@
         text-align: center;
         font-style: italic;
         color: #9ca3af;
+    }
+
+    .tab-btn.active, .tab-activity.active {
+        @apply !text-primary-500;
     }
 
     /* Mensajería */

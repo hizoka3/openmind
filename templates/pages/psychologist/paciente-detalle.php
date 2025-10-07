@@ -504,23 +504,15 @@ $completion_rate = count($all_activities) > 0 ? round((count($completed_activiti
             const tabs = document.querySelectorAll('.tab-btn');
             const panes = document.querySelectorAll('.tab-pane');
 
-            console.log('Tabs encontrados:', tabs.length);
-            console.log('Panes encontrados:', panes.length);
-
             tabs.forEach(function(tab) {
                 tab.addEventListener('click', function() {
                     const tabName = this.getAttribute('data-tab');
-                    console.log('Tab clickeado:', tabName);
 
                     // Actualizar botones
                     tabs.forEach(function(btn) {
-                        btn.classList.remove('border-primary-600', 'text-primary-600');
-                        btn.classList.add('border-transparent', 'text-gray-500');
                         btn.classList.remove('active');
                     });
 
-                    this.classList.add('border-primary-600', 'text-primary-600');
-                    this.classList.remove('border-transparent', 'text-gray-500');
                     this.classList.add('active');
 
                     // Actualizar contenido
@@ -531,7 +523,6 @@ $completion_rate = count($all_activities) > 0 ? round((count($completed_activiti
                     const selectedPane = document.getElementById('tab-' + tabName);
                     if (selectedPane) {
                         selectedPane.style.display = 'block';
-                        console.log('Mostrando pane:', 'tab-' + tabName);
                     }
                 });
             });
