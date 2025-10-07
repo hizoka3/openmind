@@ -65,6 +65,10 @@ class Plugin {
         if (is_page('auth')) {
             return OPENMIND_PATH . 'templates/auth.php';
         }
+        if (is_page(['dashboard-psicologo', 'dashboard-paciente']) && !is_user_logged_in()) {
+            wp_redirect(home_url('/auth/'));
+            exit;
+        }
         if (is_page('dashboard-psicologo') && current_user_can('manage_patients')) {
             return OPENMIND_PATH . 'templates/dashboard-psychologist.php';
         }

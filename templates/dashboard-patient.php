@@ -1,5 +1,4 @@
-<?php
-// templates/dashboard-patient.php
+<?php // templates/dashboard-patient.php
 if (!current_user_can('patient')) wp_die('Acceso denegado');
 
 $user_id = get_current_user_id();
