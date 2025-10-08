@@ -5,11 +5,10 @@ if (!defined('ABSPATH')) exit;
 // Redirigir si ya está logueado
 if (is_user_logged_in()) {
     $user = wp_get_current_user();
-    if (in_array('psychologist', $user->roles)) {
-        wp_redirect(home_url('/dashboard-psicologo/'));
-    } else {
-        wp_redirect(home_url('/dashboard-paciente/'));
-    }
+    $redirect = in_array('psychologist', $user->roles)
+            ? home_url('/dashboard-psicologo/')
+            : home_url('/dashboard-paciente/');
+    wp_redirect($redirect);
     exit;
 }
 
@@ -47,9 +46,7 @@ get_header();
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">
                                     Correo electrónico
                                 </label>
-                                <input type="email"
-                                       name="email"
-                                       required
+                                <input type="email" name="email" required
                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all shadow-none"
                                        placeholder="tu@email.com">
                             </div>
@@ -58,22 +55,18 @@ get_header();
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">
                                     Contraseña
                                 </label>
-                                <input type="password"
-                                       name="password"
-                                       required
+                                <input type="password" name="password" required
                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all shadow-none"
                                        placeholder="••••••••">
                             </div>
 
                             <div class="flex items-center justify-between text-sm">
                                 <label class="flex items-center cursor-pointer">
-                                    <input type="checkbox"
-                                           name="remember"
+                                    <input type="checkbox" name="remember"
                                            class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500 shadow-none">
                                     <span class="ml-2 text-gray-600">Recordarme</span>
                                 </label>
-                                <button type="button"
-                                        id="forgot-password-btn"
+                                <button type="button" id="forgot-password-btn"
                                         class="text-primary-600 hover:text-primary-700 font-medium bg-transparent border-0 cursor-pointer shadow-none outline-none">
                                     ¿Olvidaste tu contraseña?
                                 </button>
@@ -93,9 +86,7 @@ get_header();
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">
                                     Nombre completo
                                 </label>
-                                <input type="text"
-                                       name="name"
-                                       required
+                                <input type="text" name="name" required
                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all shadow-none"
                                        placeholder="Tu nombre">
                             </div>
@@ -104,9 +95,7 @@ get_header();
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">
                                     Correo electrónico
                                 </label>
-                                <input type="email"
-                                       name="email"
-                                       required
+                                <input type="email" name="email" required
                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all shadow-none"
                                        placeholder="tu@email.com">
                             </div>
@@ -115,10 +104,7 @@ get_header();
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">
                                     Contraseña
                                 </label>
-                                <input type="password"
-                                       name="password"
-                                       required
-                                       minlength="8"
+                                <input type="password" name="password" required minlength="8"
                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all shadow-none"
                                        placeholder="Mínimo 8 caracteres">
                                 <p class="mt-2 text-xs text-gray-500">
@@ -127,9 +113,7 @@ get_header();
                             </div>
 
                             <div class="flex items-start">
-                                <input type="checkbox"
-                                       name="terms"
-                                       required
+                                <input type="checkbox" name="terms" required
                                        class="w-4 h-4 mt-1 text-primary-600 border-gray-300 rounded focus:ring-primary-500 shadow-none">
                                 <label class="ml-2 text-sm text-gray-600">
                                     Acepto los <a href="#" class="text-primary-600 hover:text-primary-700 font-medium">términos y condiciones</a>
@@ -156,27 +140,12 @@ get_header();
         </div>
     </div>
 
-    <!-- Toast para notificaciones -->
-    <div id="auth-toast" class="fixed top-4 right-4 max-w-sm w-full transform translate-x-full transition-transform duration-300 z-50">
-        <div class="bg-white rounded-lg shadow-lg p-4 border-l-4" id="toast-content">
-            <div class="flex items-start">
-                <div class="flex-shrink-0 text-lg" id="toast-icon"></div>
-                <div class="ml-3 flex-1">
-                    <p class="text-sm font-medium text-gray-900" id="toast-message"></p>
-                </div>
-                <button onclick="hideToast()" class="ml-4 text-gray-400 hover:text-gray-600 shadow-none outline-none">
-                    <i class="fa-solid fa-times"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- Modal recuperar contraseña -->
     <div id="forgot-password-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
         <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-8">
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-2xl font-bold text-gray-900">Recuperar contraseña</h2>
-                <button onclick="closeForgotPasswordModal()" class="text-gray-400 hover:text-gray-600 shadow-none outline-none">
+                <button onclick="closeForgotPasswordModal()" class="text-gray-400 hover:text-gray-600 shadow-none outline-none border-0 bg-transparent cursor-pointer">
                     <i class="fa-solid fa-times text-xl"></i>
                 </button>
             </div>
@@ -190,16 +159,13 @@ get_header();
                     <label class="block text-sm font-semibold text-gray-700 mb-2">
                         Correo electrónico
                     </label>
-                    <input type="email"
-                           name="email"
-                           required
+                    <input type="email" name="email" required
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all shadow-none"
                            placeholder="tu@email.com">
                 </div>
 
                 <div class="flex gap-3">
-                    <button type="button"
-                            onclick="closeForgotPasswordModal()"
+                    <button type="button" onclick="closeForgotPasswordModal()"
                             class="flex-1 px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg border-0 cursor-pointer transition-all hover:bg-gray-200 shadow-none outline-none">
                         Cancelar
                     </button>
@@ -218,54 +184,43 @@ get_header();
             tab.addEventListener('click', function() {
                 const targetTab = this.dataset.tab;
 
-                // Actualizar tabs
                 document.querySelectorAll('.auth-tab').forEach(t => {
-                    if (t.dataset.tab === targetTab) {
-                        t.classList.remove('border-transparent', 'text-gray-500', 'bg-transparent');
-                        t.classList.add('border-primary-600', 'text-primary-600', 'bg-white');
-                    } else {
-                        t.classList.remove('border-primary-600', 'text-primary-600', 'bg-white');
-                        t.classList.add('border-transparent', 'text-gray-500', 'bg-transparent');
-                    }
+                    const isActive = t.dataset.tab === targetTab;
+                    t.classList.toggle('border-primary-600', isActive);
+                    t.classList.toggle('text-primary-600', isActive);
+                    t.classList.toggle('bg-white', isActive);
+                    t.classList.toggle('border-transparent', !isActive);
+                    t.classList.toggle('text-gray-500', !isActive);
+                    t.classList.toggle('bg-transparent', !isActive);
                 });
 
-                // Mostrar contenido
                 document.querySelectorAll('.auth-content').forEach(content => {
-                    if (content.dataset.content === targetTab) {
-                        content.classList.remove('hidden');
-                    } else {
-                        content.classList.add('hidden');
-                    }
+                    content.classList.toggle('hidden', content.dataset.content !== targetTab);
                 });
             });
         });
 
-        // Modal recuperar contraseña
-        function openForgotPasswordModal() {
+        // Modal
+        const openForgotPasswordModal = () => {
             const modal = document.getElementById('forgot-password-modal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
-        }
+        };
 
-        function closeForgotPasswordModal() {
+        const closeForgotPasswordModal = () => {
             const modal = document.getElementById('forgot-password-modal');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
-        }
+        };
 
         document.getElementById('forgot-password-btn').addEventListener('click', openForgotPasswordModal);
-
-        // Cerrar modal al hacer click fuera
-        document.getElementById('forgot-password-modal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeForgotPasswordModal();
-            }
+        document.getElementById('forgot-password-modal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeForgotPasswordModal();
         });
 
         // Forgot password form
         document.getElementById('forgot-password-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-
             const btn = e.target.querySelector('button[type="submit"]');
             const originalText = btn.textContent;
             btn.disabled = true;
@@ -283,57 +238,27 @@ get_header();
 
                 const data = await response.json();
 
+                Toast.show(
+                    data.success ? 'Enlace enviado. Revisa tu correo.' : (data.data?.message || 'Error al enviar enlace'),
+                    data.success ? 'success' : 'error'
+                );
+
                 if (data.success) {
-                    showToast('Enlace enviado. Revisa tu correo.', 'success');
                     closeForgotPasswordModal();
                     e.target.reset();
-                } else {
-                    showToast(data.data.message || 'Error al enviar enlace', 'error');
                 }
-
-                btn.disabled = false;
-                btn.textContent = originalText;
             } catch (error) {
                 console.error(error);
-                showToast('Error de conexión', 'error');
+                Toast.show('Error de conexión', 'error');
+            } finally {
                 btn.disabled = false;
                 btn.textContent = originalText;
             }
         });
 
-        // Toast notifications
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('auth-toast');
-            const content = document.getElementById('toast-content');
-            const icon = document.getElementById('toast-icon');
-            const messageEl = document.getElementById('toast-message');
-
-            // Configurar colores según tipo
-            const colors = {
-                success: { border: 'border-green-500', icon: '✓' },
-                error: { border: 'border-red-500', icon: '✕' },
-                info: { border: 'border-blue-500', icon: 'ℹ' }
-            };
-
-            const config = colors[type] || colors.info;
-
-            content.className = `bg-white rounded-lg shadow-lg p-4 border-l-4 ${config.border}`;
-            icon.textContent = config.icon;
-            messageEl.textContent = message;
-
-            toast.classList.remove('translate-x-full');
-
-            setTimeout(() => hideToast(), 5000);
-        }
-
-        function hideToast() {
-            document.getElementById('auth-toast').classList.add('translate-x-full');
-        }
-
         // Login form
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-
             const btn = e.target.querySelector('button[type="submit"]');
             const originalText = btn.textContent;
             btn.disabled = true;
@@ -352,18 +277,16 @@ get_header();
                 const data = await response.json();
 
                 if (data.success) {
-                    showToast('¡Bienvenido! Redirigiendo...', 'success');
-                    setTimeout(() => {
-                        window.location.href = data.data.redirect_url;
-                    }, 1500);
+                    Toast.show('¡Bienvenido! Redirigiendo...', 'success');
+                    setTimeout(() => window.location.href = data.data.redirect_url, 1500);
                 } else {
-                    showToast(data.data.message || 'Error al iniciar sesión', 'error');
+                    Toast.show(data.data?.message || 'Error al iniciar sesión', 'error');
                     btn.disabled = false;
                     btn.textContent = originalText;
                 }
             } catch (error) {
                 console.error(error);
-                showToast('Error de conexión', 'error');
+                Toast.show('Error de conexión', 'error');
                 btn.disabled = false;
                 btn.textContent = originalText;
             }
@@ -372,7 +295,6 @@ get_header();
         // Register form
         document.getElementById('register-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-
             const btn = e.target.querySelector('button[type="submit"]');
             const originalText = btn.textContent;
             btn.disabled = true;
@@ -391,19 +313,17 @@ get_header();
                 const data = await response.json();
 
                 if (data.success) {
-                    showToast('¡Cuenta creada! Redirigiendo...', 'success');
+                    Toast.show('¡Cuenta creada! Redirigiendo...', 'success');
                     e.target.reset();
-                    setTimeout(() => {
-                        window.location.href = data.data.redirect_url;
-                    }, 1500);
+                    setTimeout(() => window.location.href = data.data.redirect_url, 1500);
                 } else {
-                    showToast(data.data.message || 'Error al crear cuenta', 'error');
+                    Toast.show(data.data?.message || 'Error al crear cuenta', 'error');
                     btn.disabled = false;
                     btn.textContent = originalText;
                 }
             } catch (error) {
                 console.error(error);
-                showToast('Error de conexión', 'error');
+                Toast.show('Error de conexión', 'error');
                 btn.disabled = false;
                 btn.textContent = originalText;
             }

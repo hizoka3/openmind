@@ -5,6 +5,7 @@ $user_id = get_current_user_id();
 $current_page = $_GET['view'] ?? 'inicio';
 
 get_header();
+include OPENMIND_PATH . 'templates/components/toast.php';
 ?>
 
     <div class="openmind-dashboard psychologist">

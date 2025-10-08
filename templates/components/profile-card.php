@@ -152,17 +152,6 @@ $stats = $args['stats'] ?? []; // Estadísticas específicas del rol
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all shadow-none">
                 </div>
 
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        Correo electrónico
-                    </label>
-                    <input type="email"
-                           name="email"
-                           value="<?php echo esc_attr($user->user_email); ?>"
-                           required
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all shadow-none">
-                </div>
-
                 <div class="flex gap-3">
                     <button type="button"
                             onclick="closeEditProfileModal()"
@@ -233,27 +222,27 @@ $stats = $args['stats'] ?? []; // Estadísticas específicas del rol
 
 <script>
     // Modals
-    function openEditProfileModal() {
+    const openEditProfileModal = () => {
         document.getElementById('edit-profile-modal').style.display = 'block';
-    }
+    };
 
-    function closeEditProfileModal() {
+    const closeEditProfileModal = () => {
         document.getElementById('edit-profile-modal').style.display = 'none';
-    }
+    };
 
-    function openChangePasswordModal() {
+    const openChangePasswordModal = () => {
         document.getElementById('change-password-modal').style.display = 'block';
-    }
+    };
 
-    function closeChangePasswordModal() {
+    const closeChangePasswordModal = () => {
         document.getElementById('change-password-modal').style.display = 'none';
-    }
+    };
 
     document.getElementById('edit-profile-btn')?.addEventListener('click', openEditProfileModal);
     document.getElementById('change-password-btn')?.addEventListener('click', openChangePasswordModal);
 
     // Cerrar al hacer click fuera
-    [' edit-profile-modal', 'change-password-modal'].forEach(id => {
+    ['edit-profile-modal', 'change-password-modal'].forEach(id => {
         document.getElementById(id)?.addEventListener('click', function(e) {
             if (e.target === this) {
                 this.style.display = 'none';
@@ -266,6 +255,7 @@ $stats = $args['stats'] ?? []; // Estadísticas específicas del rol
         e.preventDefault();
 
         const btn = e.target.querySelector('button[type="submit"]');
+        const originalText = btn.textContent;
         btn.disabled = true;
         btn.textContent = 'Guardando...';
 
@@ -282,18 +272,19 @@ $stats = $args['stats'] ?? []; // Estadísticas específicas del rol
             const data = await response.json();
 
             if (data.success) {
-                alert('Perfil actualizado correctamente');
-                location.reload();
+                closeEditProfileModal();
+                Toast.show('Perfil actualizado correctamente', 'success');
+                setTimeout(() => location.reload(), 1500);
             } else {
-                alert(data.data.message || 'Error al actualizar perfil');
+                Toast.show(data.data?.message || 'Error al actualizar perfil', 'error');
                 btn.disabled = false;
-                btn.textContent = 'Guardar';
+                btn.textContent = originalText;
             }
         } catch (error) {
             console.error(error);
-            alert('Error de conexión');
+            Toast.show('Error de conexión', 'error');
             btn.disabled = false;
-            btn.textContent = 'Guardar';
+            btn.textContent = originalText;
         }
     });
 
@@ -301,6 +292,7 @@ $stats = $args['stats'] ?? []; // Estadísticas específicas del rol
         e.preventDefault();
 
         const btn = e.target.querySelector('button[type="submit"]');
+        const originalText = btn.textContent;
         btn.disabled = true;
         btn.textContent = 'Cambiando...';
 
@@ -317,20 +309,18 @@ $stats = $args['stats'] ?? []; // Estadísticas específicas del rol
             const data = await response.json();
 
             if (data.success) {
-                alert('Contraseña cambiada correctamente');
+                Toast.show('Contraseña cambiada correctamente', 'success');
                 closeChangePasswordModal();
                 e.target.reset();
             } else {
-                alert(data.data.message || 'Error al cambiar contraseña');
+                Toast.show(data.data?.message || 'Error al cambiar contraseña', 'error');
             }
-
-            btn.disabled = false;
-            btn.textContent = 'Cambiar';
         } catch (error) {
             console.error(error);
-            alert('Error de conexión');
+            Toast.show('Error de conexión', 'error');
+        } finally {
             btn.disabled = false;
-            btn.textContent = 'Cambiar';
+            btn.textContent = originalText;
         }
     });
 
@@ -345,18 +335,20 @@ $stats = $args['stats'] ?? []; // Estadísticas específicas del rol
 
         // Validar tipo de archivo
         if (!file.type.startsWith('image/')) {
-            alert('Por favor selecciona una imagen válida');
+            Toast.show('Por favor selecciona una imagen válida', 'error');
             return;
         }
 
         // Validar tamaño (max 2MB)
         if (file.size > 2 * 1024 * 1024) {
-            alert('La imagen no puede superar 2MB');
+            Toast.show('La imagen no puede superar 2MB', 'error');
             return;
         }
 
         // Preview inmediato
         const reader = new FileReader();
+        const originalSrc = document.getElementById('avatar-preview').src;
+
         reader.onload = function(e) {
             document.getElementById('avatar-preview').src = e.target.result;
         };
@@ -369,6 +361,8 @@ $stats = $args['stats'] ?? []; // Estadísticas específicas del rol
         formData.append('avatar', file);
 
         try {
+            Toast.show('Subiendo imagen...', 'info', 0);
+
             const response = await fetch(openmindData.ajaxUrl, {
                 method: 'POST',
                 body: formData
@@ -377,23 +371,23 @@ $stats = $args['stats'] ?? []; // Estadísticas específicas del rol
             const data = await response.json();
 
             if (data.success) {
+                Toast.show('Avatar actualizado correctamente', 'success');
+
                 // Actualizar todos los avatares en la página
                 const avatarUrl = data.data.avatar_url;
-                document.querySelectorAll('img[src*="gravatar"]').forEach(img => {
-                    if (img.closest('.user-avatar') || img.id === 'avatar-preview') {
-                        img.src = avatarUrl;
-                    }
+                document.querySelectorAll('img[src*="gravatar"], img[id="avatar-preview"]').forEach(img => {
+                    img.src = avatarUrl;
                 });
             } else {
-                alert(data.data.message || 'Error al subir imagen');
+                Toast.show(data.data?.message || 'Error al subir imagen', 'error');
                 // Revertir preview
-                document.getElementById('avatar-preview').src = '<?php echo esc_url(get_avatar_url($user->ID, ['size' => 120])); ?>';
+                document.getElementById('avatar-preview').src = originalSrc;
             }
         } catch (error) {
             console.error(error);
-            alert('Error de conexión');
+            Toast.show('Error de conexión', 'error');
             // Revertir preview
-            document.getElementById('avatar-preview').src = '<?php echo esc_url(get_avatar_url($user->ID, ['size' => 120])); ?>';
+            document.getElementById('avatar-preview').src = originalSrc;
         }
     });
 </script>

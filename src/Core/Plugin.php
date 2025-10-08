@@ -128,6 +128,7 @@ class Plugin {
             if (is_page(['dashboard-psicologo', 'dashboard-paciente', 'auth'])) {
                 wp_enqueue_style('openmind-styles', OPENMIND_URL . 'assets/css/style.css', [], OPENMIND_VERSION);
                 wp_enqueue_script('openmind-main', OPENMIND_URL . 'assets/js/main.js', ['jquery'], OPENMIND_VERSION, true);
+                wp_enqueue_script('openmind-toast', OPENMIND_URL . 'assets/js/toast.js', [], OPENMIND_VERSION, true);
 
                 wp_localize_script('openmind-main', 'openmindData', [
                     'ajaxUrl' => admin_url('admin-ajax.php'),
