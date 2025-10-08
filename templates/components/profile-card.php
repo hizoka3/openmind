@@ -95,7 +95,7 @@ $stats = $args['stats'] ?? []; // Estadísticas específicas del rol
     <!-- Estadísticas -->
     <div class="lg:col-span-1">
         <div class="bg-white rounded-2xl shadow-sm p-8">
-            <h3 class="text-lg font-bold text-gray-900 m-0 mb-6">
+            <h3 class="text-lg font-normal text-gray-900 m-0 mb-6">
                 <?php echo $role === 'psychologist' ? 'Estadísticas' : 'Mi Progreso'; ?>
             </h3>
 

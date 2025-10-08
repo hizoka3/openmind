@@ -93,7 +93,7 @@ $mood_emojis = [
             <div class="flex items-center gap-4 mt-8 mb-4">
                 <div class="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent flex-1"></div>
                 <div class="text-center">
-                    <div class="text-3xl font-bold text-gray-900">
+                    <div class="text-2xl font-medium text-gray-900">
                         <?php echo date('d', strtotime($entry->created_at)); ?>
                     </div>
                     <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider">
@@ -105,13 +105,11 @@ $mood_emojis = [
         <?php endif; ?>
 
             <div class="group relative">
-                <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b <?php echo $is_shared ? 'from-green-400 to-green-500' : 'from-purple-400 to-purple-500'; ?> rounded-full"></div>
-
-                <div class="ml-6 bg-white border-2 <?php echo $is_shared ? 'border-green-100 hover:border-green-200' : 'border-gray-100 hover:border-gray-200'; ?> rounded-xl p-5 transition-all hover:shadow-lg">
+                <div class="ml-6 bg-white border-2 <?php echo $is_shared ? 'border-gray-100 hover:border-gray-200' : 'border-gray-100 hover:border-gray-200'; ?> rounded-xl p-5 transition-all hover:shadow-lg">
                     <div class="flex gap-4">
                         <!-- Time & Mood -->
                         <div class="flex-shrink-0 text-center">
-                            <div class="text-2xl font-bold text-gray-900">
+                            <div class="text-xl font-normal text-gray-900">
                                 <?php echo date('H:i', strtotime($entry->created_at)); ?>
                             </div>
                             <?php if ($entry->mood): ?>
@@ -132,9 +130,8 @@ $mood_emojis = [
 
                             <div class="flex items-center gap-3 flex-wrap">
                                 <a href="<?php echo esc_url($detail_url); ?>"
-                                   class="inline-flex items-center gap-1 text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors no-underline">
-                                    <i class="fa-solid fa-book-open"></i>
-                                    Leer entrada completa
+                                   class="inline-flex items-center gap-1 text-sm font-medium text-primary-500 no-underline">
+                                    Leer diario
                                 </a>
 
                                 <?php if (!$is_psychologist): ?>

@@ -38,7 +38,7 @@ $completion_rate = count($all_activities) > 0 ? round((count($completed_activiti
     </div>
 
     <!-- Header del Paciente -->
-    <div class="bg-white rounded-2xl p-8 mb-8 shadow-sm">
+    <div class="bg-white rounded-2xl p-8 mb-4 shadow-sm">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div class="flex gap-6 items-start">
                 <?php echo get_avatar($patient->ID, 100, '', '', ['class' => 'rounded-2xl border-4 border-gray-100']); ?>
@@ -70,75 +70,70 @@ $completion_rate = count($all_activities) > 0 ? round((count($completed_activiti
     </div>
 
     <!-- Estadísticas -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white p-6 rounded-xl shadow-sm flex items-center gap-5 transition-all hover:-translate-y-1 hover:shadow-md">
-            <div class="text-4xl w-16 h-16 flex items-center justify-center bg-blue-50 rounded-xl text-blue-500">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        <div class="bg-white px-6 py-2.5 rounded-xl shadow-sm flex items-center gap-5 transition-all hover:-translate-y-1 hover:shadow-md">
+            <div class="text-3xl w-12 h-12 flex items-center justify-center bg-primary-200 rounded-xl text-primary-500">
                 <i class="fa-solid fa-clipboard-list"></i>
             </div>
             <div>
-                <h3 class="text-3xl font-bold text-blue-600 m-0"><?php echo count($all_activities); ?></h3>
-                <p class="text-sm text-gray-500 mt-1 m-0">Actividades totales</p>
+                <h3 class="text-xl font-normal text-primary-500 m-0"><?php echo count($all_activities); ?></h3>
+                <p class="text-sm text-gray-500 mt-1 m-0">Actividades</p>
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded-xl shadow-sm flex items-center gap-5 transition-all hover:-translate-y-1 hover:shadow-md">
-            <div class="text-4xl w-16 h-16 flex items-center justify-center bg-green-50 rounded-xl text-green-500">
+        <div class="bg-white px-6 py-2.5 rounded-xl shadow-sm flex items-center gap-5 transition-all hover:-translate-y-1 hover:shadow-md">
+            <div class="text-3xl w-12 h-12 flex items-center justify-center bg-primary-200 rounded-xl text-primary-500">
                 <i class="fa-solid fa-check-circle"></i>
             </div>
             <div>
-                <h3 class="text-3xl font-bold text-green-600 m-0"><?php echo count($completed_activities); ?></h3>
+                <h3 class="text-xl font-normal text-primary-500 m-0"><?php echo count($completed_activities); ?></h3>
                 <p class="text-sm text-gray-500 mt-1 m-0">Completadas</p>
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded-xl shadow-sm flex items-center gap-5 transition-all hover:-translate-y-1 hover:shadow-md">
-            <div class="text-4xl w-16 h-16 flex items-center justify-center bg-orange-50 rounded-xl text-orange-500">
+        <div class="bg-white px-6 py-2.5 rounded-xl shadow-sm flex items-center gap-5 transition-all hover:-translate-y-1 hover:shadow-md">
+            <div class="text-3xl w-12 h-12 flex items-center justify-center bg-primary-200 rounded-xl text-primary-500">
                 <i class="fa-solid fa-clock"></i>
             </div>
             <div>
-                <h3 class="text-3xl font-bold text-orange-600 m-0"><?php echo count($pending_activities); ?></h3>
+                <h3 class="text-xl font-normal text-primary-500 m-0"><?php echo count($pending_activities); ?></h3>
                 <p class="text-sm text-gray-500 mt-1 m-0">Pendientes</p>
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded-xl shadow-sm flex items-center gap-5 transition-all hover:-translate-y-1 hover:shadow-md">
-            <div class="text-4xl w-16 h-16 flex items-center justify-center bg-purple-50 rounded-xl text-purple-500">
+        <div class="bg-white px-6 py-2.5 rounded-xl shadow-sm flex items-center gap-5 transition-all hover:-translate-y-1 hover:shadow-md">
+            <div class="text-3xl w-12 h-12 flex items-center justify-center bg-primary-200 rounded-xl text-primary-500">
                 <i class="fa-solid fa-chart-line"></i>
             </div>
             <div>
-                <h3 class="text-3xl font-bold text-purple-600 m-0"><?php echo $completion_rate; ?>%</h3>
-                <p class="text-sm text-gray-500 mt-1 m-0">Tasa de completitud</p>
+                <h3 class="text-xl font-normal text-primary-500 m-0"><?php echo $completion_rate; ?>%</h3>
+                <p class="text-sm text-gray-500 mt-1 m-0">Realizadas</p>
             </div>
         </div>
     </div>
 
     <!-- Tabs -->
-    <div class="flex gap-2 border-b-2 border-gray-200 mb-8 overflow-x-auto">
-        <button class="tab-btn active flex items-center gap-2 px-6 py-3 bg-transparent border-0 border-b-4 border-primary-600 cursor-pointer text-sm font-medium text-primary-600 transition-all whitespace-nowrap rounded-t-lg" data-tab="actividades">
-            <i class="fa-solid fa-clipboard-list"></i>
-            Actividades
-        </button>
-        <button class="tab-btn flex items-center gap-2 px-6 py-3 bg-transparent border-0 border-b-4 border-transparent cursor-pointer text-sm font-medium text-gray-500 transition-all whitespace-nowrap rounded-t-lg hover:text-gray-900 hover:bg-gray-50" data-tab="bitacora">
-            <i class="fa-solid fa-book"></i>
-            Bitácora
-        </button>
-        <button class="tab-btn flex items-center gap-2 px-6 py-3 bg-transparent border-0 border-b-4 border-transparent cursor-pointer text-sm font-medium text-gray-500 transition-all whitespace-nowrap rounded-t-lg hover:text-gray-900 hover:bg-gray-50" data-tab="diario">
-            <i class="fa-solid fa-pen-to-square"></i>
-            Diario de vida
-        </button>
-        <button class="tab-btn flex items-center gap-2 px-6 py-3 bg-transparent border-0 border-b-4 border-transparent cursor-pointer text-sm font-medium text-gray-500 transition-all whitespace-nowrap rounded-t-lg hover:text-gray-900 hover:bg-gray-50" data-tab="mensajes">
-            <i class="fa-solid fa-message"></i>
-            Mensajes
-        </button>
+    <div class="bg-white px-6 rounded-xl shadow-sm flex items-center gap-5 mb-4">
+        <div class="flex gap-2 border-b-2 border-gray-200 overflow-x-auto">
+            <button class="tab-btn active flex items-center gap-2 px-6 py-3 bg-transparent border-0 border-b-4 cursor-pointer text-lg font-medium text-dark-gray-300 transition-all whitespace-nowrap rounded-t-lg" data-tab="actividades">
+                Actividades
+            </button>
+            <button class="tab-btn flex items-center gap-2 px-6 py-3 bg-transparent border-0 border-b-4 border-transparent cursor-pointer text-lg font-medium text-dark-gray-300 transition-all whitespace-nowrap rounded-t-lg hover:text-gray-900 hover:bg-gray-50" data-tab="bitacora">
+                Bitácora
+            </button>
+            <button class="tab-btn flex items-center gap-2 px-6 py-3 bg-transparent border-0 border-b-4 border-transparent cursor-pointer text-lg font-medium text-dark-gray-300 transition-all whitespace-nowrap rounded-t-lg hover:text-gray-900 hover:bg-gray-50" data-tab="diario">
+                Diario de vida
+            </button>
+            <button class="tab-btn flex items-center gap-2 px-6 py-3 bg-transparent border-0 border-b-4 border-transparent cursor-pointer text-lg font-medium text-dark-gray-300 transition-all whitespace-nowrap rounded-t-lg hover:text-gray-900 hover:bg-gray-50" data-tab="mensajes">
+                Mensajes
+            </button>
+        </div>
     </div>
 
     <!-- Tab Content -->
-    <div class="min-h-96">
+    <div class="min-h-96 bg-white p-6 rounded-xl shadow-sm">
         <!-- Tab Actividades -->
         <div class="tab-pane" id="tab-actividades" style="display: block;">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-gray-900 m-0">Actividades Asignadas</h2>
-            </div>
 
             <?php if (empty($all_activities)): ?>
                 <div class="text-center py-16 text-gray-400">
@@ -150,38 +145,6 @@ $completion_rate = count($all_activities) > 0 ? round((count($completed_activiti
                     </button>
                 </div>
             <?php else: ?>
-                <!-- Pendientes -->
-                <?php if (!empty($pending_activities)): ?>
-                    <div class="mb-10">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
-                            <i class="fa-solid fa-hourglass-half mr-2 text-orange-500"></i>
-                            Pendientes (<?php echo count($pending_activities); ?>)
-                        </h3>
-                        <div class="flex flex-col gap-4">
-                            <?php foreach ($pending_activities as $activity):
-                                $due_date = get_post_meta($activity->ID, 'due_date', true);
-                                $is_overdue = $due_date && strtotime($due_date) < current_time('timestamp');
-                                ?>
-                                <div class="bg-white border border-gray-200 rounded-xl p-5 transition-all hover:shadow-md <?php echo $is_overdue ? 'border-l-4 border-l-red-500 bg-red-50' : ''; ?>">
-                                    <h4 class="text-base font-semibold text-gray-900 mb-2 flex items-center gap-2 m-0">
-                                        <?php echo esc_html($activity->post_title); ?>
-                                    </h4>
-                                    <p class="text-sm text-gray-600 mb-3 leading-relaxed m-0"><?php echo wp_trim_words($activity->post_content, 20); ?></p>
-                                    <?php if ($due_date): ?>
-                                        <span class="inline-flex items-center gap-2 text-xs font-medium px-3 py-1 rounded-full <?php echo $is_overdue ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600'; ?>">
-                                            <i class="fa-solid fa-calendar"></i>
-                                            Vence: <?php echo date('d/m/Y', strtotime($due_date)); ?>
-                                            <?php if ($is_overdue): ?>
-                                                <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold ml-2">Vencida</span>
-                                            <?php endif; ?>
-                                        </span>
-                                    <?php endif; ?>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                <?php endif; ?>
-
                 <!-- Completadas -->
                 <?php if (!empty($completed_activities)): ?>
                     <div class="mb-10">
@@ -194,16 +157,36 @@ $completion_rate = count($all_activities) > 0 ? round((count($completed_activiti
                                 $completed_at = get_post_meta($activity->ID, 'completed_at', true);
                                 ?>
                                 <div class="bg-gray-50 opacity-75 border border-gray-200 rounded-xl p-5 transition-all hover:shadow-md">
-                                    <h4 class="text-base font-semibold text-gray-900 mb-2 flex items-center gap-2 m-0">
-                                        <i class="fa-solid fa-check-circle text-green-500"></i>
+                                    <h4 class="text-base font-semibold text-gray-900 flex items-center gap-2 m-0">
                                         <?php echo esc_html($activity->post_title); ?>
                                     </h4>
                                     <?php if ($completed_at): ?>
-                                        <span class="text-xs font-medium text-green-600 flex items-center gap-1">
-                                            <i class="fa-solid fa-calendar-check"></i>
+                                        <span class="text-xs font-medium text-green-600 flex items-center gap-1 whitespace-nowrap">
                                             Completada el <?php echo date('d/m/Y', strtotime($completed_at)); ?>
                                         </span>
                                     <?php endif; ?>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                <!-- Pendientes -->
+                <?php if (!empty($pending_activities)): ?>
+                    <div class="mb-10">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b-2 border-gray-100">
+                            <i class="fa-solid fa-hourglass-half mr-2 text-orange-500"></i>
+                            Pendientes (<?php echo count($pending_activities); ?>)
+                        </h3>
+                        <div class="flex flex-col gap-4">
+                            <?php foreach ($pending_activities as $activity):
+                                $due_date = get_post_meta($activity->ID, 'due_date', true);
+                                $is_overdue = $due_date && strtotime($due_date) < current_time('timestamp');
+                                ?>
+                                <div class="bg-white border border-gray-200 rounded-xl p-5 transition-all hover:shadow-md">
+                                    <h4 class="text-base font-semibold text-gray-900 mb-2 flex items-center gap-2 m-0">
+                                        <?php echo esc_html($activity->post_title); ?>
+                                    </h4>
+                                    <p class="text-sm text-gray-600 mb-3 leading-relaxed m-0"><?php echo wp_trim_words($activity->post_content, 20); ?></p>
                                 </div>
                             <?php endforeach; ?>
                         </div>
@@ -225,16 +208,16 @@ $completion_rate = count($all_activities) > 0 ? round((count($completed_activiti
                     <a href="?view=bitacora-nueva&patient_id=<?php echo $patient_id; ?>&return=detalle"
                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-500 text-white rounded-lg text-sm font-medium transition-all hover:bg-primary-600 hover:-translate-y-0.5 hover:shadow-lg no-underline">
                         <i class="fa-solid fa-plus"></i>
-                        Nueva Entrada
+                        Nueva Bitácora
                     </a>
                 </div>
             </div>
 
-            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6 rounded-lg">
-                <div class="flex items-start">
-                    <i class="fa-solid fa-info-circle text-blue-600 mr-3 mt-1"></i>
+            <div class="bg-primary-50 border-l-4 border-primary-500 p-4 mb-6 rounded-lg">
+                <div class="flex items-center">
+                    <i class="fa-solid fa-info-circle text-primary-500 mr-3"></i>
                     <div>
-                        <p class="text-sm text-blue-800 m-0">
+                        <p class="text-sm text-dark-gray-300 m-0">
                             <strong>Bitácora de sesiones:</strong> Registro de las sesiones terapéuticas.
                             El paciente puede ver estas entradas en su dashboard.
                         </p>
@@ -287,21 +270,21 @@ $completion_rate = count($all_activities) > 0 ? round((count($completed_activiti
                 $shared_count = \Openmind\Repositories\DiaryRepository::countRecentSharedByPsychologist(get_current_user_id());
                 if ($shared_count > 0):
                     ?>
-                    <span class="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold">
+                    <span class="inline-flex items-center gap-2 bg-primary-50 text-dark-gray-300 px-4 py-2 rounded-full text-sm font-medium">
                         <i class="fa-solid fa-bell"></i>
                         <?php echo $shared_count; ?> nueva<?php echo $shared_count > 1 ? 's' : ''; ?> (últimos 7 días)
                     </span>
                 <?php endif; ?>
             </div>
 
-            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6 rounded-lg">
+            <div class="bg-primary-50 border-l-4 border-primary-500 p-4 mb-6 rounded-lg">
                 <div class="flex items-start gap-3">
-                    <i class="fa-solid fa-info-circle text-blue-600 text-xl mt-1"></i>
+                    <i class="fa-solid fa-info-circle text-primary-500 text-xl mt-1"></i>
                     <div class="flex-1">
-                        <p class="text-sm font-semibold text-blue-900 m-0 mb-1">
+                        <p class="text-sm font-semibold text-dark-gray-300 m-0 mb-1">
                             Solo entradas compartidas
                         </p>
-                        <p class="text-sm text-blue-800 m-0">
+                        <p class="text-sm text-dark-gray-300 m-0">
                             Solo puedes ver las entradas que <?php echo esc_html($patient->display_name); ?> ha decidido compartir contigo.
                         </p>
                     </div>

@@ -91,19 +91,6 @@ $back_url = add_query_arg('view', 'bitacora', home_url('/dashboard-paciente/'));
         </div>
     </div>
 
-    <!-- Próximos pasos -->
-    <?php if (!empty($note->next_steps)): ?>
-        <div class="bg-green-50 border-l-4 border-green-400 rounded-r-xl p-6 shadow-sm mb-6">
-            <h2 class="text-lg font-bold text-green-900 mb-3 flex items-center gap-2">
-                <i class="fa-solid fa-list-check"></i>
-                Próximos Pasos
-            </h2>
-            <div class="text-green-900 whitespace-pre-wrap">
-                <?php echo nl2br(esc_html($note->next_steps)); ?>
-            </div>
-        </div>
-    <?php endif; ?>
-
     <!-- Adjuntos -->
     <?php if (!empty($attachments)): ?>
         <div class="bg-white rounded-2xl p-8 shadow-sm">

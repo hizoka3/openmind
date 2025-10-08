@@ -50,7 +50,7 @@ $stats = [
 ?>
 
 <div class="max-w-7xl mx-auto">
-    <h1 class="text-3xl font-bold text-gray-900 mb-8">Mi Perfil</h1>
+    <h1 class="text-2xl font-normal text-gray-900 mb-8">Mi Perfil</h1>
 
     <?php
     openmind_template('components/profile-card', [

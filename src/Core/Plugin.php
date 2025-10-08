@@ -127,6 +127,8 @@ class Plugin {
         add_action('wp_enqueue_scripts', function() {
             if (is_page(['dashboard-psicologo', 'dashboard-paciente', 'auth'])) {
                 wp_enqueue_style('openmind-styles', OPENMIND_URL . 'assets/css/style.css', [], OPENMIND_VERSION);
+                wp_enqueue_style('openmind-font-awesome', OPENMIND_URL . 'assets/css/all.min.css', [], OPENMIND_VERSION);
+                wp_enqueue_script('openmind-font-awesome', OPENMIND_URL . 'assets/js/fontawesome-all.min.js', ['jquery'], '6.1.1', true);
                 wp_enqueue_script('openmind-main', OPENMIND_URL . 'assets/js/main.js', ['jquery'], OPENMIND_VERSION, true);
                 wp_enqueue_script('openmind-toast', OPENMIND_URL . 'assets/js/toast.js', [], OPENMIND_VERSION, true);
 
@@ -136,7 +138,7 @@ class Plugin {
                     'userId' => get_current_user_id()
                 ]);
             }
-        });
+        }, 99);
     }
 
     public static function customAvatarUrl(string $url, $id_or_email, array $args): string {

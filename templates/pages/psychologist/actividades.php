@@ -16,7 +16,7 @@ $activities = get_posts([
 <div class="max-w-7xl">
     <!-- Header con botón -->
     <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 m-0">Actividades</h1>
+        <h1 class="text-2xl font-normal text-gray-900 m-0">Actividades</h1>
         <button class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-lg border-0 cursor-pointer text-sm font-medium transition-all hover:bg-primary-700 hover:-translate-y-0.5 hover:!shadow-lg shadow-none"
                 id="create-activity">
             <i class="fa-solid fa-plus"></i>

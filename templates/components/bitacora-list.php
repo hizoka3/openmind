@@ -60,30 +60,17 @@ $dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
             $dia_semana_numero = intval(date('w', strtotime($entry->created_at)));
             ?>
 
-            <?php if ($show_date_separator): ?>
-            <div class="flex items-center gap-4 mt-8 first:mt-0">
-                <div class="h-px bg-gray-300 flex-1"></div>
-                <div class="text-sm font-semibold text-gray-500 uppercase tracking-wider">
-                    <?php echo $dia_numero; ?> <?php echo $meses[$mes_numero]; ?> <?php echo $anio; ?>
-                </div>
-                <div class="h-px bg-gray-300 flex-1"></div>
-            </div>
-        <?php endif; ?>
-
             <div class="relative group">
-                <!-- Borde izquierdo de color -->
-                <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary-500 rounded-l-xl"></div>
-
                 <!-- Contenedor principal -->
                 <div class="ml-2 py-3 px-3 bg-white border-2 border-gray-200 rounded-xl transition-all hover:shadow-lg hover:border-primary-300 cursor-pointer flex"
                      onclick="window.location.href='<?php echo esc_url($detail_url); ?>'">
 
                     <!-- Fecha grande (izquierda) -->
-                    <div class="flex-shrink-0 rounded-xl min-w-32 w-32 bg-primary-50 flex flex-col items-center justify-center">
-                        <div class="text-4xl font-bold text-primary-600 leading-none">
+                    <div class="flex-shrink-0 rounded-xl min-w-32 w-32 bg-primary-500 flex flex-col items-center justify-center">
+                        <div class="text-4xl font-bold text-white leading-none">
                             <?php echo $dia_numero; ?>
                         </div>
-                        <div class="text-xs font-semibold text-primary-400 uppercase tracking-wider mt-1">
+                        <div class="text-xs font-semibold text-white uppercase tracking-wider mt-1">
                             <?php echo $meses[$mes_numero]; ?>
                         </div>
                     </div>
@@ -95,7 +82,7 @@ $dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
                             <div class="flex-shrink-0 px-4">
                                 <!-- Hora y día -->
                                 <div class="mb-2">
-                                    <div class="text-xl font-bold text-gray-900 leading-none">
+                                    <div class="text-lg font-normal text-gray-900 leading-none">
                                         <?php echo date('H:i', strtotime($entry->created_at)); ?>
                                     </div>
                                     <div class="text-xs text-gray-500 mt-0.5">
@@ -106,7 +93,7 @@ $dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
                                 <!-- Sesión # y Mood -->
                                 <div class="flex items-center gap-2">
                                     <span class="inline-flex items-center bg-primary-500 text-white px-3 py-1 rounded-full text-xs font-bold">
-                                        Sesión #<?php echo $entry->session_number; ?>
+                                        Bitácora #<?php echo $entry->session_number; ?>
                                     </span>
 
                                     <?php if ($entry->mood_assessment): ?>
@@ -131,13 +118,6 @@ $dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
                                             <span class="flex items-center gap-1">
                                                 <i class="fa-solid fa-paperclip"></i>
                                                 <?php echo count($attachments); ?> adjunto<?php echo count($attachments) > 1 ? 's' : ''; ?>
-                                            </span>
-                                        <?php endif; ?>
-
-                                        <?php if (!empty($entry->next_steps)): ?>
-                                            <span class="flex items-center gap-1">
-                                                <i class="fa-solid fa-list-check"></i>
-                                                Próximos pasos
                                             </span>
                                         <?php endif; ?>
 

@@ -13,8 +13,7 @@ $other_user_id = intval($_GET['user_id'] ?? 0);
 
 <div class="max-w-7xl mx-auto">
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 m-0 mb-2">
-            <i class="fa-solid fa-comments mr-3 text-primary-500"></i>
+        <h1 class="text-2xl font-normal text-gray-900 m-0">
             Mensajería
         </h1>
         <p class="text-gray-600 m-0">

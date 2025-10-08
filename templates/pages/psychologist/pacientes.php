@@ -22,8 +22,7 @@ $patients = get_users([
     <!-- Header -->
     <div class="flex justify-between items-center mb-8">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900 m-0 mb-2">
-                <i class="fa-solid fa-users mr-3 text-primary-500"></i>
+            <h1 class="text-2xl font-normal text-gray-900 m-0">
                 Mis Pacientes
             </h1>
             <p class="text-gray-600 m-0">

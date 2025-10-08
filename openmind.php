@@ -2,14 +2,14 @@
 /**
  * Plugin Name: OpenMind
  * Description: Gestión de pacientes y psicólogos
- * Version: 1.0.10
+ * Version: 1.0.18
  * Author: Pez web
  * Text Domain: openmind
  */
 
 if (!defined('ABSPATH')) exit;
 
-define('OPENMIND_VERSION', '1.0.10');
+define('OPENMIND_VERSION', '1.0.18');
 define('OPENMIND_PATH', plugin_dir_path(__FILE__));
 define('OPENMIND_URL', plugin_dir_url(__FILE__));
 

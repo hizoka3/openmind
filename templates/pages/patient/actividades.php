@@ -21,7 +21,7 @@ $completed = array_filter($activities, fn($a) => get_post_meta($a->ID, 'complete
 ?>
 
 <div class="max-w-7xl">
-    <h1 class="text-3xl font-bold text-gray-900 mb-6">Mis Actividades</h1>
+    <h1 class="text-2xl font-normal text-gray-900 mb-6">Mis Actividades</h1>
 
     <!-- Tabs estilo consistente con paciente-detalle.php -->
     <div class="flex gap-2 border-b-2 border-gray-200 mb-8 overflow-x-auto">

@@ -29,7 +29,7 @@ $base_url = get_permalink();
 
 <div class="max-w-7xl mx-auto">
     <!-- Welcome Section -->
-    <div class="bg-gradient-to-r from-primary-50 to-purple-50 rounded-2xl p-8 mb-8 border-2 border-primary-200">
+    <div class="bg-gradient-to-r from-primary-50 to-purple-50 rounded-2xl p-8 mb-4 border-2 border-primary-200">
         <div class="flex items-center gap-4">
             <?php echo get_avatar($user_id, 50, '', '', ['class' => 'rounded-full border-4 border-white shadow-md']); ?>
             <div>
@@ -42,7 +42,7 @@ $base_url = get_permalink();
     </div>
 
     <!-- Stats Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
         <!-- Pacientes Card -->
         <a href="<?php echo add_query_arg('view', 'pacientes', $base_url) ?>" class="block bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all" style="text-decoration: none;">
             <div class="flex items-center gap-4">
@@ -50,7 +50,7 @@ $base_url = get_permalink();
                     <i class="fa-solid fa-users text-3xl text-white"></i>
                 </div>
                 <div class="min-w-16 flex-1">
-                    <h3 class="text-3xl font-bold text-gray-900 m-0 mb-1"><?php echo count($patients); ?></h3>
+                    <h3 class="text-3xl font-normal text-gray-900 m-0 mb-1"><?php echo count($patients); ?></h3>
                     <p class="text-gray-600 text-sm m-0">Pacientes</p>
                 </div>
             </div>
@@ -63,7 +63,7 @@ $base_url = get_permalink();
                     <i class="fa-solid fa-clipboard-list text-3xl text-white"></i>
                 </div>
                 <div class="min-w-0 flex-1">
-                    <h3 class="text-3xl font-bold text-gray-900 m-0 mb-1"><?php echo count($activities); ?></h3>
+                    <h3 class="text-3xl font-normal text-gray-900 m-0 mb-1"><?php echo count($activities); ?></h3>
                     <p class="text-gray-600 text-sm m-0">Actividades totales</p>
                 </div>
             </div>
@@ -75,13 +75,13 @@ $base_url = get_permalink();
                 <div class="w-16 h-16 <?php echo $unread_messages > 0 ? 'bg-primary-600' : 'bg-primary-500'; ?> rounded-xl flex items-center justify-center flex-shrink-0 relative">
                     <i class="fa-solid fa-message text-3xl <?php echo $unread_messages > 0 ? 'text-primary-500' : 'text-white'; ?>"></i>
                     <?php if ($unread_messages > 0): ?>
-                        <span class="absolute -top-2 -right-2 bg-primary-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                        <span class="absolute -top-2 -right-2 bg-primary-500 text-white text-xs font-normal rounded-full w-6 h-6 flex items-center justify-center">
                             <?php echo $unread_messages; ?>
                         </span>
                     <?php endif; ?>
                 </div>
                 <div class="min-w-0 flex-1">
-                    <h3 class="text-3xl font-bold text-gray-900 m-0 mb-1"><?php echo $unread_messages; ?></h3>
+                    <h3 class="text-3xl font-normal text-gray-900 m-0 mb-1"><?php echo $unread_messages; ?></h3>
                     <p class="text-gray-600 text-sm m-0">Mensajes sin leer</p>
                 </div>
             </div>
@@ -92,10 +92,10 @@ $base_url = get_permalink();
     <div class="bg-white rounded-2xl p-6 shadow-sm">
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-xl font-light text-gray-900 m-0">Actividad Reciente</h2>
-            <a href="?view=mensajeria"
+            <!--<a href="?view=mensajeria"
                class="text-primary-600 text-sm font-medium hover:text-primary-700 transition-colors no-underline">
                 Ver todo
-            </a>
+            </a>-->
         </div>
 
         <?php if (empty($recent_events)): ?>

@@ -130,15 +130,6 @@ $mood_options = [
     include OPENMIND_PATH . 'templates/components/mood-selector.php';
     ?>
 
-    <!-- Próximos pasos -->
-    <div class="mb-6">
-        <label class="block text-sm font-semibold text-gray-700 mb-2">
-            Próximos pasos / Plan de acción
-        </label>
-        <textarea name="next_steps" rows="4"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="Tareas, objetivos o plan para la próxima sesión..."><?php echo esc_textarea($next_steps); ?></textarea>
-    </div>
 
     <!-- Imágenes -->
     <div class="mb-6">

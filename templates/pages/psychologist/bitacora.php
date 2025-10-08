@@ -21,8 +21,7 @@ $patients = get_users([
 
 <div class="max-w-6xl mx-auto">
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 m-0 mb-2">
-            <i class="fa-solid fa-book mr-3 text-primary-500"></i>
+        <h1 class="text-2xl font-normal text-gray-900 m-0">
             Bitácora de Pacientes
         </h1>
         <p class="text-gray-600 m-0">
@@ -72,7 +71,7 @@ $patients = get_users([
                     <!-- Acciones -->
                     <div class="flex gap-2">
                         <a href="<?php echo add_query_arg(['view' => 'bitacora', 'patient_id' => $patient->ID], home_url('/dashboard-psicologo/')); ?>"
-                           class="flex-1 text-center px-4 py-2 bg-primary-50 text-primary-600 rounded-lg text-sm font-medium transition-all hover:bg-primary-100 no-underline">
+                           class="flex-1 text-center px-4 py-2 bg-primary-500 text-white rounded-lg text-sm font-medium transition-all no-underline">
                             Ver bitácora
                         </a>
                         <a href="<?php echo add_query_arg(['view' => 'bitacora-nueva', 'patient_id' => $patient->ID, 'return' => 'lista'], home_url('/dashboard-psicologo/')); ?>"
