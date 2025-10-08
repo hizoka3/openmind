@@ -32,19 +32,16 @@ $stats = [
                 'icon' => 'fa-solid fa-users',
                 'value' => $patients_count,
                 'label' => 'Pacientes activos',
-                'color' => 'blue'
         ],
         [
                 'icon' => 'fa-solid fa-clipboard-list',
                 'value' => $activities_count,
                 'label' => 'Actividades creadas',
-                'color' => 'green'
         ],
         [
                 'icon' => 'fa-solid fa-messages',
                 'value' => $messages_count ?: 0,
                 'label' => 'Mensajes intercambiados',
-                'color' => 'purple'
         ]
 ];
 ?>

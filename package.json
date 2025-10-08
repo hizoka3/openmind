@@ -1,6 +1,6 @@
 {
     "name": "openmind-plugin",
-    "version": "1.0.18",
+    "version": "1.0.19",
     "description": "Plugin WordPress para gestión de pacientes y psicólogos",
     "scripts": {
         "build:css": "tailwindcss -i ./assets/css/src/tailwind.css -o ./assets/css/style.css --minify",

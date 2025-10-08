@@ -10,24 +10,23 @@ $psychologist = $psychologist_id ? get_userdata($psychologist_id) : null;
 <div class="max-w-6xl mx-auto">
     <!-- Header -->
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 m-0 mb-2">
-            <i class="fa-solid fa-book-open mr-3 text-purple-500"></i>
+        <h1 class="text-2xl font-normal text-gray-900 m-0">
             Mi Diario Personal
         </h1>
-        <p class="text-gray-600 m-0">
+        <p class="text-dark-gray-300 m-0">
             Tu espacio privado para registrar pensamientos y emociones día a día
         </p>
     </div>
 
     <!-- Info Box -->
-    <div class="bg-gradient-to-r from-purple-50 to-pink-50 border-l-4 border-purple-400 p-4 mb-6 rounded-lg">
+    <div class="bg-primary-50 border-l-4 border-primary-500 p-4 mb-6 rounded-lg">
         <div class="flex items-start gap-3">
-            <i class="fa-solid fa-lock text-purple-600 text-xl mt-1"></i>
+            <i class="fa-solid fa-lock text-dark-gray-300 text-xl mt-1"></i>
             <div class="flex-1">
-                <p class="text-sm font-semibold text-purple-900 m-0 mb-1">
+                <p class="text-sm font-semibold text-dark-gray-300 m-0 mb-1">
                     Privado por defecto
                 </p>
-                <p class="text-sm text-purple-800 m-0">
+                <p class="text-sm text-dark-gray-300 m-0">
                     Tus entradas son privadas. Puedes compartir entradas específicas con
                     <?php echo $psychologist ? '<strong>' . esc_html($psychologist->display_name) . '</strong>' : 'tu psicólogo'; ?>.
                 </p>
@@ -38,7 +37,7 @@ $psychologist = $psychologist_id ? get_userdata($psychologist_id) : null;
     <!-- Botón Nueva Entrada -->
     <div class="mb-8">
         <a href="<?php echo add_query_arg('view', 'diario-nuevo', home_url('/dashboard-paciente/')); ?>"
-           class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg border-0 text-sm font-semibold transition-all hover:from-purple-600 hover:to-pink-600 hover:-translate-y-0.5 hover:shadow-lg shadow-none no-underline">
+           class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-lg border-0 text-sm font-semibold transition-all hover:-translate-y-0.5 hover:shadow-lg shadow-none no-underline">
             <i class="fa-solid fa-plus"></i>
             Nueva Entrada
         </a>

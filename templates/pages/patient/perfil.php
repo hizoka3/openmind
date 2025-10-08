@@ -55,19 +55,16 @@ $stats = [
                 'icon' => 'fa-solid fa-clipboard-check',
                 'value' => count($completed_activities),
                 'label' => 'Actividades completadas',
-                'color' => 'green'
         ],
         [
                 'icon' => 'fa-solid fa-tasks',
                 'value' => count($total_activities),
                 'label' => 'Actividades totales',
-                'color' => 'blue'
         ],
         [
                 'icon' => 'fa-solid fa-chart-line',
                 'value' => $completion_rate . '%',
                 'label' => 'Tasa de completitud',
-                'color' => 'purple'
         ]
 ];
 ?>

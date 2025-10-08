@@ -104,11 +104,11 @@ $stats = $args['stats'] ?? []; // Estadísticas específicas del rol
                     <?php foreach ($stats as $stat): ?>
                         <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                             <div class="flex items-center gap-3">
-                                <div class="w-12 h-12 bg-<?php echo $stat['color']; ?>-100 rounded-lg flex items-center justify-center">
-                                    <i class="<?php echo $stat['icon']; ?> text-<?php echo $stat['color']; ?>-600 text-xl"></i>
+                                <div class="w-12 h-12 bg-primary-50 rounded-lg flex items-center justify-center">
+                                    <i class="<?php echo $stat['icon']; ?> text-primary-500 text-xl"></i>
                                 </div>
                                 <div>
-                                    <p class="text-2xl font-bold text-gray-900 m-0">
+                                    <p class="text-xl font-medium text-gray-900 m-0">
                                         <?php echo $stat['value']; ?>
                                     </p>
                                     <p class="text-sm text-gray-600 m-0">
@@ -130,7 +130,7 @@ $stats = $args['stats'] ?? []; // Estadísticas específicas del rol
 
 <!-- Modals -->
 <!-- Modal Editar Perfil -->
-<div id="edit-profile-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 p-4" style="display: none;">
+<div id="edit-profile-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 p-4" style="display: none;">
     <div class="min-h-screen flex items-center justify-center">
         <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-8">
             <div class="flex items-center justify-between mb-6">
@@ -169,7 +169,7 @@ $stats = $args['stats'] ?? []; // Estadísticas específicas del rol
 </div>
 
 <!-- Modal Cambiar Contraseña -->
-<div id="change-password-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 p-4" style="display: none;">
+<div id="change-password-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 p-4" style="display: none;">
     <div class="min-h-screen flex items-center justify-center">
         <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-8">
             <div class="flex items-center justify-between mb-6">

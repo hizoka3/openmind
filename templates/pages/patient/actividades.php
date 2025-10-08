@@ -25,7 +25,7 @@ $completed = array_filter($activities, fn($a) => get_post_meta($a->ID, 'complete
 
     <!-- Tabs estilo consistente con paciente-detalle.php -->
     <div class="flex gap-2 border-b-2 border-gray-200 mb-8 overflow-x-auto">
-        <button class="tab-activity active flex items-center gap-2 px-6 py-3 bg-transparent border-0 border-b-4 border-primary-600 cursor-pointer text-sm font-medium text-primary-600 transition-all whitespace-nowrap rounded-t-lg"
+        <button class="tab-activity active flex items-center gap-2 px-6 py-3 bg-transparent border-0 border-b-4 border-primary-600 cursor-pointer text-sm font-medium transition-all whitespace-nowrap rounded-t-lg"
                 data-filter="pending">
             <i class="fa-solid fa-hourglass-half"></i>
             Pendientes

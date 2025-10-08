@@ -38,7 +38,7 @@ $mood_emojis = [
     <!-- Breadcrumb -->
     <div class="mb-6">
         <a href="<?php echo add_query_arg('view', 'diario', home_url('/dashboard-paciente/')); ?>"
-           class="inline-flex items-center gap-2 text-purple-600 text-sm font-medium transition-colors hover:text-purple-700 no-underline">
+           class="inline-flex items-center gap-2 text-primary-500 text-sm font-medium no-underline">
             <i class="fa-solid fa-arrow-left"></i>
             Volver a Diario
         </a>
@@ -63,7 +63,7 @@ $mood_emojis = [
                         <?php echo date('H:i', strtotime($entry->created_at)); ?>
                     </span>
                     <?php if ($entry->mood): ?>
-                        <span class="inline-flex items-center gap-2 bg-purple-100 text-purple-700 px-3 py-1.5 rounded-full font-medium">
+                        <span class="inline-flex items-center gap-2 bg-primary-100 text-primary-500 px-3 py-1.5 rounded-full font-medium">
                             <span class="text-xl"><?php echo $mood_emojis[$entry->mood] ?? ''; ?></span>
                             <?php echo esc_html(ucfirst($entry->mood)); ?>
                         </span>
@@ -122,8 +122,7 @@ $mood_emojis = [
             </div>
 
             <a href="<?php echo add_query_arg('view', 'diario', home_url('/dashboard-paciente/')); ?>"
-               class="inline-flex items-center gap-2 px-4 py-2 bg-purple-500 text-white rounded-lg text-sm font-medium transition-all hover:bg-purple-600 shadow-none no-underline">
-                <i class="fa-solid fa-book-open"></i>
+               class="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg text-sm font-medium transition-all hover:bg-purple-600 shadow-none no-underline">
                 Ver todas las entradas
             </a>
         </div>
