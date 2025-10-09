@@ -1,5 +1,4 @@
-<?php
-// templates/components/mood-selector.php
+<?php // templates/components/mood-selector.php
 /**
  * Componente reutilizable para seleccionar estado de ánimo
  *
@@ -15,33 +14,17 @@
 $name = $mood_args['name'] ?? 'mood';
 $selected = $mood_args['selected'] ?? '';
 $label = $mood_args['label'] ?? '¿Cómo te sientes hoy?';
-$color = $mood_args['color'] ?? 'purple';
 $required = $mood_args['required'] ?? false;
 
 $mood_options = [
-    'feliz' => ['emoji' => '😊', 'label' => 'Feliz'],
-    'triste' => ['emoji' => '😢', 'label' => 'Triste'],
-    'ansioso' => ['emoji' => '😰', 'label' => 'Ansioso'],
-    'neutral' => ['emoji' => '😐', 'label' => 'Neutral'],
-    'enojado' => ['emoji' => '😠', 'label' => 'Enojado'],
-    'calmado' => ['emoji' => '😌', 'label' => 'Calmado']
+        'feliz' => ['emoji' => '😊', 'label' => 'Feliz'],
+        'triste' => ['emoji' => '😢', 'label' => 'Triste'],
+        'ansioso' => ['emoji' => '😰', 'label' => 'Ansioso'],
+        'neutral' => ['emoji' => '😐', 'label' => 'Neutral'],
+        'enojado' => ['emoji' => '😠', 'label' => 'Enojado'],
+        'calmado' => ['emoji' => '😌', 'label' => 'Calmado']
 ];
 
-// Colores según el theme
-$colors = [
-    'purple' => [
-        'border' => 'border-purple-500',
-        'bg' => 'bg-purple-50',
-        'text' => 'text-purple-700'
-    ],
-    'primary' => [
-        'border' => 'border-primary-500',
-        'bg' => 'bg-primary-50',
-        'text' => 'text-primary-700'
-    ]
-];
-
-$theme = $colors[$color] ?? $colors['purple'];
 ?>
 
 <div class="mb-6">
@@ -60,11 +43,12 @@ $theme = $colors[$color] ?? $colors['purple'];
                        name="<?php echo esc_attr($name); ?>"
                        value="<?php echo esc_attr($value); ?>"
                        class="peer sr-only"
-                    <?php checked($selected, $value); ?>
-                    <?php echo $required ? 'required' : ''; ?>>
-                <div class="flex flex-col items-center gap-2 p-3 border-2 border-gray-200 rounded-lg transition-all peer-checked:<?php echo $theme['border']; ?> peer-checked:<?php echo $theme['bg']; ?> hover:border-gray-300 hover:shadow-sm">
+                        <?php checked($selected, $value); ?>
+                        <?php echo $required ? 'required' : ''; ?>>
+
+                <div class="flex flex-col items-center gap-2 p-3 border-2 border-gray-200 rounded-lg transition-all hover:border-gray-300 hover:shadow-sm peer-checked:border-primary-500 peer-checked:bg-primary-50">
                     <span class="text-3xl"><?php echo $mood['emoji']; ?></span>
-                    <span class="text-xs font-medium text-gray-700 peer-checked:<?php echo $theme['text']; ?>">
+                    <span class="text-xs font-medium text-gray-600 peer-checked:text-gray-800">
                         <?php echo esc_html($mood['label']); ?>
                     </span>
                 </div>

@@ -124,7 +124,6 @@ $mood_options = [
             'name' => 'mood',
             'selected' => $mood,
             'label' => 'Estado anímico observado del paciente',
-            'color' => 'primary',
             'required' => false
     ];
     include OPENMIND_PATH . 'templates/components/mood-selector.php';

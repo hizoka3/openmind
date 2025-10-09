@@ -19,7 +19,7 @@ $psychologist = $psychologist_id ? get_userdata($psychologist_id) : null;
     <!-- Breadcrumb -->
     <div class="mb-6">
         <a href="<?php echo add_query_arg('view', 'diario', home_url('/dashboard-paciente/')); ?>"
-           class="inline-flex items-center gap-2 text-purple-600 text-sm font-medium transition-colors hover:text-purple-700 no-underline">
+           class="inline-flex items-center gap-2 text-primary-500 text-sm font-medium no-underline">
             <i class="fa-solid fa-arrow-left"></i>
             Volver a Diario
         </a>
@@ -27,8 +27,7 @@ $psychologist = $psychologist_id ? get_userdata($psychologist_id) : null;
 
     <!-- Header -->
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 m-0 mb-2">
-            <i class="fa-solid fa-pen-to-square mr-3 text-purple-500"></i>
+        <h1 class="text-2xl font-medium text-gray-900 m-0 mb-2">
             Nueva Entrada de Diario
         </h1>
         <p class="text-gray-600 m-0">
@@ -42,14 +41,14 @@ $psychologist = $psychologist_id ? get_userdata($psychologist_id) : null;
             <?php wp_nonce_field('save_patient_diary', 'openmind_diary_nonce'); ?>
 
             <!-- Info Box -->
-            <div class="bg-purple-50 border-l-4 border-purple-400 p-4 mb-6 rounded-lg">
+            <div class="bg-primary-50 border-l-4 border-primary-500 p-4 mb-6 rounded-lg">
                 <div class="flex items-center">
-                    <i class="fa-solid fa-lock text-purple-600 mr-3 text-xl"></i>
+                    <i class="fa-solid fa-lock text-dark-gray-300 mr-3 text-xl"></i>
                     <div>
-                        <p class="text-sm font-medium text-purple-800 m-0">
+                        <p class="text-sm font-medium text-dark-gray-300 m-0">
                             <strong>Esta entrada será privada por defecto.</strong>
                         </p>
-                        <p class="text-sm text-purple-700 m-0 mt-1">
+                        <p class="text-sm text-dark-gray-300 m-0 mt-1">
                             Podrás compartirla con <?php echo $psychologist ? esc_html($psychologist->display_name) : 'tu psicólogo'; ?> después si lo deseas.
                         </p>
                     </div>
@@ -62,7 +61,6 @@ $psychologist = $psychologist_id ? get_userdata($psychologist_id) : null;
                     'name' => 'mood',
                     'selected' => '',
                     'label' => '¿Cómo te sientes hoy?',
-                    'color' => 'purple',
                     'required' => false
             ];
             include OPENMIND_PATH . 'templates/components/mood-selector.php';
@@ -112,7 +110,7 @@ $psychologist = $psychologist_id ? get_userdata($psychologist_id) : null;
                        name="attachments[]"
                        accept="image/jpeg,image/png,image/webp"
                        multiple
-                       class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100">
+                       class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-500 hover:file:bg-primary-100">
                 <p class="text-xs text-gray-500 mt-2">JPG, PNG o WebP. Máximo 5MB por imagen.</p>
             </div>
 
@@ -125,7 +123,7 @@ $psychologist = $psychologist_id ? get_userdata($psychologist_id) : null;
                 </a>
 
                 <button type="submit"
-                        class="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg border-0 cursor-pointer text-sm font-semibold transition-all hover:from-purple-600 hover:to-pink-600 hover:-translate-y-0.5 hover:shadow-lg shadow-none">
+                        class="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-lg border-0 cursor-pointer text-sm font-semibold transition-all hover:-translate-y-0.5 hover:shadow-lg shadow-none">
                     <i class="fa-solid fa-save"></i>
                     Guardar Entrada
                 </button>
