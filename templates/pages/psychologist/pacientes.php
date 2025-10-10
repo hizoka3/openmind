@@ -90,7 +90,10 @@ $patients = get_users([
                     <tr class="transition-colors hover:bg-gray-50">
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-3">
-                                <?php echo get_avatar($patient->ID, 40, '', '', ['class' => 'rounded-lg border-2 border-gray-100']); ?>
+                                <img id="avatar-preview"
+                                     src="<?php echo esc_url(get_avatar_url($patient->ID, ['size' => 40])); ?>"
+                                     alt="Avatar"
+                                     class="w-10 h-10 rounded-full border-4 border-primary-100 object-cover">
                                 <div>
                                     <div class="font-semibold text-gray-900">
                                         <?php echo esc_html($patient->display_name); ?>

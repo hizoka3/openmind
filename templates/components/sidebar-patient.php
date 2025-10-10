@@ -41,7 +41,7 @@ $menu_items = [
     </nav>
 
     <div class="sidebar-footer">
-        <a href="<?php echo wp_logout_url(home_url()); ?>" class="btn-logout">
+        <a href="<?php echo wp_logout_url(home_url() . '/auth'); ?>" class="btn-logout">
             Salir
         </a>
     </div>

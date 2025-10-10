@@ -41,7 +41,10 @@ $completion_rate = count($all_activities) > 0 ? round((count($completed_activiti
     <div class="bg-white rounded-2xl p-8 mb-4 shadow-sm">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div class="flex gap-6 items-start">
-                <?php echo get_avatar($patient->ID, 100, '', '', ['class' => 'rounded-2xl border-4 border-gray-100']); ?>
+                <img id="avatar-preview"
+                     src="<?php echo esc_url(get_avatar_url($patient->ID, ['size' => 80])); ?>"
+                     alt="Avatar"
+                     class="w-28 h-28 rounded-full border-4 border-primary-100 object-cover">
                 <div>
                     <h1 class="text-3xl font-bold text-gray-900 m-0 mb-3"><?php echo esc_html($patient->display_name); ?></h1>
                     <p class="flex items-center gap-2 text-gray-600 text-sm my-1 m-0">

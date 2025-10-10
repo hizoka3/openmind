@@ -74,17 +74,19 @@ if ($is_owner) {
         </div>
 
         <!-- Header Card -->
-        <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-8 mb-8 border-2 border-purple-200">
+        <div class="bg-primary-50 rounded-2xl p-8 mb-8 border-2 border-primary-600">
             <div class="flex items-start justify-between gap-6 mb-6">
                 <div class="flex items-center gap-4">
                     <?php if ($is_psychologist): ?>
-                        <?php echo get_avatar($entry->patient_id, 64, '', '', ['class' => 'rounded-full border-4 border-white shadow-md']); ?>
+                        <img id="avatar-preview"
+                             src="<?php echo esc_url(get_avatar_url($entry->patient_id, ['size' => 64])); ?>"
+                             alt="Avatar"
+                             class="w-16 h-16 rounded-full border-4 border-primary-100 object-cover">
                         <div>
                             <h1 class="text-2xl font-bold text-gray-900 m-0 mb-1">
                                 Entrada de <?php echo esc_html($patient->display_name); ?>
                             </h1>
                             <p class="text-sm text-gray-600 m-0">
-                                <i class="fa-solid fa-calendar mr-1"></i>
                                 <?php echo date('l, d \d\e F \d\e Y \a \l\a\s H:i', strtotime($entry->created_at)); ?>
                             </p>
                         </div>
@@ -105,7 +107,7 @@ if ($is_owner) {
                 <!-- Estado y Mood -->
                 <div class="flex flex-col items-end gap-3">
                     <?php if ($entry->mood): ?>
-                        <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-full border-2 border-purple-200 shadow-sm">
+                        <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-full border-2 border-primary-200 shadow-sm">
                             <span class="text-3xl"><?php echo $mood_emojis[$entry->mood] ?? ''; ?></span>
                             <span class="text-sm font-semibold text-gray-700">
                             <?php echo esc_html(ucfirst($entry->mood)); ?>
@@ -163,14 +165,14 @@ if ($is_owner) {
         <?php endif; ?>
 
         <?php if ($is_psychologist): ?>
-            <div class="bg-blue-50 rounded-xl p-6 border border-blue-200">
+            <div class="bg-primary-50 rounded-xl p-6 border border-primary-200">
                 <div class="flex items-start gap-3">
-                    <i class="fa-solid fa-info-circle text-blue-600 text-xl"></i>
+                    <i class="fa-solid fa-info-circle text-primary-500 text-xl"></i>
                     <div>
-                        <p class="text-sm font-semibold text-blue-900 m-0 mb-1">
+                        <p class="text-sm font-semibold text-dark-gray-300 m-0 mb-1">
                             Entrada compartida por el paciente
                         </p>
-                        <p class="text-sm text-blue-800 m-0">
+                        <p class="text-sm text-dark-gray-300 m-0">
                             <?php echo esc_html($patient->display_name); ?> compartió esta entrada contigo
                             el <?php echo date('d/m/Y \a \l\a\s H:i', strtotime($entry->created_at)); ?>.
                         </p>
