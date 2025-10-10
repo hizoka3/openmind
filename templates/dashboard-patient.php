@@ -2,7 +2,7 @@
 if (!current_user_can('patient')) wp_die('Acceso denegado');
 
 $user_id = get_current_user_id();
-$current_page = $_GET['view'] ?? 'actividades';
+$current_page = $_GET['view'] ?? 'inicio'; // 👈 Cambio: default a 'inicio'
 
 get_header();
 include OPENMIND_PATH . 'templates/components/toast.php';
@@ -17,6 +17,7 @@ include OPENMIND_PATH . 'templates/components/toast.php';
                 <?php
                 // Mapeo de vistas a archivos
                 $view_files = [
+                        'inicio' => 'inicio.php', // 👈 Nuevo mapeo
                         'actividades' => 'actividades.php',
                         'mensajeria' => 'mensajeria.php',
                         'bitacora' => 'bitacora.php',
@@ -47,8 +48,8 @@ include OPENMIND_PATH . 'templates/components/toast.php';
                         }
                     }
                 } else {
-                    // Vista no reconocida, cargar actividades
-                    include OPENMIND_PATH . 'templates/pages/patient/actividades.php';
+                    // Vista no reconocida, cargar inicio
+                    include OPENMIND_PATH . 'templates/pages/patient/inicio.php'; // 👈 Cambio: fallback a inicio
                 }
                 ?>
             </div>
