@@ -141,10 +141,6 @@
         @apply text-dark-gray-300;
     }
 
-    .sidebar-footer {
-        padding: 1.5rem;
-    }
-
     .btn-logout {
         display: block;
         width: 100%;

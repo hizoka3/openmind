@@ -105,7 +105,7 @@ $mood_emojis = [
         <?php endif; ?>
 
             <div class="group relative">
-                <div class="ml-6 bg-white border-2 <?php echo $is_shared ? 'border-gray-100 hover:border-gray-200' : 'border-gray-100 hover:border-gray-200'; ?> rounded-xl p-5 transition-all hover:shadow-lg">
+                <div class="bg-white border-2 <?php echo $is_shared ? 'border-gray-100 hover:border-gray-200' : 'border-gray-100 hover:border-gray-200'; ?> rounded-xl p-5 transition-all hover:shadow-lg">
                     <div class="flex gap-4">
                         <!-- Time & Mood -->
                         <div class="flex-shrink-0 text-center">

@@ -62,7 +62,7 @@ $dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 
             <div class="relative group">
                 <!-- Contenedor principal -->
-                <div class="ml-2 py-3 px-3 bg-white border-2 border-gray-200 rounded-xl transition-all hover:shadow-lg hover:border-primary-300 cursor-pointer flex"
+                <div class="py-3 px-3 bg-white border-2 border-gray-200 rounded-xl transition-all hover:shadow-lg hover:border-primary-300 cursor-pointer flex"
                      onclick="window.location.href='<?php echo esc_url($detail_url); ?>'">
 
                     <!-- Fecha grande (izquierda) -->

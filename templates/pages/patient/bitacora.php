@@ -20,8 +20,7 @@ $base_url = add_query_arg(['view' => 'bitacora'], home_url('/dashboard-paciente/
 
 <div class="max-w-5xl mx-auto">
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 m-0 mb-2">
-            <i class="fa-solid fa-book mr-3 text-primary-500"></i>
+        <h1 class="text-2xl font-normal text-gray-900 m-0 mb-2">
             Bitácora de Sesiones
         </h1>
         <p class="text-gray-600 m-0">

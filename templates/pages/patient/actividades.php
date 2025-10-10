@@ -24,19 +24,19 @@ $completed = array_filter($activities, fn($a) => get_post_meta($a->ID, 'complete
     <h1 class="text-2xl font-normal text-gray-900 mb-6">Mis Actividades</h1>
 
     <!-- Tabs estilo consistente con paciente-detalle.php -->
-    <div class="flex gap-2 border-b-2 border-gray-200 mb-8 overflow-x-auto">
-        <button class="tab-activity active flex items-center gap-2 px-6 py-3 bg-transparent border-0 border-b-4 border-primary-600 cursor-pointer text-sm font-medium transition-all whitespace-nowrap rounded-t-lg"
-                data-filter="pending">
-            <i class="fa-solid fa-hourglass-half"></i>
-            Pendientes
-            <span class="inline-flex items-center justify-center min-w-6 h-6 px-2 bg-primary-600 text-white text-xs font-semibold rounded-full"><?php echo count($pending); ?></span>
-        </button>
-        <button class="tab-activity flex items-center gap-2 px-6 py-3 bg-transparent border-0 border-b-4 border-transparent cursor-pointer text-sm font-medium text-gray-500 transition-all whitespace-nowrap rounded-t-lg hover:text-gray-900 hover:bg-gray-50"
-                data-filter="completed">
-            <i class="fa-solid fa-check-circle"></i>
-            Completadas
-            <span class="inline-flex items-center justify-center min-w-6 h-6 px-2 bg-gray-300 text-gray-700 text-xs font-semibold rounded-full"><?php echo count($completed); ?></span>
-        </button>
+    <div class="bg-white px-6 rounded-xl shadow-sm flex items-center gap-5 mb-4">
+        <div class="flex gap-2 border-b-2 border-gray-200 overflow-x-auto">
+            <button class="tab-activity active flex items-center gap-2 px-6 py-3 bg-transparent border-0 border-b-4 cursor-pointer text-lg font-medium text-dark-gray-300 transition-all whitespace-nowrap rounded-t-lg"
+                    data-filter="pending">
+                Pendientes
+                <span class="inline-flex items-center justify-center min-w-6 h-6 px-2 bg-primary-600 text-white text-xs font-semibold rounded-full"><?php echo count($pending); ?></span>
+            </button>
+            <button class="tab-activity active flex items-center gap-2 px-6 py-3 bg-transparent border-0 border-b-4 cursor-pointer text-lg font-medium text-dark-gray-300 transition-all whitespace-nowrap rounded-t-lg"
+                    data-filter="completed">
+                Completadas
+                <span class="inline-flex items-center justify-center min-w-6 h-6 px-2 bg-gray-300 text-gray-700 text-xs font-semibold rounded-full"><?php echo count($completed); ?></span>
+            </button>
+        </div>
     </div>
 
     <!-- Pendientes -->
