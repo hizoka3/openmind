@@ -8,8 +8,8 @@ $current_user = wp_get_current_user();
 $psychologist_id = get_user_meta($user_id, 'psychologist_id', true);
 $psychologist = $psychologist_id ? get_userdata($psychologist_id) : null;
 
-// Stats
-$activities = \Openmind\Controllers\ActivityController::getPatientActivities($user_id);
+// Stats - USAR MÉTODO ACTUALIZADO
+$assignments = \Openmind\Controllers\ActivityController::getPatientAssignments($user_id);
 $unread_messages = \Openmind\Repositories\MessageRepository::getUnreadCount($user_id);
 
 // Eventos recientes
@@ -61,7 +61,7 @@ $base_url = get_permalink();
                     <i class="fa-solid fa-clipboard-list text-3xl text-white"></i>
                 </div>
                 <div class="min-w-0 flex-1">
-                    <h3 class="text-3xl font-normal text-gray-900 m-0 mb-1"><?php echo count($activities); ?></h3>
+                    <h3 class="text-3xl font-normal text-gray-900 m-0 mb-1"><?php echo count($assignments); ?></h3>
                     <p class="text-gray-600 text-sm m-0">Mis Actividades</p>
                 </div>
             </div>

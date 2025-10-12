@@ -21,6 +21,7 @@ include OPENMIND_PATH . 'templates/components/toast.php';
                         'pacientes' => 'pacientes.php',
                         'paciente-detalle' => 'paciente-detalle.php',
                         'actividades' => 'actividades.php',
+                        'actividad-detalle' => 'actividad-detalle.php',
                         'mensajeria' => 'mensajeria.php',
                         'bitacora' => 'bitacora.php',
                         'bitacora-nueva' => 'bitacora-nueva.php',

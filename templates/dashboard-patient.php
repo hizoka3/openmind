@@ -19,6 +19,7 @@ include OPENMIND_PATH . 'templates/components/toast.php';
                 $view_files = [
                         'inicio' => 'inicio.php', // 👈 Nuevo mapeo
                         'actividades' => 'actividades.php',
+                        'actividad-detalle' => 'actividad-detalle.php',
                         'mensajeria' => 'mensajeria.php',
                         'bitacora' => 'bitacora.php',
                         'bitacora-detalle' => 'bitacora-detalle.php',

@@ -1,0 +1,152 @@
+.openmind-activity-detail {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.openmind-nav-back {
+    margin-bottom: 20px;
+}
+
+.btn-back {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #333;
+}
+
+.activity-header {
+    background: #fff;
+    padding: 24px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.activity-meta {
+    display: flex;
+    gap: 16px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+.status {
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.status-pending { background: #fef3c7; color: #92400e; }
+.status-completed { background: #d1fae5; color: #065f46; }
+
+.psychologist-message,
+.original-resource,
+.response-form-section,
+.previous-responses {
+    background: #fff;
+    padding: 24px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn-download,
+.btn-link {
+    display: inline-block;
+    padding: 12px 24px;
+    background: #3b82f6;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-top: 12px;
+}
+
+.video-wrapper {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+}
+
+.video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-primary {
+    padding: 12px 24px;
+    background: #10b981;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-secondary {
+    padding: 12px 24px;
+    background: #6b7280;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.response-item {
+    border-left: 4px solid #3b82f6;
+    padding: 16px;
+    margin-bottom: 16px;
+    background: #f9fafb;
+}
+
+.response-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.response-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-edit,
+.btn-delete {
+    padding: 4px 8px;
+    font-size: 12px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.response-files {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.response-files a {
+    display: inline-block;
+    margin-right: 12px;
+    color: #3b82f6;
+    text-decoration: none;
+}

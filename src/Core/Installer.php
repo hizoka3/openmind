@@ -51,7 +51,7 @@ class Installer {
             KEY is_private (is_private)
         ) $charset;";
 
-        // NUEVA: Tabla session notes (bitácora psicólogo)
+        // Tabla session notes (bitácora psicólogo)
         $sql[] = "CREATE TABLE {$wpdb->prefix}openmind_session_notes (
             id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
             psychologist_id bigint(20) unsigned NOT NULL,
@@ -69,7 +69,7 @@ class Installer {
             KEY created_at (created_at)
         ) $charset;";
 
-        // NUEVA: Tabla attachments (imágenes para ambos)
+        // Tabla attachments (imágenes para ambos)
         $sql[] = "CREATE TABLE {$wpdb->prefix}openmind_attachments (
             id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
             entry_type varchar(20) NOT NULL,
@@ -90,6 +90,12 @@ class Installer {
 
         // Migrar datos existentes
         self::migrateToSessionNotes();
+
+        // Agregar capability a administrator
+        $admin = get_role('administrator');
+        if ($admin) {
+            $admin->add_cap('manage_activity_library');
+        }
 
         update_option('openmind_db_version', OPENMIND_VERSION);
         self::createPages();

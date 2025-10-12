@@ -1,6 +1,8 @@
 <?php // src/Core/Plugin.php
 namespace Openmind\Core;
 
+use Openmind\Admin\ActivityMetaboxes;
+
 class Plugin {
 
     public static function init(): void {
@@ -9,6 +11,7 @@ class Plugin {
         self::loadAssets();
         self::loadControllers();
         self::registerFormActions();
+        self::registerAjaxActions();
     }
 
     private static function loadHelpers(): void {
@@ -44,6 +47,25 @@ class Plugin {
         ]);
     }
 
+    private static function registerAjaxActions(): void {
+        // Respuestas de actividades (paciente)
+        add_action('wp_ajax_openmind_submit_response', [
+            '\Openmind\Controllers\ActivityController',
+            'submitResponse'
+        ]);
+
+        add_action('wp_ajax_openmind_delete_response', [
+            '\Openmind\Controllers\ActivityController',
+            'deleteResponse'
+        ]);
+
+        // Respuesta del psicólogo
+        add_action('wp_ajax_openmind_psychologist_response', [
+            '\Openmind\Controllers\ActivityController',
+            'psychologistResponse'
+        ]);
+    }
+
     public static function activate(): void {
         Installer::install();
         flush_rewrite_rules();
@@ -56,6 +78,8 @@ class Plugin {
     private static function loadHooks(): void {
         add_action('init', [self::class, 'registerRoles']);
         add_action('init', [self::class, 'registerPostTypes']);
+        add_action('add_meta_boxes', [self::class, 'registerMetaboxes']);
+        add_action('save_post_activity', [self::class, 'saveActivityMeta'], 10, 2);
         add_filter('template_include', [self::class, 'loadTemplate']);
         add_filter('login_redirect', [self::class, 'redirectAfterLogin'], 10, 3);
         add_filter('get_avatar_url', [self::class, 'customAvatarUrl'], 10, 3);
@@ -106,21 +130,72 @@ class Plugin {
                 'write_diary' => true
             ]);
         }
+
+        // Agregar capability a administrator
+        $admin = get_role('administrator');
+        if ($admin && !$admin->has_cap('manage_activity_library')) {
+            $admin->add_cap('manage_activity_library');
+        }
     }
 
     public static function registerPostTypes(): void {
+        // CPT: Biblioteca de Actividades (Solo Admin)
         register_post_type('activity', [
             'labels' => [
-                'name' => 'Actividades',
-                'singular_name' => 'Actividad'
+                'name' => 'Biblioteca de Actividades',
+                'singular_name' => 'Actividad',
+                'add_new' => 'Agregar Actividad',
+                'add_new_item' => 'Nueva Actividad',
+                'edit_item' => 'Editar Actividad',
+                'view_item' => 'Ver Actividad',
+                'search_items' => 'Buscar Actividades',
+                'not_found' => 'No se encontraron actividades',
+                'not_found_in_trash' => 'No hay actividades en papelera'
             ],
             'public' => false,
             'show_ui' => true,
             'show_in_menu' => true,
             'capability_type' => 'post',
+            'capabilities' => [
+                'edit_post' => 'manage_activity_library',
+                'read_post' => 'manage_activity_library',
+                'delete_post' => 'manage_activity_library',
+                'edit_posts' => 'manage_activity_library',
+                'edit_others_posts' => 'manage_activity_library',
+                'delete_posts' => 'manage_activity_library',
+                'publish_posts' => 'manage_activity_library',
+                'read_private_posts' => 'manage_activity_library'
+            ],
             'supports' => ['title', 'editor'],
-            'menu_icon' => 'dashicons-clipboard'
+            'menu_icon' => 'dashicons-book-alt',
+            'menu_position' => 25,
+            'has_archive' => false,
+            'rewrite' => false,
+            'show_in_rest' => false
         ]);
+
+        // CPT: Actividades Asignadas (Oculto - solo vía código)
+        register_post_type('activity_assignment', [
+            'labels' => [
+                'name' => 'Actividades Asignadas',
+                'singular_name' => 'Asignación'
+            ],
+            'public' => false,
+            'show_ui' => false,
+            'show_in_menu' => false,
+            'capability_type' => 'post',
+            'supports' => ['title', 'editor'],
+            'has_archive' => false,
+            'rewrite' => false
+        ]);
+    }
+
+    public static function registerMetaboxes(): void {
+        ActivityMetaboxes::register();
+    }
+
+    public static function saveActivityMeta($post_id, $post): void {
+        ActivityMetaboxes::save($post_id, $post);
     }
 
     private static function loadAssets(): void {
@@ -130,7 +205,7 @@ class Plugin {
                 wp_enqueue_style('openmind-font-awesome', OPENMIND_URL . 'assets/css/all.min.css', [], OPENMIND_VERSION);
                 wp_enqueue_script('openmind-font-awesome', OPENMIND_URL . 'assets/js/fontawesome-all.min.js', ['jquery'], '6.1.1', true);
                 wp_enqueue_script('openmind-main', OPENMIND_URL . 'assets/js/main.js', ['jquery'], OPENMIND_VERSION, true);
-                wp_enqueue_script('openmind-toast', OPENMIND_URL . 'assets/js/toast.js', [], OPENMIND_VERSION, true);
+                wp_enqueue_script('openmind-toast', OPENMIND_URL . 'assets/js/toast.js', ['jquery'], OPENMIND_VERSION, true);
 
                 wp_localize_script('openmind-main', 'openmindData', [
                     'ajaxUrl' => admin_url('admin-ajax.php'),

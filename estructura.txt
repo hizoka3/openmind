@@ -2,6 +2,7 @@
 ├── README.md
 ├── assets
 │   ├── css
+│   │   ├── activity-detail.css
 │   │   ├── all.min.css
 │   │   ├── fontawesome-all.css
 │   │   ├── src
@@ -9,6 +10,7 @@
 │   │   │   └── tailwind.css
 │   │   └── style.css
 │   └── js
+│       ├── activity-detail.js
 │       ├── fontawesome-all.min.js
 │       ├── main.js
 │       └── toast.js
@@ -71,6 +73,7 @@
 │   │   ├── bitacora-list.php
 │   │   ├── diary-list.php
 │   │   ├── header.php
+│   │   ├── modal-asignar-actividad.php
 │   │   ├── mood-selector.php
 │   │   ├── patient-card.php
 │   │   ├── profile-card.php
@@ -80,17 +83,22 @@
 │   ├── dashboard-patient.php
 │   ├── dashboard-psychologist.php
 │   └── pages
+│       ├── admin
+│       │   └── biblioteca-actividades.php
 │       ├── diario-detalle.php
 │       ├── mensajeria.php
 │       ├── patient
+│       │   ├── actividad-detalle.php
 │       │   ├── actividades.php
 │       │   ├── bitacora-detalle.php
 │       │   ├── bitacora.php
 │       │   ├── diario-detalle.php
 │       │   ├── diario-nuevo.php
 │       │   ├── diario.php
+│       │   ├── inicio.php
 │       │   └── perfil.php
 │       └── psychologist
+│           ├── actividad-detalle.php
 │           ├── actividades.php
 │           ├── bitacora-detalle.php
 │           ├── bitacora-editar.php
@@ -119,4 +127,4 @@
     ├── fa-solid-900.woff
     └── fa-solid-900.woff2
 
-17 directories, 103 files
+18 directories, 110 files
