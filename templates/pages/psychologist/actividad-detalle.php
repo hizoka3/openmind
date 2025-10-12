@@ -72,7 +72,7 @@ usort($all_responses, function($a, $b) {
     <!-- Navegación -->
     <div class="mb-6">
         <a href="<?php echo esc_url(add_query_arg(['view' => 'paciente-detalle', 'patient_id' => $patient_id], home_url('/dashboard-psicologo/'))); ?>"
-           class="inline-flex items-center gap-2 text-primary-600 text-sm font-medium transition-colors hover:text-primary-700 no-underline">
+           class="inline-flex items-center gap-2 text-primary-500 text-sm font-medium transition-colors hover:text-primary-700 no-underline">
             <i class="fa-solid fa-arrow-left"></i>
             Volver a <?php echo esc_html($patient->display_name); ?>
         </a>

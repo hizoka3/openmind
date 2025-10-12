@@ -37,12 +37,10 @@ $assignments = get_posts([
     <div class="bg-white px-6 rounded-xl shadow-sm flex items-center gap-5 mb-4">
         <div class="flex gap-2 border-b-2 border-gray-200 overflow-x-auto">
             <button class="tab-activity active flex items-center gap-2 px-6 py-3 bg-transparent border-0 border-b-4 cursor-pointer text-lg font-medium text-dark-gray-300 transition-all whitespace-nowrap rounded-t-lg" data-tab="biblioteca">
-                <i class="fa-solid fa-book"></i>
                 Biblioteca
                 <span class="inline-flex items-center justify-center min-w-6 h-6 px-2 bg-primary-600 text-white text-xs font-semibold rounded-full"><?php echo count($library_activities); ?></span>
             </button>
             <button class="tab-activity flex items-center gap-2 px-6 py-3 bg-transparent border-0 border-b-4 border-transparent cursor-pointer text-lg font-medium text-dark-gray-300 transition-all whitespace-nowrap rounded-t-lg hover:text-gray-900 hover:bg-gray-50" data-tab="asignaciones">
-                <i class="fa-solid fa-clipboard-check"></i>
                 Mis Asignaciones
                 <span class="inline-flex items-center justify-center min-w-6 h-6 px-2 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full"><?php echo count($assignments); ?></span>
             </button>

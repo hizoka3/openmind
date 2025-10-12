@@ -272,7 +272,7 @@ $active_tab = $_GET['tab'] ?? 'actividades';
                 if ($total_entries > 5): ?>
                     <div class="mt-6 text-center">
                         <a href="?view=bitacora&patient_id=<?php echo $patient_id; ?>"
-                           class="inline-flex items-center gap-2 text-primary-600 font-medium hover:text-primary-700 no-underline">
+                           class="inline-flex items-center gap-2 text-primary-500 font-medium hover:text-primary-700 no-underline">
                             Ver las <?php echo $total_entries; ?> entradas completas
                             <i class="fa-solid fa-arrow-right"></i>
                         </a>

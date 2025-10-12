@@ -28,7 +28,7 @@ if (!$patient || $patient_psychologist_id != $psychologist_id) {
         <a href="<?php echo $return === 'detalle'
                 ? add_query_arg(['view' => 'pacientes', 'patient_id' => $patient_id], home_url('/dashboard-psicologo/'))
                 : add_query_arg(['view' => 'bitacora', 'patient_id' => $patient_id], home_url('/dashboard-psicologo/')); ?>"
-           class="inline-flex items-center gap-2 text-primary-600 text-sm font-medium transition-colors hover:text-primary-700 no-underline">
+           class="inline-flex items-center gap-2 text-primary-500 text-sm font-medium transition-colors hover:text-primary-700 no-underline">
             <i class="fa-solid fa-arrow-left"></i>
             Volver
         </a>

@@ -58,7 +58,7 @@ $responses = get_comments([
     <!-- Navegación -->
     <div class="mb-6">
         <a href="<?php echo esc_url(add_query_arg('view', 'actividades', home_url('/dashboard-paciente/'))); ?>"
-           class="inline-flex items-center gap-2 text-primary-600 text-sm font-medium transition-colors hover:text-primary-700 no-underline">
+           class="inline-flex items-center gap-2 text-primary-500 text-sm font-medium transition-colors hover:text-primary-700 no-underline">
             <i class="fa-solid fa-arrow-left"></i>
             Volver a Actividades
         </a>
