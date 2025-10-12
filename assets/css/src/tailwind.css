@@ -79,7 +79,7 @@
     .user-avatar img {
         margin: 0 auto;
         border-radius: 9999px;
-        @apply border-4 border-solid border-primary-600;
+        @apply border-4 border-solid border-primary-600 object-cover;
     }
 
     .sidebar-header h3 {

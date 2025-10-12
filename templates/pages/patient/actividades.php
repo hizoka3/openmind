@@ -26,8 +26,7 @@ $completed = array_filter($assignments, fn($a) => get_post_meta($a->ID, 'status'
 
     <?php if (empty($assignments)): ?>
         <div class="bg-white rounded-xl shadow-sm p-16 text-center">
-            <div class="text-6xl mb-4">📋</div>
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">No tienes actividades asignadas</h3>
+            <h3 class="text-xl text-dark-gray-300 mb-2">No tienes actividades asignadas</h3>
             <p class="text-gray-600">Tu psicólogo te asignará actividades próximamente</p>
         </div>
     <?php else: ?>
@@ -65,7 +64,10 @@ $completed = array_filter($assignments, fn($a) => get_post_meta($a->ID, 'status'
                                 <?php endif; ?>
                                 <div class="pt-4 border-t border-gray-100 flex items-center justify-between text-sm">
                                     <div class="flex items-center gap-2">
-                                        <?php echo get_avatar($psychologist->ID, 24, '', '', ['class' => 'rounded-full']); ?>
+                                        <img id="avatar-preview"
+                                             src="<?php echo esc_url(get_avatar_url($psychologist->ID, ['size' => 24])); ?>"
+                                             alt="Avatar"
+                                             class="w-6 h-6 rounded-full object-cover">
                                         <span class="text-gray-600"><?php echo esc_html($psychologist->display_name); ?></span>
                                     </div>
                                     <?php if ($due_date): ?>
@@ -73,7 +75,7 @@ $completed = array_filter($assignments, fn($a) => get_post_meta($a->ID, 'status'
                                     <?php endif; ?>
                                 </div>
                                 <?php if ($response_count > 0): ?>
-                                    <div class="mt-3 text-xs text-primary-600">
+                                    <div class="mt-3 text-xs text-primary-500">
                                         <i class="fa-solid fa-comments mr-1"></i><?php echo $response_count; ?> respuesta<?php echo $response_count > 1 ? 's' : ''; ?>
                                     </div>
                                 <?php endif; ?>
@@ -116,13 +118,16 @@ $completed = array_filter($assignments, fn($a) => get_post_meta($a->ID, 'status'
                                 <?php endif; ?>
                                 <div class="pt-4 border-t border-gray-100 flex items-center justify-between text-sm">
                                     <div class="flex items-center gap-2">
-                                        <?php echo get_avatar($psychologist->ID, 24, '', '', ['class' => 'rounded-full']); ?>
+                                        <img id="avatar-preview"
+                                             src="<?php echo esc_url(get_avatar_url($psychologist->ID, ['size' => 24])); ?>"
+                                             alt="Avatar"
+                                             class="w-6 h-6 rounded-full object-cover">
                                         <span class="text-gray-600"><?php echo esc_html($psychologist->display_name); ?></span>
                                     </div>
                                     <span class="text-gray-500"><i class="fa-solid fa-check-circle mr-1"></i><?php echo date('d/m', strtotime($completed_at)); ?></span>
                                 </div>
                                 <?php if ($response_count > 0): ?>
-                                    <div class="mt-3 text-xs text-primary-600">
+                                    <div class="mt-3 text-xs text-primary-500">
                                         <i class="fa-solid fa-comments mr-1"></i><?php echo $response_count; ?> respuesta<?php echo $response_count > 1 ? 's' : ''; ?>
                                     </div>
                                 <?php endif; ?>

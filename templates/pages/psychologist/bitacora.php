@@ -47,7 +47,10 @@ $patients = get_users([
                 <div class="bg-white border border-gray-200 rounded-xl p-6 transition-all hover:shadow-lg hover:-translate-y-1">
                     <!-- Header -->
                     <div class="flex items-start gap-4 mb-4">
-                        <?php echo get_avatar($patient->ID, 60, '', '', ['class' => 'rounded-xl border-2 border-gray-100']); ?>
+                        <img id="avatar-preview"
+                             src="<?php echo esc_url(get_avatar_url($patient->ID, ['size' => 50])); ?>"
+                             alt="Avatar"
+                             class="w-16 h-16 rounded-full border-4 border-primary-100 object-cover">
                         <div class="flex-1">
                             <h3 class="text-lg font-semibold text-gray-900 m-0 mb-1">
                                 <?php echo esc_html($patient->display_name); ?>

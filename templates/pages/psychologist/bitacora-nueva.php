@@ -36,8 +36,7 @@ if (!$patient || $patient_psychologist_id != $psychologist_id) {
 
     <!-- Header -->
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 m-0 mb-2">
-            <i class="fa-solid fa-pen-to-square mr-3 text-primary-500"></i>
+        <h1 class="text-3xl font-normal text-dark-gray-300 m-0 mb-2">
             Nueva Entrada de Bitácora
         </h1>
         <p class="text-gray-600 m-0">

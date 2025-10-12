@@ -48,7 +48,7 @@ $active_tab = $_GET['tab'] ?? 'actividades';
                     <img id="avatar-preview"
                          src="<?php echo esc_url(get_avatar_url($patient->ID, ['size' => 80])); ?>"
                          alt="Avatar"
-                         class="w-20 h-20 rounded-2xl border-4 border-gray-100 object-cover">
+                         class="w-20 h-20 rounded-full border-4 border-gray-100 object-cover">
                     <div>
                         <h1 class="text-3xl font-bold text-gray-900 m-0 mb-2"><?php echo esc_html($patient->display_name); ?></h1>
                         <p class="flex items-center gap-2 text-gray-600 text-sm m-0">
@@ -345,7 +345,10 @@ $active_tab = $_GET['tab'] ?? 'actividades';
                                 <div class="flex gap-3 <?php if ($is_sent): ?>justify-end<?php else: ?>justify-start<?php endif; ?>">
                                     <?php if (!$is_sent): ?>
                                         <div class="flex-shrink-0 mt-1">
-                                            <?php echo get_avatar($patient_id, 32, '', '', ['class' => 'rounded-full border-2 border-white shadow-sm']); ?>
+                                            <img id="avatar-preview"
+                                                 src="<?php echo esc_url(get_avatar_url($patient_id, ['size' => 32])); ?>"
+                                                 alt="Avatar del paciente"
+                                                 class="w-8 h-8 rounded-full border-4 border-primary-100 object-cover">
                                         </div>
                                     <?php endif; ?>
 
@@ -356,8 +359,8 @@ $active_tab = $_GET['tab'] ?? 'actividades';
                                             </p>
                                         </div>
                                         <div class="flex items-center gap-1.5 mt-1 px-1">
-                                            <i class="fa-solid fa-clock text-xs <?php echo $is_sent ? 'text-primary-600' : 'text-gray-400'; ?>"></i>
-                                            <span class="text-xs <?php echo $is_sent ? 'text-primary-600' : 'text-gray-500'; ?>">
+                                            <i class="fa-solid fa-clock text-xs <?php echo $is_sent ? 'text-primary-500' : 'text-gray-400'; ?>"></i>
+                                            <span class="text-xs <?php echo $is_sent ? 'text-primary-500' : 'text-gray-500'; ?>">
                                             <?php
                                             $date = new DateTime($msg->created_at);
                                             $now = new DateTime();
@@ -377,7 +380,10 @@ $active_tab = $_GET['tab'] ?? 'actividades';
 
                                     <?php if ($is_sent): ?>
                                         <div class="flex-shrink-0 mt-1">
-                                            <?php echo get_avatar(get_current_user_id(), 32, '', '', ['class' => 'rounded-full border-2 border-primary-200 shadow-sm']); ?>
+                                            <img id="avatar-preview"
+                                                 src="<?php echo esc_url(get_avatar_url(get_current_user_id(), ['size' => 32])); ?>"
+                                                 alt="Avatar"
+                                                 class="w-8 h-8 rounded-full object-cover border-2 border-primary-200 shadow-sm">
                                         </div>
                                     <?php endif; ?>
                                 </div>
@@ -419,7 +425,7 @@ $active_tab = $_GET['tab'] ?? 'actividades';
                                     <div class="text-xs text-gray-500">Total mensajes</div>
                                 </div>
                                 <div class="text-center">
-                                    <div class="text-2xl font-bold text-primary-600"><?php echo count($last_messages); ?></div>
+                                    <div class="text-2xl font-bold text-primary-500"><?php echo count($last_messages); ?></div>
                                     <div class="text-xs text-gray-500">Mostrando</div>
                                 </div>
                             </div>

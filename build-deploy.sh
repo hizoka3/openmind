@@ -8,24 +8,64 @@ GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
+CYAN='\033[0;36m'
 NC='\033[0m'
 
 echo -e "${BLUE}🚀 OpenMind Plugin Build${NC}"
 echo "====================================="
 
-# Get current version and increment
+# Get current version
 current_version=$(grep "Version:" openmind.php | sed 's/.*Version: *//' | sed 's/ *\*.*$//' | tr -d '\n\r')
 IFS='.' read -ra VERSION_PARTS <<< "$current_version"
 major=${VERSION_PARTS[0]:-1}
 minor=${VERSION_PARTS[1]:-0}
 patch=${VERSION_PARTS[2]:-0}
-new_patch=$((patch + 1))
-new_version="$major.$minor.$new_patch"
 
-echo -e "${BLUE}Current version: $current_version${NC}"
-echo -e "${BLUE}Next version: $new_version${NC}"
+echo -e "${CYAN}Current version: ${YELLOW}$current_version${NC}"
 echo ""
-echo "This will create: releases/openmind-v${new_version}.zip"
+echo "Select version increment type:"
+echo ""
+echo -e "${RED}1)${NC} MAJOR (${major}.x.x → $((major + 1)).0.0)"
+echo "   Breaking changes, incompatible API, major features"
+echo ""
+echo -e "${YELLOW}2)${NC} MINOR (x.${minor}.x → ${major}.$((minor + 1)).0)"
+echo "   New features, backwards compatible"
+echo ""
+echo -e "${GREEN}3)${NC} PATCH (x.x.${patch} → ${major}.${minor}.$((patch + 1)))"
+echo "   Bug fixes, small improvements"
+echo ""
+
+read -p "Choose increment type [1-3, default=3]: " -r increment_type
+increment_type=${increment_type:-3}
+
+case $increment_type in
+    1)
+        new_major=$((major + 1))
+        new_version="${new_major}.0.0"
+        change_type="MAJOR"
+        ;;
+    2)
+        new_minor=$((minor + 1))
+        new_version="${major}.${new_minor}.0"
+        change_type="MINOR"
+        ;;
+    3)
+        new_patch=$((patch + 1))
+        new_version="${major}.${minor}.${new_patch}"
+        change_type="PATCH"
+        ;;
+    *)
+        echo -e "${RED}Invalid option. Defaulting to PATCH${NC}"
+        new_patch=$((patch + 1))
+        new_version="${major}.${minor}.${new_patch}"
+        change_type="PATCH"
+        ;;
+esac
+
+echo ""
+echo -e "${BLUE}Building version:${NC} ${current_version} → ${GREEN}${new_version}${NC} (${change_type})"
+echo -e "${BLUE}Output:${NC} releases/openmind-v${new_version}.zip"
+echo ""
 read -p "Continue? (y/N): " -r
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     echo "Cancelled."
@@ -173,7 +213,7 @@ echo "================================="
 echo ""
 echo "📦 Package: $zip_file"
 echo "📏 Size: $zip_size"
-echo "🔖 Version: $new_version"
+echo "🔖 Version: $new_version (${change_type})"
 echo "🚀 Ready for WordPress!"
 echo ""
 echo "To install:"

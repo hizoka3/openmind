@@ -168,9 +168,8 @@ $assignments = get_posts([
     <div id="tab-asignaciones" class="tab-content" style="display: none;">
         <?php if (empty($assignments)): ?>
             <div class="text-center py-20 bg-white rounded-xl shadow-sm">
-                <div class="text-6xl mb-4">📋</div>
-                <p class="text-lg text-gray-600 mb-2">No has asignado actividades aún</p>
-                <p class="text-sm text-gray-500">Ve a la biblioteca y asigna actividades a tus pacientes</p>
+                <p class="text-lg text-dark-gray-300 mb-2">No has asignado actividades aún</p>
+                <p class="text-sm text-gray-600">Ve a la biblioteca y asigna actividades a tus pacientes</p>
             </div>
         <?php else: ?>
             <div class="flex flex-col gap-4">
@@ -215,7 +214,10 @@ $assignments = get_posts([
                                 <!-- Paciente -->
                                 <?php if ($patient): ?>
                                     <div class="flex items-center gap-2 mb-2">
-                                        <?php echo get_avatar($patient->ID, 24, '', '', ['class' => 'rounded-full']); ?>
+                                        <img id="avatar-preview"
+                                             src="<?php echo esc_url(get_avatar_url($patient->ID, ['size' => 24])); ?>"
+                                             alt="Avatar"
+                                             class="w-6 h-6 rounded-full border-4 border-primary-100 object-cover">
                                         <span class="text-sm font-medium text-gray-700">
                                             <?php echo esc_html($patient->display_name); ?>
                                         </span>
@@ -322,7 +324,10 @@ $assignments = get_posts([
                                        name="patient_ids[]"
                                        value="<?php echo $patient->ID; ?>"
                                        class="patient-checkbox rounded border-gray-300 text-primary-600 focus:ring-primary-500">
-                                <?php echo get_avatar($patient->ID, 32, '', '', ['class' => 'rounded-full']); ?>
+                                <img id="avatar-preview"
+                                     src="<?php echo esc_url(get_avatar_url($patient->ID, ['size' => 32])); ?>"
+                                     alt="Avatar"
+                                     class="w-8 h-8 rounded-full object-cover">
                                 <span class="text-sm font-medium text-gray-700">
                                     <?php echo esc_html($patient->display_name); ?>
                                 </span>

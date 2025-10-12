@@ -82,7 +82,10 @@ usort($all_responses, function($a, $b) {
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
         <div class="flex items-start justify-between mb-4">
             <div class="flex items-center gap-3">
-                <?php echo get_avatar($patient->ID, 48, '', '', ['class' => 'rounded-full']); ?>
+                <img id="avatar-preview"
+                     src="<?php echo esc_url(get_avatar_url($patient->ID, ['size' => 32])); ?>"
+                     alt="Avatar del paciente"
+                     class="w-12 h-12 rounded-full object-cover">
                 <div>
                     <h1 class="text-2xl font-bold text-gray-900 m-0"><?php echo esc_html($assignment->post_title); ?></h1>
                     <p class="text-sm text-gray-600 m-0">Asignada a <?php echo esc_html($patient->display_name); ?></p>
@@ -203,7 +206,6 @@ usort($all_responses, function($a, $b) {
 
         <?php if (empty($all_responses)): ?>
             <div class="text-center py-12">
-                <div class="text-6xl mb-4">📝</div>
                 <p class="text-gray-600">Aún no hay respuestas en esta actividad</p>
             </div>
         <?php else: ?>
@@ -215,7 +217,10 @@ usort($all_responses, function($a, $b) {
                     <div class="border-l-4 <?php echo $is_patient ? 'border-green-500 bg-green-50' : 'border-blue-500 bg-blue-50'; ?> rounded-lg p-4">
                         <div class="flex items-start justify-between mb-3">
                             <div class="flex items-center gap-2">
-                                <?php echo get_avatar($response->user_id, 32, '', '', ['class' => 'rounded-full']); ?>
+                                <img id="avatar-preview"
+                                     src="<?php echo esc_url(get_avatar_url($response->user_id, ['size' => 32])); ?>"
+                                     alt="Avatar"
+                                     class="w-8 h-8 rounded-full object-cover">
                                 <div>
                                     <p class="text-sm font-semibold text-gray-900 m-0">
                                         <?php echo esc_html($author->display_name); ?>

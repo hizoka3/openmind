@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
+    'Openmind\\Admin\\ActivityMetaboxes' => $baseDir . '/src/Admin/ActivityMetaboxes.php',
     'Openmind\\Controllers\\ActivityController' => $baseDir . '/src/Controllers/ActivityController.php',
     'Openmind\\Controllers\\AttachmentController' => $baseDir . '/src/Controllers/AttachmentController.php',
     'Openmind\\Controllers\\AuthController' => $baseDir . '/src/Controllers/AuthController.php',

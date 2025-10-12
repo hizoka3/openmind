@@ -57,10 +57,12 @@ $base_url = add_query_arg(['view' => 'bitacora', 'patient_id' => $patient_id], h
     <div class="bg-white rounded-2xl p-8 mb-8 shadow-sm">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div class="flex gap-6 items-start">
-                <?php echo get_avatar($patient->ID, 80, '', '', ['class' => 'rounded-2xl border-4 border-gray-100']); ?>
+                <img id="avatar-preview"
+                     src="<?php echo esc_url(get_avatar_url($patient->ID, ['size' => 80])); ?>"
+                     alt="Avatar del paciente"
+                     class="w-20 h-20 rounded-full object-cover border-4 border-gray-100">
                 <div>
                     <h1 class="text-3xl font-bold text-gray-900 m-0 mb-2">
-                        <i class="fa-solid fa-book mr-3 text-primary-500"></i>
                         Bitácora de <?php echo esc_html($patient->display_name); ?>
                     </h1>
                     <p class="text-gray-500 m-0"><?php echo esc_html($patient->user_email); ?></p>

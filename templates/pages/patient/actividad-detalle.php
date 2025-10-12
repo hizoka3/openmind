@@ -82,7 +82,10 @@ $responses = get_comments([
             <?php endif; ?>
 
             <div class="flex items-center gap-2">
-                <?php echo get_avatar($psychologist->ID, 24, '', '', ['class' => 'rounded-full']); ?>
+                <img id="avatar-preview"
+                     src="<?php echo esc_url(get_avatar_url($psychologist->ID, ['size' => 24])); ?>"
+                     alt="Avatar"
+                     class="w-6 h-6 rounded-full object-cover">
                 <span class="text-sm text-gray-600">Asignada por: <strong><?php echo esc_html($psychologist->display_name); ?></strong></span>
             </div>
         </div>

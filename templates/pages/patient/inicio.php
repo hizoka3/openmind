@@ -21,7 +21,12 @@ $base_url = get_permalink();
     <!-- Welcome Section -->
     <div class="bg-gradient-to-r from-primary-50 to-purple-50 rounded-2xl p-8 mb-4 border-2 border-primary-200">
         <div class="flex items-center gap-4">
-            <?php echo get_avatar($user_id, 50, '', '', ['class' => 'rounded-full border-4 border-white shadow-md']); ?>
+            <div class="user-avatar">
+                <img id="avatar-preview"
+                     src="<?php echo esc_url(get_avatar_url($current_user->ID, ['size' => 50])); ?>"
+                     alt="Avatar"
+                     class="w-16 h-16 rounded-full border-4 border-primary-100 object-cover">
+            </div>
             <div>
                 <h1 class="text-2xl font-normal text-gray-900 m-0">
                     Hola <?php echo esc_html($current_user->display_name); ?>
