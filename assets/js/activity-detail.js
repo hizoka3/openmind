@@ -1,29 +1,41 @@
+// assets/js/activity-detail.js
 /**
- * Gestión de respuestas en detalle de actividad
+ * Activity Detail - Manejo unificado para paciente y psicólogo
  */
+
 const OpenmindActivityDetail = {
-    init() {
+    config: {
+        role: '',
+        ajaxUrl: '',
+        nonce: '',
+        editorId: '',
+        currentEditId: null
+    },
+
+    init(config) {
+        this.config = { ...this.config, ...config };
         this.bindEvents();
     },
 
     bindEvents() {
-        const form = document.getElementById('activity-response-form');
-        if (form) {
-            form.addEventListener('submit', (e) => this.handleSubmit(e));
-        }
+        // Formulario de respuesta
+        const forms = ['activity-response-form', 'psychologist-response-form'];
+        forms.forEach(formId => {
+            const form = document.getElementById(formId);
+            if (form) {
+                form.addEventListener('submit', (e) => this.handleSubmit(e));
+            }
+        });
 
+        // Botones de editar
         document.querySelectorAll('.btn-edit').forEach(btn => {
             btn.addEventListener('click', (e) => this.handleEdit(e));
         });
 
-        document.querySelectorAll('.btn-delete').forEach(btn => {
-            btn.addEventListener('click', (e) => this.handleDelete(e));
+        // Botones de ocultar
+        document.querySelectorAll('.btn-hide').forEach(btn => {
+            btn.addEventListener('click', (e) => this.handleHide(e));
         });
-
-        const cancelBtn = document.getElementById('cancel-edit');
-        if (cancelBtn) {
-            cancelBtn.addEventListener('click', () => this.cancelEdit());
-        }
     },
 
     async handleSubmit(e) {
@@ -33,13 +45,39 @@ const OpenmindActivityDetail = {
         const submitBtn = form.querySelector('#submit-response');
         const formData = new FormData(form);
 
-        formData.append('action', 'openmind_submit_response');
+        // Determinar action según el formulario
+        const action = form.id === 'psychologist-response-form'
+            ? 'openmind_psychologist_response'
+            : 'openmind_submit_response';
 
+        formData.append('action', action);
+
+        // Obtener contenido del editor
+        const editorId = form.id === 'psychologist-response-form' ? 'psychologist_response' : 'response_content';
+        let content = '';
+
+        if (typeof tinymce !== 'undefined' && tinymce.get(editorId)) {
+            content = tinymce.get(editorId).getContent();
+        } else {
+            const textarea = document.getElementById(editorId);
+            content = textarea ? textarea.value : '';
+        }
+
+        // Validar contenido
+        if (!content || content.trim() === '' || content === '<p><br data-mce-bogus="1"></p>') {
+            Toast.show('Por favor escribe un comentario', 'error');
+            return;
+        }
+
+        // Asegurar que el contenido se incluya en FormData
+        formData.set(editorId, content);
+
+        const originalText = submitBtn.innerHTML;
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Enviando...';
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Enviando...';
 
         try {
-            const response = await fetch(openmindData.ajaxUrl, {
+            const response = await fetch(this.config.ajaxUrl, {
                 method: 'POST',
                 body: formData
             });
@@ -47,80 +85,280 @@ const OpenmindActivityDetail = {
             const data = await response.json();
 
             if (data.success) {
-                alert(data.data.message);
-                location.reload(); // Recargar para mostrar respuesta
+                Toast.show(data.data.message || 'Respuesta enviada correctamente', 'success');
+                setTimeout(() => location.reload(), 1500);
             } else {
-                alert('Error: ' + data.data.message);
+                Toast.show(data.data?.message || 'Error al enviar respuesta', 'error');
             }
         } catch (error) {
-            alert('Error de conexión');
+            console.error(error);
+            Toast.show('Error de conexión', 'error');
         } finally {
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Enviar Respuesta';
+            submitBtn.innerHTML = originalText;
         }
     },
 
     handleEdit(e) {
         const responseId = e.currentTarget.dataset.responseId;
-        const responseItem = document.querySelector(`.response-item[data-response-id="${responseId}"]`);
+        const responseItem = document.querySelector(`[data-response-id="${responseId}"]`);
         const content = responseItem.querySelector('.response-content').innerHTML;
 
-        // Cargar contenido en editor
-        if (typeof tinymce !== 'undefined') {
-            tinymce.get('response_content').setContent(content);
-        } else {
-            document.getElementById('response_content').value = content;
-        }
-
-        // Cambiar a modo edición
-        document.getElementById('response_id').value = responseId;
-        document.getElementById('submit-response').textContent = 'Actualizar Respuesta';
-        document.getElementById('cancel-edit').style.display = 'inline-block';
-
-        // Scroll al formulario
-        document.querySelector('.response-form-section').scrollIntoView({ behavior: 'smooth' });
+        this.config.currentEditId = responseId;
+        this.openEditModal(content, responseId);
     },
 
-    async handleDelete(e) {
-        if (!confirm('¿Estás seguro de eliminar esta respuesta?')) return;
+    openEditModal(content, responseId) {
+        // Crear modal
+        const modal = document.createElement('div');
+        modal.id = 'edit-response-modal';
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+        modal.innerHTML = `
+            <div class="bg-white rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+                    <h3 class="text-xl font-bold text-[#333333] flex items-center gap-2">
+                        <i class="fa-solid fa-edit text-primary-500"></i>
+                        Editar respuesta
+                    </h3>
+                    <button id="close-edit-modal" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fa-solid fa-times text-2xl"></i>
+                    </button>
+                </div>
+                
+                <div class="p-6">
+                    <form id="edit-response-form" enctype="multipart/form-data">
+                        <input type="hidden" name="response_id" value="${responseId}">
+                        <input type="hidden" name="assignment_id" value="${document.querySelector('input[name="assignment_id"]')?.value || ''}">
+                        
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Contenido de la respuesta
+                            </label>
+                            <textarea id="edit_response_content" name="response_content" rows="10" class="w-full border border-gray-300 rounded-lg p-3">${content}</textarea>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="edit_response_files" class="block text-sm font-medium text-gray-700 mb-2">
+                                Archivos adjuntos (máx. 5)
+                            </label>
+                            <input type="file"
+                                   name="response_files[]"
+                                   id="edit_response_files"
+                                   multiple
+                                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif"
+                                   max="5"
+                                   class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none p-2">
+                            <p class="mt-1 text-xs text-gray-500">Formatos: PDF, DOC, DOCX, JPG, PNG, GIF</p>
+                        </div>
+                        
+                        <div class="flex gap-3">
+                            <button type="submit"
+                                    class="flex-1 px-6 py-3 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-400 transition-colors"
+                                    id="save-edit-response">
+                                <i class="fa-solid fa-save mr-2"></i>
+                                Guardar cambios
+                            </button>
+                            <button type="button"
+                                    class="flex-1 px-6 py-3 bg-gray-200 text-[#333333] rounded-lg font-semibold hover:bg-gray-300 transition-colors"
+                                    id="cancel-edit-modal">
+                                Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        `;
 
-        const responseId = e.currentTarget.dataset.responseId;
+        document.body.appendChild(modal);
+
+        // Inicializar TinyMCE en el modal
+        setTimeout(() => {
+            if (typeof tinymce !== 'undefined') {
+                tinymce.init({
+                    selector: '#edit_response_content',
+                    menubar: false,
+                    height: 300,
+                    plugins: 'lists link',
+                    toolbar: 'bold italic underline | bullist numlist | link',
+                    setup: (editor) => {
+                        editor.on('init', () => {
+                            editor.setContent(content);
+                        });
+                    }
+                });
+            }
+        }, 100);
+
+        // Event listeners del modal
+        document.getElementById('close-edit-modal').addEventListener('click', () => this.closeEditModal());
+        document.getElementById('cancel-edit-modal').addEventListener('click', () => this.closeEditModal());
+        document.getElementById('edit-response-form').addEventListener('submit', (e) => this.submitEdit(e));
+
+        // Cerrar al hacer click fuera
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                this.closeEditModal();
+            }
+        });
+    },
+
+    closeEditModal() {
+        const modal = document.getElementById('edit-response-modal');
+        if (modal) {
+            // Destruir TinyMCE
+            if (typeof tinymce !== 'undefined' && tinymce.get('edit_response_content')) {
+                tinymce.get('edit_response_content').remove();
+            }
+            modal.remove();
+        }
+        this.config.currentEditId = null;
+    },
+
+    async submitEdit(e) {
+        e.preventDefault();
+
+        const form = e.target;
+        const submitBtn = form.querySelector('#save-edit-response');
+        const formData = new FormData(form);
+
+        // Obtener contenido del editor del modal
+        let content = '';
+        if (typeof tinymce !== 'undefined' && tinymce.get('edit_response_content')) {
+            content = tinymce.get('edit_response_content').getContent();
+        } else {
+            content = document.getElementById('edit_response_content').value;
+        }
+
+        if (!content || content.trim() === '' || content === '<p><br data-mce-bogus="1"></p>') {
+            Toast.show('Por favor escribe un comentario', 'error');
+            return;
+        }
+
+        formData.set('response_content', content);
+        formData.append('action', 'openmind_submit_response');
+        formData.append('response_nonce', this.config.nonce); // 👈 FIX: Agregado nonce correcto
+
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Guardando...';
 
         try {
-            const response = await fetch(openmindData.ajaxUrl, {
+            const response = await fetch(this.config.ajaxUrl, {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                Toast.show(data.data.message || 'Respuesta actualizada correctamente', 'success');
+                this.closeEditModal();
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                Toast.show(data.data?.message || 'Error al actualizar respuesta', 'error');
+            }
+        } catch (error) {
+            console.error(error);
+            Toast.show('Error de conexión', 'error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        }
+    },
+
+    handleHide(e) {
+        const responseId = e.currentTarget.dataset.responseId;
+
+        const modal = this.createHideModal();
+        document.body.appendChild(modal);
+
+        modal.querySelector('#confirm-hide').addEventListener('click', async () => {
+            modal.remove();
+            await this.hideResponse(responseId);
+        });
+
+        modal.querySelector('#cancel-hide').addEventListener('click', () => {
+            modal.remove();
+        });
+    },
+
+    createHideModal() {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        modal.innerHTML = `
+            <div class="bg-white rounded-xl max-w-md w-full mx-4 p-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                        <i class="fa-solid fa-eye-slash text-orange-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-[#333333] m-0">¿Ocultar este mensaje?</h3>
+                </div>
+                
+                <div class="mb-6 space-y-3">
+                    <div class="flex items-start gap-2">
+                        <i class="fa-solid fa-check text-green-600 mt-1"></i>
+                        <p class="text-sm text-gray-700 m-0">Se ocultará de tu vista</p>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <i class="fa-solid fa-user-doctor text-primary-500 mt-1"></i>
+                        <p class="text-sm text-gray-700 m-0">Tu psicólogo seguirá viéndolo</p>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <i class="fa-solid fa-shield-halved text-primary-400 mt-1"></i>
+                        <p class="text-sm text-gray-700 m-0">Se conserva por motivos clínicos y legales</p>
+                    </div>
+                </div>
+                
+                <div class="flex gap-3">
+                    <button id="confirm-hide" 
+                            class="flex-1 px-4 py-3 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition-colors">
+                        <i class="fa-solid fa-eye-slash mr-2"></i>
+                        Ocultar
+                    </button>
+                    <button id="cancel-hide" 
+                            class="flex-1 px-4 py-3 bg-gray-200 text-[#333333] rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        `;
+        return modal;
+    },
+
+    async hideResponse(responseId) {
+        try {
+            const response = await fetch(this.config.ajaxUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: new URLSearchParams({
-                    action: 'openmind_delete_response',
+                    action: 'openmind_hide_response',
                     response_id: responseId,
-                    nonce: openmindData.nonces.delete_response
+                    nonce: this.config.nonce
                 })
             });
 
             const data = await response.json();
 
             if (data.success) {
-                document.querySelector(`.response-item[data-response-id="${responseId}"]`).remove();
-                alert('Respuesta eliminada');
+                Toast.show(data.data.message, 'success');
+                setTimeout(() => location.reload(), 1500);
             } else {
-                alert('Error: ' + data.data.message);
+                Toast.show(data.data || 'Error al ocultar respuesta', 'error');
             }
         } catch (error) {
-            alert('Error de conexión');
-        }
-    },
-
-    cancelEdit() {
-        document.getElementById('response_id').value = '0';
-        document.getElementById('submit-response').textContent = 'Enviar Respuesta';
-        document.getElementById('cancel-edit').style.display = 'none';
-
-        if (typeof tinymce !== 'undefined') {
-            tinymce.get('response_content').setContent('');
-        } else {
-            document.getElementById('response_content').value = '';
+            console.error(error);
+            Toast.show('Error de conexión', 'error');
         }
     }
 };
 
-document.addEventListener('DOMContentLoaded', () => OpenmindActivityDetail.init());
+// Inicializar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', () => {
+    if (typeof openmindData !== 'undefined') {
+        OpenmindActivityDetail.init({
+            ajaxUrl: openmindData.ajaxUrl,
+            nonce: openmindData.nonce,
+            role: openmindData.userRole || 'patient'
+        });
+    }
+});

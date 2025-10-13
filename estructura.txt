@@ -43,8 +43,11 @@
 │   ├── openmind-v1.0.6.zip
 │   ├── openmind-v1.0.7.zip
 │   ├── openmind-v1.0.8.zip
-│   └── openmind-v1.0.9.zip
+│   ├── openmind-v1.0.9.zip
+│   └── openmind-v2.0.0.zip
 ├── src
+│   ├── Admin
+│   │   └── ActivityMetaboxes.php
 │   ├── Controllers
 │   │   ├── ActivityController.php
 │   │   ├── AttachmentController.php
@@ -75,7 +78,6 @@
 │   │   ├── header.php
 │   │   ├── modal-asignar-actividad.php
 │   │   ├── mood-selector.php
-│   │   ├── patient-card.php
 │   │   ├── profile-card.php
 │   │   ├── sidebar-patient.php
 │   │   ├── sidebar-psychologist.php
@@ -83,8 +85,6 @@
 │   ├── dashboard-patient.php
 │   ├── dashboard-psychologist.php
 │   └── pages
-│       ├── admin
-│       │   └── biblioteca-actividades.php
 │       ├── diario-detalle.php
 │       ├── mensajeria.php
 │       ├── patient

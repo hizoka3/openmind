@@ -48,18 +48,29 @@ class Plugin {
     }
 
     private static function registerAjaxActions(): void {
-        // Respuestas de actividades (paciente)
+        // ===== RESPUESTAS DE ACTIVIDADES (Unificado en ResponseController) =====
+
+        // Crear/Editar respuesta del paciente
         add_action('wp_ajax_openmind_submit_response', [
-            '\Openmind\Controllers\ActivityController',
-            'submitResponse'
+            '\Openmind\Controllers\ResponseController',
+            'editResponse'
         ]);
 
+        // Ocultar respuesta (soft delete)
+        add_action('wp_ajax_openmind_hide_response', [
+            '\Openmind\Controllers\ResponseController',
+            'hideResponse'
+        ]);
+
+        // Alias para compatibilidad (redirige a hideResponse)
         add_action('wp_ajax_openmind_delete_response', [
-            '\Openmind\Controllers\ActivityController',
+            '\Openmind\Controllers\ResponseController',
             'deleteResponse'
         ]);
 
-        // Respuesta del psicólogo
+        // ===== RESPUESTA DEL PSICÓLOGO =====
+
+        // Comentario del psicólogo sobre actividad
         add_action('wp_ajax_openmind_psychologist_response', [
             '\Openmind\Controllers\ActivityController',
             'psychologistResponse'
@@ -201,16 +212,32 @@ class Plugin {
     private static function loadAssets(): void {
         add_action('wp_enqueue_scripts', function() {
             if (is_page(['dashboard-psicologo', 'dashboard-paciente', 'auth'])) {
+                // Estilos globales
                 wp_enqueue_style('openmind-styles', OPENMIND_URL . 'assets/css/style.css', [], OPENMIND_VERSION);
                 wp_enqueue_style('openmind-font-awesome', OPENMIND_URL . 'assets/css/all.min.css', [], OPENMIND_VERSION);
+
+                // Scripts globales
                 wp_enqueue_script('openmind-font-awesome', OPENMIND_URL . 'assets/js/fontawesome-all.min.js', ['jquery'], '6.1.1', true);
                 wp_enqueue_script('openmind-main', OPENMIND_URL . 'assets/js/main.js', ['jquery'], OPENMIND_VERSION, true);
                 wp_enqueue_script('openmind-toast', OPENMIND_URL . 'assets/js/toast.js', ['jquery'], OPENMIND_VERSION, true);
 
+                // Script específico para detalle de actividad
+                if (isset($_GET['view']) && $_GET['view'] === 'actividad-detalle') {
+                    wp_enqueue_script(
+                        'openmind-activity-detail',
+                        OPENMIND_URL . 'assets/js/activity-detail.js',
+                        ['jquery'],
+                        OPENMIND_VERSION,
+                        true
+                    );
+                }
+
+                // Localizar datos para JavaScript
                 wp_localize_script('openmind-main', 'openmindData', [
                     'ajaxUrl' => admin_url('admin-ajax.php'),
                     'nonce' => wp_create_nonce('openmind_nonce'),
-                    'userId' => get_current_user_id()
+                    'userId' => get_current_user_id(),
+                    'userRole' => current_user_can('manage_patients') ? 'psychologist' : 'patient'
                 ]);
             }
         }, 99);
