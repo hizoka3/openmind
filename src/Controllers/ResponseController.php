@@ -10,7 +10,7 @@ class ResponseController {
      * Ocultar respuesta (soft delete)
      */
     public static function hideResponse(): void {
-        check_ajax_referer('submit_activity_response', 'nonce');
+        check_ajax_referer('submit_activity_response', 'response_nonce'); // 🔧 FIX: cambiado de 'nonce' a 'response_nonce'
 
         $response_id = isset($_POST['response_id']) ? absint($_POST['response_id']) : 0;
         $user_id = get_current_user_id();
@@ -91,13 +91,14 @@ class ResponseController {
         ]);
 
         // Manejar archivos si hay nuevos uploads
-        $file_ids = [];
         if (!empty($_FILES['response_files']['name'][0])) {
             require_once(ABSPATH . 'wp-admin/includes/file.php');
             require_once(ABSPATH . 'wp-admin/includes/media.php');
             require_once(ABSPATH . 'wp-admin/includes/image.php');
 
+            $new_file_ids = [];
             $files = $_FILES['response_files'];
+
             foreach ($files['name'] as $key => $value) {
                 if ($files['name'][$key]) {
                     $file = [
@@ -111,13 +112,16 @@ class ResponseController {
                     $attachment_id = media_handle_upload('upload_file', 0);
 
                     if (!is_wp_error($attachment_id)) {
-                        $file_ids[] = $attachment_id;
+                        $new_file_ids[] = $attachment_id;
                     }
                 }
             }
 
-            if (!empty($file_ids)) {
-                update_comment_meta($response_id, '_response_files', $file_ids);
+            // 🔧 FIX: AGREGAR archivos nuevos a los existentes (no reemplazar)
+            if (!empty($new_file_ids)) {
+                $existing_files = get_comment_meta($response_id, '_response_files', true) ?: [];
+                $all_files = array_merge($existing_files, $new_file_ids);
+                update_comment_meta($response_id, '_response_files', $all_files);
             }
         }
 

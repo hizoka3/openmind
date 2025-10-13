@@ -84,8 +84,7 @@ $assignments = get_posts([
         <?php if (empty($library_activities)): ?>
             <!-- Empty State -->
             <div class="text-center py-20 bg-white rounded-xl shadow-sm">
-                <div class="text-6xl mb-4">📚</div>
-                <p class="text-lg text-gray-600 mb-2">No hay actividades en la biblioteca</p>
+                <p class="text-lg text-dark-gray-300 mb-2">No hay actividades en la biblioteca</p>
                 <p class="text-sm text-gray-500">Contacta al administrador para que agregue actividades</p>
             </div>
         <?php else: ?>

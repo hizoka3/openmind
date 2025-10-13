@@ -58,77 +58,83 @@ $responses = array_filter($all_responses, function($r) use ($user_id) {
 });
 ?>
 
-<div class="max-w-4xl mx-auto">
+    <div class="max-w-4xl mx-auto">
 
-    <?php
-    // Header
-    $header_args = [
-            'assignment' => $assignment,
-            'user' => $psychologist,
-            'status' => $status,
-            'due_date' => $due_date,
-            'completed_at' => $completed_at,
-            'back_url' => add_query_arg('view', 'actividades', home_url('/dashboard-paciente/')),
-            'back_text' => 'Volver a Actividades'
-    ];
-    include OPENMIND_PATH . 'templates/components/activity/header.php';
-    ?>
+        <?php
+        // Header
+        $header_args = [
+                'assignment' => $assignment,
+                'user' => $psychologist,
+                'status' => $status,
+                'due_date' => $due_date,
+                'completed_at' => $completed_at,
+                'back_url' => add_query_arg('view', 'actividades', home_url('/dashboard-paciente/')),
+                'back_text' => 'Volver a Actividades'
+        ];
+        include OPENMIND_PATH . 'templates/components/activity/header.php';
+        ?>
 
-    <?php if ($assignment->post_content): ?>
-        <div class="bg-primary-50 rounded-xl border-l-4 border-primary-500 p-6 mb-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                <i class="fa-solid fa-message text-primary-600"></i>
-                Mensaje del psicólogo
-            </h3>
-            <div class="prose max-w-none text-gray-700">
-                <?php echo wp_kses_post($assignment->post_content); ?>
+        <?php if ($assignment->post_content): ?>
+            <div class="bg-primary-50 rounded-xl border-l-4 border-primary-500 p-6 mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-message text-primary-600"></i>
+                    Mensaje del psicólogo
+                </h3>
+                <div class="prose max-w-none text-gray-700">
+                    <?php echo wp_kses_post($assignment->post_content); ?>
+                </div>
             </div>
-        </div>
-    <?php endif; ?>
+        <?php endif; ?>
 
-    <?php
-    // Resource Viewer
-    $resource_args = [
-            'activity' => $activity,
-            'activity_type' => $activity_type,
-            'activity_file' => $activity_file,
-            'activity_url' => $activity_url
-    ];
-    include OPENMIND_PATH . 'templates/components/activity/resource-viewer.php';
-    ?>
+        <?php
+        // Resource Viewer
+        $resource_args = [
+                'activity' => $activity,
+                'activity_type' => $activity_type,
+                'activity_file' => $activity_file,
+                'activity_url' => $activity_url
+        ];
+        include OPENMIND_PATH . 'templates/components/activity/resource-viewer.php';
+        ?>
 
-    <?php if ($responses): ?>
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-comments text-purple-600"></i>
-                Conversación (<?php echo count($responses); ?>)
-            </h3>
+        <?php if ($responses): ?>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-comments text-purple-600"></i>
+                    Conversación (<?php echo count($responses); ?>)
+                </h3>
 
-            <div class="space-y-4">
-                <?php foreach($responses as $response):
-                    $response_args = [
-                            'response' => $response,
-                            'is_patient_response' => $response->comment_type === 'activity_response',
-                            'show_actions' => $response->comment_type === 'activity_response',
-                            'current_user_id' => $user_id
-                    ];
-                    include OPENMIND_PATH . 'templates/components/activity/response-item.php';
-                endforeach; ?>
+                <div class="space-y-4">
+                    <?php foreach($responses as $response):
+                        $response_args = [
+                                'response' => $response,
+                                'is_patient_response' => $response->comment_type === 'activity_response',
+                                'show_actions' => $response->comment_type === 'activity_response',
+                                'current_user_id' => $user_id
+                        ];
+                        include OPENMIND_PATH . 'templates/components/activity/response-item.php';
+                    endforeach; ?>
+                </div>
             </div>
-        </div>
-    <?php endif; ?>
+        <?php endif; ?>
 
-    <?php
-    // Response Form (DESPUÉS de los mensajes)
-    $form_args = [
-            'assignment_id' => $assignment_id,
-            'form_id' => 'activity-response-form',
-            'editor_id' => 'response_content',
-            'button_text' => 'Enviar Respuesta',
-            'title' => 'Tu respuesta',
-            'icon' => 'fa-pen'
-    ];
-    include OPENMIND_PATH . 'templates/components/activity/response-form.php';
-    ?>
+        <?php
+        // Response Form (DESPUÉS de los mensajes)
+        $form_args = [
+                'assignment_id' => $assignment_id,
+                'form_id' => 'activity-response-form',
+                'editor_id' => 'response_content',
+                'button_text' => 'Enviar Respuesta',
+                'title' => 'Tu respuesta',
+                'icon' => 'fa-pen'
+        ];
+        include OPENMIND_PATH . 'templates/components/activity/response-form.php';
+        ?>
 
-</div>
+    </div>
+
+<?php
+// Incluir modales al final
+include OPENMIND_PATH . 'templates/components/modal-edit-response.php';
+include OPENMIND_PATH . 'templates/components/modal-hide-response.php';
+?>
