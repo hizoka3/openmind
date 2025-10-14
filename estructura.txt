@@ -1,5 +1,6 @@
 .
 ├── README.md
+├── ROADMAP-FASE-2.md
 ├── assets
 │   ├── css
 │   │   ├── activity-detail.css
@@ -55,6 +56,7 @@
 │   │   ├── DiaryController.php
 │   │   ├── MessageController.php
 │   │   ├── PatientController.php
+│   │   ├── ResponseController.php
 │   │   └── SessionNoteController.php
 │   ├── Core
 │   │   ├── Installer.php
@@ -71,12 +73,20 @@
 ├── templates
 │   ├── auth.php
 │   ├── components
+│   │   ├── activity
+│   │   │   ├── attachments.php
+│   │   │   ├── header.php
+│   │   │   ├── resource-viewer.php
+│   │   │   ├── response-form.php
+│   │   │   └── response-item.php
 │   │   ├── activity-card.php
 │   │   ├── bitacora-form.php
 │   │   ├── bitacora-list.php
 │   │   ├── diary-list.php
 │   │   ├── header.php
 │   │   ├── modal-asignar-actividad.php
+│   │   ├── modal-edit-response.php
+│   │   ├── modal-hide-response.php
 │   │   ├── mood-selector.php
 │   │   ├── profile-card.php
 │   │   ├── sidebar-patient.php
@@ -127,4 +137,4 @@
     ├── fa-solid-900.woff
     └── fa-solid-900.woff2
 
-18 directories, 110 files
+19 directories, 119 files

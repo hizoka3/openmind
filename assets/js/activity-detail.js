@@ -1,7 +1,6 @@
 // assets/js/activity-detail.js
 /**
  * Activity Detail - Manejo unificado para paciente y psicólogo
- * Modales en HTML - JS solo maneja show/hide/submit
  */
 
 const OpenmindActivityDetail = {
@@ -9,24 +8,18 @@ const OpenmindActivityDetail = {
         role: '',
         ajaxUrl: '',
         nonce: '',
+        editorId: '',
         currentEditId: null
     },
 
     init(config) {
         this.config = { ...this.config, ...config };
-
-        // 🔧 FIX: Leer nonce del form (ya generado por PHP)
-        const nonceField = document.querySelector('input[name="response_nonce"]');
-        if (nonceField) {
-            this.config.nonce = nonceField.value;
-        }
-
         this.bindEvents();
-        this.initModalListeners();
+        this.initAccordions(); // 👈 NUEVO: Inicializar acordeones explícitamente
     },
 
     bindEvents() {
-        // Formulario de respuesta principal
+        // Formulario de respuesta
         const forms = ['activity-response-form', 'psychologist-response-form'];
         forms.forEach(formId => {
             const form = document.getElementById(formId);
@@ -37,55 +30,31 @@ const OpenmindActivityDetail = {
 
         // Botones de editar
         document.querySelectorAll('.btn-edit').forEach(btn => {
-            btn.addEventListener('click', (e) => this.openEditModal(e));
+            btn.addEventListener('click', (e) => this.handleEdit(e));
         });
 
         // Botones de ocultar
         document.querySelectorAll('.btn-hide').forEach(btn => {
-            btn.addEventListener('click', (e) => this.openHideModal(e));
+            btn.addEventListener('click', (e) => this.handleHide(e));
+        });
+
+        // Botones de toggle hidden (mostrar/ocultar mensaje oculto)
+        document.querySelectorAll('.btn-toggle-hidden').forEach(btn => {
+            btn.addEventListener('click', (e) => this.handleToggleHidden(e));
         });
     },
 
-    initModalListeners() {
-        // Modal Editar
-        const editModal = document.getElementById('edit-response-modal');
-        if (editModal) {
-            document.getElementById('close-edit-modal')?.addEventListener('click', () => this.closeEditModal());
-            document.getElementById('cancel-edit-modal')?.addEventListener('click', () => this.closeEditModal());
-            document.getElementById('edit-response-form')?.addEventListener('submit', (e) => this.submitEdit(e));
-
-            // Cerrar al hacer clic fuera
-            editModal.addEventListener('click', (e) => {
-                if (e.target.id === 'edit-response-modal') {
-                    this.closeEditModal();
-                }
+    initAccordions() {
+        // Inicializar acordeones directamente
+        document.querySelectorAll('.accordion-toggle').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.handleAccordionToggle(btn);
             });
-        }
-
-        // Modal Ocultar
-        const hideModal = document.getElementById('hide-response-modal');
-        if (hideModal) {
-            document.getElementById('confirm-hide')?.addEventListener('click', () => this.confirmHide());
-            document.getElementById('cancel-hide')?.addEventListener('click', () => this.closeHideModal());
-
-            // Cerrar al hacer clic fuera
-            hideModal.addEventListener('click', (e) => {
-                if (e.target.id === 'hide-response-modal') {
-                    this.closeHideModal();
-                }
-            });
-        }
-
-        // Cerrar modales con ESC
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                this.closeEditModal();
-                this.closeHideModal();
-            }
         });
     },
 
-    // ========== SUBMIT RESPONSE (Form principal) ==========
     async handleSubmit(e) {
         e.preventDefault();
 
@@ -93,6 +62,7 @@ const OpenmindActivityDetail = {
         const submitBtn = form.querySelector('#submit-response');
         const formData = new FormData(form);
 
+        // Determinar action según el formulario
         const action = form.id === 'psychologist-response-form'
             ? 'openmind_psychologist_response'
             : 'openmind_submit_response';
@@ -110,12 +80,14 @@ const OpenmindActivityDetail = {
             content = textarea ? textarea.value : '';
         }
 
+        // Validar contenido
         if (!content || content.trim() === '' || content === '<p><br data-mce-bogus="1"></p>') {
             Toast.show('Por favor escribe un comentario', 'error');
             return;
         }
 
-        formData.set(editorId === 'psychologist_response' ? 'psychologist_response' : 'response_content', content);
+        // Asegurar que el contenido se incluya en FormData
+        formData.set(editorId, content);
 
         const originalText = submitBtn.innerHTML;
         submitBtn.disabled = true;
@@ -133,7 +105,7 @@ const OpenmindActivityDetail = {
                 Toast.show(data.data.message || 'Respuesta enviada correctamente', 'success');
                 setTimeout(() => location.reload(), 1500);
             } else {
-                Toast.show(data.data || 'Error al enviar respuesta', 'error');
+                Toast.show(data.data?.message || 'Error al enviar respuesta', 'error');
             }
         } catch (error) {
             console.error(error);
@@ -144,19 +116,77 @@ const OpenmindActivityDetail = {
         }
     },
 
-    // ========== EDITAR RESPUESTA ==========
-    openEditModal(e) {
+    handleEdit(e) {
         const responseId = e.currentTarget.dataset.responseId;
         const responseItem = document.querySelector(`[data-response-id="${responseId}"]`);
         const content = responseItem.querySelector('.response-content').innerHTML;
 
-        // Poblar datos del modal
-        document.getElementById('edit-response-id').value = responseId;
-        document.getElementById('edit-assignment-id').value = document.querySelector('input[name="assignment_id"]')?.value || '';
+        this.config.currentEditId = responseId;
+        this.openEditModal(content, responseId);
+    },
 
-        // Mostrar modal
-        const modal = document.getElementById('edit-response-modal');
-        modal.classList.remove('hidden');
+    openEditModal(content, responseId) {
+        // Crear modal
+        const modal = document.createElement('div');
+        modal.id = 'edit-response-modal';
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+        modal.innerHTML = `
+            <div class="bg-white rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+                    <h3 class="text-xl font-bold text-[#333333] flex items-center gap-2">
+                        <i class="fa-solid fa-edit text-primary-500"></i>
+                        Editar respuesta
+                    </h3>
+                    <button id="close-edit-modal" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fa-solid fa-times text-2xl"></i>
+                    </button>
+                </div>
+                
+                <div class="p-6">
+                    <form id="edit-response-form" enctype="multipart/form-data">
+                        <input type="hidden" name="response_id" value="${responseId}">
+                        <input type="hidden" name="assignment_id" value="${document.querySelector('input[name="assignment_id"]')?.value || ''}">
+                        
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Contenido de la respuesta
+                            </label>
+                            <textarea id="edit_response_content" name="response_content" rows="10" class="w-full border border-gray-300 rounded-lg p-3">${content}</textarea>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="edit_response_files" class="block text-sm font-medium text-gray-700 mb-2">
+                                Archivos adjuntos (máx. 5)
+                            </label>
+                            <input type="file"
+                                   name="response_files[]"
+                                   id="edit_response_files"
+                                   multiple
+                                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif"
+                                   max="5"
+                                   class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none p-2">
+                            <p class="mt-1 text-xs text-gray-500">Formatos: PDF, DOC, DOCX, JPG, PNG, GIF</p>
+                        </div>
+                        
+                        <div class="flex gap-3">
+                            <button type="submit"
+                                    class="flex-1 px-6 py-3 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-400 transition-colors"
+                                    id="save-edit-response">
+                                <i class="fa-solid fa-save mr-2"></i>
+                                Guardar cambios
+                            </button>
+                            <button type="button"
+                                    class="flex-1 px-6 py-3 bg-gray-200 text-[#333333] rounded-lg font-semibold hover:bg-gray-300 transition-colors"
+                                    id="cancel-edit-modal">
+                                Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
 
         // Inicializar TinyMCE en el modal
         setTimeout(() => {
@@ -173,26 +203,30 @@ const OpenmindActivityDetail = {
                         });
                     }
                 });
-            } else {
-                document.getElementById('edit_response_content').value = content;
             }
         }, 100);
 
-        this.config.currentEditId = responseId;
+        // Event listeners del modal
+        document.getElementById('close-edit-modal').addEventListener('click', () => this.closeEditModal());
+        document.getElementById('cancel-edit-modal').addEventListener('click', () => this.closeEditModal());
+        document.getElementById('edit-response-form').addEventListener('submit', (e) => this.submitEdit(e));
+
+        // Cerrar al hacer click fuera
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                this.closeEditModal();
+            }
+        });
     },
 
     closeEditModal() {
         const modal = document.getElementById('edit-response-modal');
         if (modal) {
-            modal.classList.add('hidden');
-
             // Destruir TinyMCE
             if (typeof tinymce !== 'undefined' && tinymce.get('edit_response_content')) {
                 tinymce.get('edit_response_content').remove();
             }
-
-            // Limpiar form
-            document.getElementById('edit-response-form').reset();
+            modal.remove();
         }
         this.config.currentEditId = null;
     },
@@ -204,7 +238,7 @@ const OpenmindActivityDetail = {
         const submitBtn = form.querySelector('#save-edit-response');
         const formData = new FormData(form);
 
-        // Obtener contenido del editor
+        // Obtener contenido del editor del modal
         let content = '';
         if (typeof tinymce !== 'undefined' && tinymce.get('edit_response_content')) {
             content = tinymce.get('edit_response_content').getContent();
@@ -249,31 +283,66 @@ const OpenmindActivityDetail = {
         }
     },
 
-    // ========== OCULTAR RESPUESTA ==========
-    openHideModal(e) {
+    handleHide(e) {
         const responseId = e.currentTarget.dataset.responseId;
 
-        // Poblar ID en el modal
-        document.getElementById('hide-response-id').value = responseId;
+        const modal = this.createHideModal();
+        document.body.appendChild(modal);
 
-        // Mostrar modal
-        document.getElementById('hide-response-modal').classList.remove('hidden');
+        modal.querySelector('#confirm-hide').addEventListener('click', async () => {
+            modal.remove();
+            await this.hideResponse(responseId);
+        });
+
+        modal.querySelector('#cancel-hide').addEventListener('click', () => {
+            modal.remove();
+        });
     },
 
-    closeHideModal() {
-        document.getElementById('hide-response-modal').classList.add('hidden');
+    createHideModal() {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        modal.innerHTML = `
+            <div class="bg-white rounded-xl max-w-md w-full mx-4 p-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                        <i class="fa-solid fa-eye-slash text-orange-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-[#333333] m-0">¿Ocultar este mensaje?</h3>
+                </div>
+                
+                <div class="mb-6 space-y-3">
+                    <div class="flex items-start gap-2">
+                        <i class="fa-solid fa-check text-green-600 mt-1"></i>
+                        <p class="text-sm text-gray-700 m-0">Se ocultará de tu vista</p>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <i class="fa-solid fa-user-doctor text-primary-500 mt-1"></i>
+                        <p class="text-sm text-gray-700 m-0">Tu psicólogo seguirá viéndolo</p>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <i class="fa-solid fa-shield-halved text-primary-400 mt-1"></i>
+                        <p class="text-sm text-gray-700 m-0">Se conserva por motivos clínicos y legales</p>
+                    </div>
+                </div>
+                
+                <div class="flex gap-3">
+                    <button id="confirm-hide" 
+                            class="flex-1 px-4 py-3 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition-colors">
+                        <i class="fa-solid fa-eye-slash mr-2"></i>
+                        Ocultar
+                    </button>
+                    <button id="cancel-hide" 
+                            class="flex-1 px-4 py-3 bg-gray-200 text-[#333333] rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        `;
+        return modal;
     },
 
-    async confirmHide() {
-        const responseId = document.getElementById('hide-response-id').value;
-
-        if (!responseId) {
-            Toast.show('Error: ID de respuesta no encontrado', 'error');
-            return;
-        }
-
-        this.closeHideModal();
-
+    async hideResponse(responseId) {
         try {
             const response = await fetch(this.config.ajaxUrl, {
                 method: 'POST',
@@ -281,7 +350,7 @@ const OpenmindActivityDetail = {
                 body: new URLSearchParams({
                     action: 'openmind_hide_response',
                     response_id: responseId,
-                    response_nonce: this.config.nonce // 🔧 FIX: cambiado de 'nonce' a 'response_nonce'
+                    nonce: this.config.nonce
                 })
             });
 
@@ -296,6 +365,49 @@ const OpenmindActivityDetail = {
         } catch (error) {
             console.error(error);
             Toast.show('Error de conexión', 'error');
+        }
+    },
+
+    handleToggleHidden(e) {
+        const responseId = e.currentTarget.dataset.responseId;
+
+        // Buscar el placeholder gris y el contenido oculto por data-response-id
+        const placeholder = document.querySelector(`[data-response-id="${responseId}"].bg-gray-100`);
+        const hiddenContent = document.querySelector(`.hidden-response-content[data-response-id="${responseId}"]`);
+
+        if (hiddenContent && placeholder) {
+            // Toggle visibility
+            const isCurrentlyHidden = hiddenContent.classList.contains('hidden');
+
+            if (isCurrentlyHidden) {
+                // Mostrar contenido, ocultar placeholder
+                hiddenContent.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+            } else {
+                // Ocultar contenido, mostrar placeholder
+                hiddenContent.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+            }
+        }
+    },
+
+    handleAccordionToggle(button) {
+        const targetId = button.dataset.target;
+        const content = document.getElementById(targetId);
+        const icon = button.querySelector('.accordion-icon');
+
+        if (content && icon) {
+            const isHidden = content.classList.contains('hidden');
+
+            if (isHidden) {
+                // Abrir acordeón
+                content.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                // Cerrar acordeón
+                content.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            }
         }
     }
 };

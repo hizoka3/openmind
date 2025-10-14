@@ -53,7 +53,7 @@ class Plugin {
         // Crear/Editar respuesta del paciente
         add_action('wp_ajax_openmind_submit_response', [
             '\Openmind\Controllers\ResponseController',
-            'editResponse'
+            'submitResponse'
         ]);
 
         // Ocultar respuesta (soft delete)

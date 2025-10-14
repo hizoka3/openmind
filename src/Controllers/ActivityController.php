@@ -403,26 +403,32 @@ class ActivityController {
     public static function psychologistResponse() {
         global $wpdb;
 
-        check_ajax_referer('submit_psychologist_response', 'response_nonce');
+        // 🔧 FIX: Cambiar nonce para que coincida con el form
+        check_ajax_referer('submit_activity_response', 'response_nonce');
 
         $user_id = get_current_user_id();
         if (!current_user_can('manage_patients')) {
             wp_send_json_error(['message' => 'No autorizado']);
         }
 
-        $assignment_id = absint($_POST['assignment_id']);
-        $patient_id = absint($_POST['patient_id']);
-        $content = wp_kses_post($_POST['psychologist_response']);
+        $assignment_id = isset($_POST['assignment_id']) ? absint($_POST['assignment_id']) : 0;
+        $patient_id = isset($_POST['patient_id']) ? absint($_POST['patient_id']) : 0;
+        $content = isset($_POST['psychologist_response']) ? wp_kses_post($_POST['psychologist_response']) : '';
+
+        // 🔧 FIX: Validación mejorada
+        if (!$assignment_id || !$patient_id) {
+            wp_send_json_error('Datos incompletos');
+        }
 
         // Validar que haya contenido
         if (empty(trim(strip_tags($content)))) {
-            wp_send_json_error(['message' => 'El comentario no puede estar vacío']);
+            wp_send_json_error('El comentario no puede estar vacío');
         }
 
         // Verificar que la actividad fue asignada por este psicólogo
         $psychologist_id = get_post_meta($assignment_id, 'psychologist_id', true);
         if ($psychologist_id != $user_id) {
-            wp_send_json_error(['message' => 'No autorizado']);
+            wp_send_json_error('No autorizado');
         }
 
         // Obtener datos del usuario
@@ -431,7 +437,7 @@ class ActivityController {
         // Crear comentario del psicólogo
         $comment_id = wp_insert_comment([
             'comment_post_ID' => $assignment_id,
-            'comment_type' => 'psy_response', // 👈 ACORTADO (12 caracteres)
+            'comment_type' => 'psy_response',
             'comment_content' => $content,
             'user_id' => $user_id,
             'comment_author' => $user->display_name,
@@ -443,46 +449,32 @@ class ActivityController {
         ]);
 
         if (!$comment_id) {
-            error_log('ERROR wp_insert_comment details:');
-            error_log('Last DB Error: ' . $wpdb->last_error);
-            error_log('Last DB Query: ' . $wpdb->last_query);
-            wp_send_json_error(['message' => 'Error al guardar comentario']);
+            error_log('ERROR wp_insert_comment - Last DB Error: ' . $wpdb->last_error);
+            wp_send_json_error('Error al guardar comentario');
         }
 
-        // Procesar archivos si hay
-        $uploaded_files = [];
+        // Procesar archivos adjuntos (si los hay)
         if (!empty($_FILES['response_files']['name'][0])) {
             require_once(ABSPATH . 'wp-admin/includes/file.php');
-            require_once(ABSPATH . 'wp-admin/includes/image.php');
             require_once(ABSPATH . 'wp-admin/includes/media.php');
+            require_once(ABSPATH . 'wp-admin/includes/image.php');
 
-            $files_count = min(count($_FILES['response_files']['name']), 3);
+            $uploaded_files = [];
+            $files = $_FILES['response_files'];
 
-            for ($i = 0; $i < $files_count; $i++) {
-                if ($_FILES['response_files']['error'][$i] === UPLOAD_ERR_OK) {
+            foreach ($files['name'] as $key => $value) {
+                if ($files['name'][$key]) {
                     $file = [
-                        'name' => $_FILES['response_files']['name'][$i],
-                        'type' => $_FILES['response_files']['type'][$i],
-                        'tmp_name' => $_FILES['response_files']['tmp_name'][$i],
-                        'error' => $_FILES['response_files']['error'][$i],
-                        'size' => $_FILES['response_files']['size'][$i]
+                        'name' => $files['name'][$key],
+                        'type' => $files['type'][$key],
+                        'tmp_name' => $files['tmp_name'][$key],
+                        'error' => $files['error'][$key],
+                        'size' => $files['size'][$key]
                     ];
+                    $_FILES = ['upload_file' => $file];
+                    $attachment_id = media_handle_upload('upload_file', 0);
 
-                    $upload = wp_handle_upload($file, ['test_form' => false]);
-
-                    if (!isset($upload['error'])) {
-                        $attachment_id = wp_insert_attachment([
-                            'post_mime_type' => $upload['type'],
-                            'post_title' => sanitize_file_name($file['name']),
-                            'post_content' => '',
-                            'post_status' => 'inherit'
-                        ], $upload['file']);
-
-                        wp_update_attachment_metadata(
-                            $attachment_id,
-                            wp_generate_attachment_metadata($attachment_id, $upload['file'])
-                        );
-
+                    if (!is_wp_error($attachment_id)) {
                         $uploaded_files[] = $attachment_id;
                     }
                 }
@@ -493,6 +485,10 @@ class ActivityController {
             }
         }
 
-        wp_send_json_success(['message' => 'Comentario enviado exitosamente']);
+        // 🔧 FIX: Retornar mensaje en el formato correcto
+        wp_send_json_success([
+            'message' => 'Comentario enviado correctamente',
+            'comment_id' => $comment_id
+        ]);
     }
 }

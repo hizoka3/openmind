@@ -23,8 +23,8 @@ $activity_url = $resource_args['activity_url'];
     </h3>
 
     <?php if ($activity->post_content): ?>
-        <div class="prose max-w-none text-gray-600 mb-4">
-            <?php echo wp_kses_post($activity->post_content); ?>
+        <div class="prose prose-sm max-w-none text-dark-gray-300 mb-4">
+            <?php echo wpautop(wp_kses_post($activity->post_content)); ?>
         </div>
     <?php endif; ?>
 

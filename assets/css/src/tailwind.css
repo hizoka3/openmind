@@ -407,7 +407,7 @@
         font-size: 0.75rem;
         font-weight: 700;
         border-radius: 9999px;
-        @apply bg-primary-500;
+        @apply bg-red-500;
     }
 
     .messages-container {
@@ -474,5 +474,15 @@
         padding: 4rem 1rem;
         min-height: 400px;
         color: #9ca3af;
+    }
+
+    .prose h1 {
+        @apply text-3xl font-bold mb-4;
+    }
+    .prose h2 {
+        @apply text-2xl font-bold mb-4;
+    }
+    .prose p {
+        @apply mb-2;
     }
 }

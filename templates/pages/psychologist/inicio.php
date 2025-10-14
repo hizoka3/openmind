@@ -75,12 +75,14 @@ $base_url = get_permalink();
         </a>
 
         <!-- Mensajes Card -->
-        <a href="<?php echo add_query_arg('view', 'mensajeria', $base_url) ?>" class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all <?php echo $unread_messages > 0 ? 'border-2 border-primary-600' : ''; ?>" style="text-decoration: none;">
+        <a href="<?php echo add_query_arg('view', 'mensajeria', $base_url); ?>"
+           class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all <?php echo $unread_messages > 0 ? 'border-2 border-primary-600' : ''; ?>"
+           style="text-decoration: none;">
             <div class="flex items-center gap-4">
-                <div class="w-16 h-16 <?php echo $unread_messages > 0 ? 'bg-primary-600' : 'bg-primary-500'; ?> rounded-xl flex items-center justify-center flex-shrink-0 relative">
-                    <i class="fa-solid fa-message text-3xl <?php echo $unread_messages > 0 ? 'text-primary-500' : 'text-white'; ?>"></i>
+                <div class="w-16 h-16 bg-primary-500 rounded-xl flex items-center justify-center flex-shrink-0 relative">
+                    <i class="fa-solid fa-message text-3xl text-white"></i>
                     <?php if ($unread_messages > 0): ?>
-                        <span class="absolute -top-2 -right-2 bg-primary-500 text-white text-xs font-normal rounded-full w-6 h-6 flex items-center justify-center">
+                        <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-normal rounded-full w-6 h-6 flex items-center justify-center">
                             <?php echo $unread_messages; ?>
                         </span>
                     <?php endif; ?>
