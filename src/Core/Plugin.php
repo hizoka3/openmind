@@ -26,6 +26,8 @@ class Plugin {
         \Openmind\Controllers\SessionNoteController::init();
         \Openmind\Controllers\AttachmentController::init();
         \Openmind\Controllers\AuthController::init();
+
+        \Openmind\Admin\PsychologistProfile::register();
     }
 
     private static function registerFormActions(): void {
@@ -210,6 +212,7 @@ class Plugin {
     }
 
     private static function loadAssets(): void {
+        // ===== FRONTEND =====
         add_action('wp_enqueue_scripts', function() {
             if (is_page(['dashboard-psicologo', 'dashboard-paciente', 'auth'])) {
                 // Estilos globales
@@ -241,6 +244,19 @@ class Plugin {
                 ]);
             }
         }, 99);
+
+        // ===== ADMIN (WP-ADMIN) =====
+        add_action('admin_enqueue_scripts', function($hook) {
+            // Solo cargar en páginas de perfil de usuario
+            if ($hook === 'profile.php' || $hook === 'user-edit.php') {
+                wp_enqueue_style(
+                    'openmind-admin-styles',
+                    OPENMIND_URL . 'assets/css/style.css',
+                    [],
+                    OPENMIND_VERSION
+                );
+            }
+        });
     }
 
     public static function customAvatarUrl(string $url, $id_or_email, array $args): string {

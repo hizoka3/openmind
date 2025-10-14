@@ -45,7 +45,8 @@
 │   ├── openmind-v1.0.7.zip
 │   ├── openmind-v1.0.8.zip
 │   ├── openmind-v1.0.9.zip
-│   └── openmind-v2.0.0.zip
+│   ├── openmind-v2.0.0.zip
+│   └── openmind-v2.0.1.zip
 ├── src
 │   ├── Admin
 │   │   └── ActivityMetaboxes.php
@@ -137,4 +138,4 @@
     ├── fa-solid-900.woff
     └── fa-solid-900.woff2
 
-19 directories, 119 files
+19 directories, 120 files

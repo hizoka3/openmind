@@ -29,6 +29,7 @@ class ComposerStaticInit6d41af1f30d54c9276827afc41c6b883
         'Openmind\\Controllers\\DiaryController' => __DIR__ . '/../..' . '/src/Controllers/DiaryController.php',
         'Openmind\\Controllers\\MessageController' => __DIR__ . '/../..' . '/src/Controllers/MessageController.php',
         'Openmind\\Controllers\\PatientController' => __DIR__ . '/../..' . '/src/Controllers/PatientController.php',
+        'Openmind\\Controllers\\ResponseController' => __DIR__ . '/../..' . '/src/Controllers/ResponseController.php',
         'Openmind\\Controllers\\SessionNoteController' => __DIR__ . '/../..' . '/src/Controllers/SessionNoteController.php',
         'Openmind\\Core\\Installer' => __DIR__ . '/../..' . '/src/Core/Installer.php',
         'Openmind\\Core\\Plugin' => __DIR__ . '/../..' . '/src/Core/Plugin.php',

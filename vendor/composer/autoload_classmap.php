@@ -14,6 +14,7 @@ return array(
     'Openmind\\Controllers\\DiaryController' => $baseDir . '/src/Controllers/DiaryController.php',
     'Openmind\\Controllers\\MessageController' => $baseDir . '/src/Controllers/MessageController.php',
     'Openmind\\Controllers\\PatientController' => $baseDir . '/src/Controllers/PatientController.php',
+    'Openmind\\Controllers\\ResponseController' => $baseDir . '/src/Controllers/ResponseController.php',
     'Openmind\\Controllers\\SessionNoteController' => $baseDir . '/src/Controllers/SessionNoteController.php',
     'Openmind\\Core\\Installer' => $baseDir . '/src/Core/Installer.php',
     'Openmind\\Core\\Plugin' => $baseDir . '/src/Core/Plugin.php',
