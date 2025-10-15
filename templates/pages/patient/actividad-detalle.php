@@ -28,18 +28,24 @@ if ($patient_id != $user_id) {
     return;
 }
 
-// Cargar datos
-$activity_id = $assignment->post_parent;
-$activity = get_post($activity_id);
-$psychologist_id = get_post_meta($assignment_id, 'psychologist_id', true);
-$psychologist = get_userdata($psychologist_id);
-$status = get_post_meta($assignment_id, 'status', true);
-$due_date = get_post_meta($assignment_id, 'due_date', true);
-$completed_at = get_post_meta($assignment_id, 'completed_at', true);
+// ✅ ACTUALIZADO - Usar getActivityData con recursos múltiples
+$activity_data = \Openmind\Controllers\ActivityController::getActivityData($assignment_id);
 
-$activity_type = get_post_meta($activity_id, '_activity_type', true);
-$activity_file = get_post_meta($activity_id, '_activity_file', true);
-$activity_url = get_post_meta($activity_id, '_activity_url', true);
+if (!$activity_data) {
+    echo '<div class="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-center my-6">
+        <i class="fa-solid fa-triangle-exclamation mr-2"></i>
+        Error al cargar datos de la actividad
+    </div>';
+    return;
+}
+
+$activity = $activity_data['library'];
+$psychologist_id = $activity_data['psychologist_id'];
+$psychologist = get_userdata($psychologist_id);
+$status = $activity_data['status'];
+$due_date = $activity_data['due_date'];
+$completed_at = $activity_data['completed_at'];
+$resources = $activity_data['resources']; // ✅ NUEVO
 
 // Obtener TODAS las respuestas (incluye ocultas)
 $all_responses = get_comments([
@@ -47,13 +53,13 @@ $all_responses = get_comments([
         'type' => ['activity_response', 'psy_response'],
         'status' => ['approve', 'hidden'],
         'orderby' => 'comment_date',
-        'order' => 'DESC' // 👈 NUEVO: Más recientes primero
+        'order' => 'DESC'
 ]);
 
 // Filtrar: Mostrar activas + propias ocultas
 $responses = array_filter($all_responses, function($r) use ($user_id) {
-    if ($r->comment_approved === '1') return true; // Activa
-    if ($r->comment_approved === 'hidden' && $r->user_id == $user_id) return true; // Propia oculta
+    if ($r->comment_approved === '1') return true;
+    if ($r->comment_approved === 'hidden' && $r->user_id == $user_id) return true;
     return false;
 });
 ?>
@@ -86,15 +92,19 @@ $responses = array_filter($all_responses, function($r) use ($user_id) {
     <?php endif; ?>
 
     <?php
-    // Resource Viewer
-    $resource_args = [
-            'activity' => $activity,
-            'activity_type' => $activity_type,
-            'activity_file' => $activity_file,
-            'activity_url' => $activity_url
-    ];
-    include OPENMIND_PATH . 'templates/components/activity/resource-viewer.php';
-    ?>
+    // ✅ ACTUALIZADO - Usar nuevo componente de recursos múltiples
+    if (!empty($resources)): ?>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-book-open text-primary-600"></i>
+                Recursos de la actividad
+            </h3>
+            <?php
+            $resources_args = ['resources' => $resources];
+            include OPENMIND_PATH . 'templates/components/activity-resources.php';
+            ?>
+        </div>
+    <?php endif; ?>
 
     <?php
     // Response Form PRIMERO (acordeón cerrado)

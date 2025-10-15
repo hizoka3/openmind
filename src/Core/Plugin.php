@@ -70,12 +70,15 @@ class Plugin {
             'deleteResponse'
         ]);
 
-        // ===== RESPUESTA DEL PSICÓLOGO =====
-
         // Comentario del psicólogo sobre actividad
         add_action('wp_ajax_openmind_psychologist_response', [
             '\Openmind\Controllers\ActivityController',
             'psychologistResponse'
+        ]);
+
+        add_action('wp_ajax_openmind_render_resource_row', [
+            '\Openmind\Admin\ActivityMetaboxes',
+            'ajaxRenderResourceRow'
         ]);
     }
 

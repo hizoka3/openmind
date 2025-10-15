@@ -176,7 +176,6 @@ class ActivityController {
         ]);
 
         if ($comment_id) {
-            // Incrementar contador
             $count = (int) get_post_meta($assignment_id, 'response_count', true);
             update_post_meta($assignment_id, 'response_count', $count + 1);
 
@@ -224,6 +223,9 @@ class ActivityController {
         ]);
     }
 
+    /**
+     * ✅ ACTUALIZADO - Retorna array de recursos
+     */
     public static function getActivityData(int $assignment_id): ?array {
         $assignment = get_post($assignment_id);
         if (!$assignment || $assignment->post_type !== 'activity_assignment') {
@@ -233,12 +235,27 @@ class ActivityController {
         $library_id = $assignment->post_parent;
         $library = get_post($library_id);
 
+        // ✅ NUEVO - Obtener múltiples recursos
+        $resources = get_post_meta($library_id, '_activity_resources', true) ?: [];
+
+        // Fallback para actividades antiguas no migradas
+        if (empty($resources)) {
+            $old_type = get_post_meta($library_id, '_activity_type', true);
+            if ($old_type) {
+                $resources = [[
+                    'type' => $old_type,
+                    'file_id' => get_post_meta($library_id, '_activity_file', true) ?: '',
+                    'url' => get_post_meta($library_id, '_activity_url', true) ?: '',
+                    'title' => '',
+                    'order' => 0
+                ]];
+            }
+        }
+
         return [
             'assignment' => $assignment,
             'library' => $library,
-            'type' => get_post_meta($library_id, '_activity_type', true),
-            'file_id' => get_post_meta($library_id, '_activity_file', true),
-            'url' => get_post_meta($library_id, '_activity_url', true),
+            'resources' => $resources, // ✅ NUEVO - Array de recursos
             'patient_id' => get_post_meta($assignment_id, 'patient_id', true),
             'psychologist_id' => get_post_meta($assignment_id, 'psychologist_id', true),
             'status' => get_post_meta($assignment_id, 'status', true),
@@ -263,13 +280,11 @@ class ActivityController {
         $response_id = absint($_POST['response_id']);
         $content = wp_kses_post($_POST['response_content']);
 
-        // Verificar que la actividad pertenece al paciente
         $patient_id = get_post_meta($assignment_id, 'patient_id', true);
         if ($patient_id != $user_id) {
             wp_send_json_error(['message' => 'Actividad no pertenece al usuario']);
         }
 
-        // Editar respuesta existente
         if ($response_id > 0) {
             $comment = get_comment($response_id);
             if (!$comment || $comment->user_id != $user_id) {
@@ -283,9 +298,7 @@ class ActivityController {
 
             $final_response_id = $response_id;
             $action_type = 'updated';
-        }
-        // Nueva respuesta
-        else {
+        } else {
             $final_response_id = wp_insert_comment([
                 'comment_post_ID' => $assignment_id,
                 'comment_type' => 'activity_response',
@@ -300,7 +313,6 @@ class ActivityController {
 
             $action_type = 'created';
 
-            // Actualizar status y completed_at en primera respuesta
             $response_count = get_comments([
                 'post_id' => $assignment_id,
                 'type' => 'activity_response',
@@ -321,7 +333,7 @@ class ActivityController {
             require_once(ABSPATH . 'wp-admin/includes/media.php');
 
             $files_count = count($_FILES['response_files']['name']);
-            $files_count = min($files_count, 5); // Máximo 5
+            $files_count = min($files_count, 5);
 
             for ($i = 0; $i < $files_count; $i++) {
                 if ($_FILES['response_files']['error'][$i] === UPLOAD_ERR_OK) {
@@ -354,7 +366,6 @@ class ActivityController {
             }
 
             if (!empty($uploaded_files)) {
-                // Si es edición, combinar con archivos existentes
                 if ($response_id > 0) {
                     $existing_files = get_comment_meta($response_id, '_response_files', true) ?: [];
                     $uploaded_files = array_merge($existing_files, $uploaded_files);
@@ -384,7 +395,6 @@ class ActivityController {
             wp_send_json_error(['message' => 'Respuesta no encontrada']);
         }
 
-        // Eliminar archivos adjuntos
         $files = get_comment_meta($response_id, '_response_files', true);
         if ($files && is_array($files)) {
             foreach ($files as $file_id) {
@@ -403,7 +413,6 @@ class ActivityController {
     public static function psychologistResponse() {
         global $wpdb;
 
-        // 🔧 FIX: Cambiar nonce para que coincida con el form
         check_ajax_referer('submit_activity_response', 'response_nonce');
 
         $user_id = get_current_user_id();
@@ -415,26 +424,21 @@ class ActivityController {
         $patient_id = isset($_POST['patient_id']) ? absint($_POST['patient_id']) : 0;
         $content = isset($_POST['psychologist_response']) ? wp_kses_post($_POST['psychologist_response']) : '';
 
-        // 🔧 FIX: Validación mejorada
         if (!$assignment_id || !$patient_id) {
             wp_send_json_error('Datos incompletos');
         }
 
-        // Validar que haya contenido
         if (empty(trim(strip_tags($content)))) {
             wp_send_json_error('El comentario no puede estar vacío');
         }
 
-        // Verificar que la actividad fue asignada por este psicólogo
         $psychologist_id = get_post_meta($assignment_id, 'psychologist_id', true);
         if ($psychologist_id != $user_id) {
             wp_send_json_error('No autorizado');
         }
 
-        // Obtener datos del usuario
         $user = get_userdata($user_id);
 
-        // Crear comentario del psicólogo
         $comment_id = wp_insert_comment([
             'comment_post_ID' => $assignment_id,
             'comment_type' => 'psy_response',
@@ -453,7 +457,6 @@ class ActivityController {
             wp_send_json_error('Error al guardar comentario');
         }
 
-        // Procesar archivos adjuntos (si los hay)
         if (!empty($_FILES['response_files']['name'][0])) {
             require_once(ABSPATH . 'wp-admin/includes/file.php');
             require_once(ABSPATH . 'wp-admin/includes/media.php');
@@ -485,7 +488,6 @@ class ActivityController {
             }
         }
 
-        // 🔧 FIX: Retornar mensaje en el formato correcto
         wp_send_json_success([
             'message' => 'Comentario enviado correctamente',
             'comment_id' => $comment_id

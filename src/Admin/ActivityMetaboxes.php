@@ -5,249 +5,493 @@ class ActivityMetaboxes {
 
     public static function register(): void {
         add_meta_box(
-            'activity_resource_metabox',
-            'Recurso de la Actividad',
-            [self::class, 'renderResourceMetabox'],
-            'activity',
-            'normal',
-            'high'
+                'activity_resources_metabox',
+                'Recursos de la Actividad',
+                [self::class, 'renderResourcesMetabox'],
+                'activity',
+                'normal',
+                'high'
         );
     }
 
-    public static function renderResourceMetabox($post): void {
+    public static function renderResourcesMetabox($post): void {
         wp_nonce_field('openmind_activity_meta', 'openmind_activity_nonce');
 
-        $type = get_post_meta($post->ID, '_activity_type', true) ?: 'pdf';
-        $file_id = get_post_meta($post->ID, '_activity_file', true);
-        $url = get_post_meta($post->ID, '_activity_url', true);
+        $resources = get_post_meta($post->ID, '_activity_resources', true) ?: [];
+
+        // Fallback para actividades antiguas
+        if (empty($resources)) {
+            $old_type = get_post_meta($post->ID, '_activity_type', true);
+            if ($old_type) {
+                $resources = [[
+                        'type' => $old_type,
+                        'file_id' => get_post_meta($post->ID, '_activity_file', true) ?: '',
+                        'url' => get_post_meta($post->ID, '_activity_url', true) ?: '',
+                        'title' => '',
+                        'order' => 0
+                ]];
+            }
+        }
+
+        $resource_count = count($resources);
+        ?>
+
+        <div id="activity-resources-wrapper">
+            <div style="margin-bottom: 20px; padding: 15px; background: #f0f6fc; border-left: 4px solid #2271b1; border-radius: 4px;">
+                <p style="margin: 0; font-size: 13px;">
+                    <span class="dashicons dashicons-info" style="vertical-align: middle;"></span>
+                    <strong>Puedes agregar hasta 5 recursos</strong> (videos de YouTube, PDFs o links externos)
+                </p>
+                <p style="margin: 8px 0 0 0; font-size: 13px; color: #646970;">
+                    Arrastra las filas para reordenar • <span id="resource-counter"><?php echo $resource_count; ?>/5</span> recursos
+                </p>
+            </div>
+
+            <div id="resources-container">
+                <?php if (!empty($resources)): ?>
+                    <?php foreach ($resources as $index => $resource): ?>
+                        <?php self::renderResourceRow($index, $resource); ?>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+
+            <button type="button" id="add-resource-btn" class="button button-secondary" style="margin-top: 15px;">
+                <span class="dashicons dashicons-plus-alt" style="vertical-align: middle; margin-top: 3px;"></span>
+                Agregar Recurso
+            </button>
+        </div>
+
+        <?php self::renderScripts(); ?>
+        <?php
+    }
+
+    private static function renderResourceRow(int $index, array $resource = []): void {
+        $type = $resource['type'] ?? 'pdf';
+        $file_id = $resource['file_id'] ?? '';
+        $url = $resource['url'] ?? '';
+        $title = $resource['title'] ?? '';
+        $order = $resource['order'] ?? $index;
 
         $show_file = ($type === 'pdf');
         $show_url = in_array($type, ['youtube', 'link']);
         ?>
-
-        <div style="padding: 15px 0;">
-            <!-- Selector de Tipo -->
-            <div style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #ddd;">
-                <p style="margin-bottom: 12px; font-weight: 600; font-size: 14px;">Tipo de Recurso *</p>
-
-                <label style="display: inline-block; margin-right: 20px; cursor: pointer; padding: 8px 12px; border: 2px solid #ddd; border-radius: 4px; transition: all 0.2s;">
-                    <input type="radio" name="activity_type" value="pdf" <?php checked($type, 'pdf'); ?>
-                           onchange="toggleResourceInput(this.value)" required style="margin-right: 6px;">
-                    <span class="dashicons dashicons-media-document" style="color: #2271b1; vertical-align: middle;"></span>
-                    <strong>PDF</strong>
-                </label>
-
-                <label style="display: inline-block; margin-right: 20px; cursor: pointer; padding: 8px 12px; border: 2px solid #ddd; border-radius: 4px; transition: all 0.2s;">
-                    <input type="radio" name="activity_type" value="youtube" <?php checked($type, 'youtube'); ?>
-                           onchange="toggleResourceInput(this.value)" style="margin-right: 6px;">
-                    <span class="dashicons dashicons-video-alt3" style="color: #d63638; vertical-align: middle;"></span>
-                    <strong>YouTube</strong>
-                </label>
-
-                <label style="display: inline-block; cursor: pointer; padding: 8px 12px; border: 2px solid #ddd; border-radius: 4px; transition: all 0.2s;">
-                    <input type="radio" name="activity_type" value="link" <?php checked($type, 'link'); ?>
-                           onchange="toggleResourceInput(this.value)" style="margin-right: 6px;">
-                    <span class="dashicons dashicons-admin-links" style="color: #2271b1; vertical-align: middle;"></span>
-                    <strong>Link Externo</strong>
-                </label>
+        <div class="resource-row" data-index="<?php echo $index; ?>" draggable="true">
+            <div class="resource-header">
+                <span class="drag-handle dashicons dashicons-menu" title="Arrastra para reordenar"></span>
+                <span class="resource-number">#<?php echo $index + 1; ?></span>
+                <button type="button" class="remove-resource" title="Eliminar recurso">
+                    <span class="dashicons dashicons-no-alt"></span>
+                </button>
             </div>
 
-            <!-- Upload de archivo (PDF/Video) -->
-            <div id="file-upload-section" style="<?php echo $show_file ? '' : 'display:none;'; ?>">
-                <p style="margin-bottom: 10px; font-weight: 600; font-size: 14px;">Archivo</p>
+            <div class="resource-content">
+                <!-- Tipo de recurso -->
+                <div class="resource-field">
+                    <label>Tipo de Recurso *</label>
+                    <select name="activity_resources[<?php echo $index; ?>][type]" class="resource-type-select" required>
+                        <option value="pdf" <?php selected($type, 'pdf'); ?>>📄 PDF</option>
+                        <option value="youtube" <?php selected($type, 'youtube'); ?>>🎬 YouTube</option>
+                        <option value="link" <?php selected($type, 'link'); ?>>🔗 Link Externo</option>
+                    </select>
+                </div>
 
-                <div style="margin-bottom: 15px;">
-                    <button type="button" class="button button-primary" id="upload_file_button">
-                        <span class="dashicons dashicons-upload" style="vertical-align: middle; margin-top: 3px;"></span>
-                        Seleccionar Archivo
+                <!-- Upload PDF -->
+                <div class="resource-field file-upload-field" style="<?php echo $show_file ? '' : 'display:none;'; ?>">
+                    <label>Archivo PDF *</label>
+                    <button type="button" class="button upload-pdf-btn">
+                        <span class="dashicons dashicons-upload" style="vertical-align: middle;"></span>
+                        Seleccionar PDF
                     </button>
-                    <input type="hidden" id="activity_file_id" name="activity_file" value="<?php echo esc_attr($file_id); ?>">
+                    <input type="hidden" class="pdf-file-id" name="activity_resources[<?php echo $index; ?>][file_id]" value="<?php echo esc_attr($file_id); ?>">
+
+                    <div class="pdf-preview" style="<?php echo $file_id ? '' : 'display:none;'; ?>">
+                        <?php if ($file_id):
+                            $file_url = wp_get_attachment_url($file_id);
+                            $file_name = basename(get_attached_file($file_id));
+                            ?>
+                            <span class="dashicons dashicons-media-document"></span>
+                            <a href="<?php echo esc_url($file_url); ?>" target="_blank"><?php echo esc_html($file_name); ?></a>
+                            <button type="button" class="remove-pdf">×</button>
+                        <?php endif; ?>
+                    </div>
                 </div>
 
-                <div id="file_preview" style="<?php echo $file_id ? '' : 'display:none;'; ?>">
-                    <?php if ($file_id):
-                        $file_url = wp_get_attachment_url($file_id);
-                        $file_name = basename(get_attached_file($file_id));
-                        ?>
-                        <div style="padding: 12px; background: #f0f0f1; border-radius: 4px; display: inline-block;">
-                            <span class="dashicons dashicons-media-default" style="vertical-align: middle; color: #2271b1;"></span>
-                            <a href="<?php echo esc_url($file_url); ?>" target="_blank" style="text-decoration: none; font-weight: 500;">
-                                <?php echo esc_html($file_name); ?>
-                            </a>
-                            <button type="button" class="button-link-delete" id="remove_file_button" style="color: #d63638; margin-left: 10px;">
-                                Eliminar
-                            </button>
-                        </div>
-                    <?php endif; ?>
+                <!-- Input URL -->
+                <div class="resource-field url-input-field" style="<?php echo $show_url ? '' : 'display:none;'; ?>">
+                    <label>URL *</label>
+                    <input type="url" class="resource-url" name="activity_resources[<?php echo $index; ?>][url]"
+                           value="<?php echo esc_attr($url); ?>"
+                           placeholder="https://">
+                    <p class="description url-hint"></p>
                 </div>
 
-                <p class="description" style="margin-top: 10px;">
-                    Sube un archivo PDF
-                </p>
-            </div>
+                <!-- Título opcional -->
+                <div class="resource-field">
+                    <label>Título descriptivo (opcional)</label>
+                    <input type="text" name="activity_resources[<?php echo $index; ?>][title]"
+                           value="<?php echo esc_attr($title); ?>"
+                           placeholder="Ej: Guía de ejercicios">
+                </div>
 
-            <!-- Input de URL (YouTube/Link) -->
-            <div id="url-input-section" style="<?php echo $show_url ? '' : 'display:none;'; ?>">
-                <p style="margin-bottom: 10px; font-weight: 600; font-size: 14px;">URL del Recurso</p>
-
-                <input type="url"
-                       name="activity_url"
-                       id="activity_url"
-                       value="<?php echo esc_attr($url); ?>"
-                       placeholder="https://..."
-                       style="width: 100%; max-width: 600px; padding: 8px 12px; font-size: 14px;"
-                       class="regular-text">
-
-                <p class="description" style="margin-top: 10px;">
-                    <span id="url-hint-youtube" style="<?php echo $type === 'youtube' ? '' : 'display:none;'; ?>">
-                        <strong>YouTube:</strong> Ejemplo: https://www.youtube.com/watch?v=VIDEO_ID
-                    </span>
-                    <span id="url-hint-link" style="<?php echo $type === 'link' ? '' : 'display:none;'; ?>">
-                        <strong>Link externo:</strong> URL completa del recurso (artículo, podcast, sitio web, etc.)
-                    </span>
-                </p>
+                <input type="hidden" name="activity_resources[<?php echo $index; ?>][order]" value="<?php echo $order; ?>" class="resource-order">
             </div>
         </div>
+        <?php
+    }
+
+    private static function renderScripts(): void {
+        ?>
+        <style>
+            #resources-container {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .resource-row {
+                background: #fff;
+                border: 1px solid #c3c4c7;
+                border-radius: 4px;
+                padding: 15px;
+                cursor: move;
+                transition: all 0.2s;
+            }
+
+            .resource-row:hover {
+                border-color: #2271b1;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+
+            .resource-row.dragging {
+                opacity: 0.5;
+                transform: scale(0.98);
+            }
+
+            .resource-row.drag-over {
+                border-color: #2271b1;
+                border-style: dashed;
+                background: #f0f6fc;
+            }
+
+            .resource-header {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+                border-bottom: 1px solid #dcdcde;
+            }
+
+            .drag-handle {
+                color: #8c8f94;
+                cursor: move;
+                font-size: 20px;
+            }
+
+            .drag-handle:hover {
+                color: #2271b1;
+            }
+
+            .resource-number {
+                font-weight: 600;
+                color: #2271b1;
+                font-size: 14px;
+            }
+
+            .remove-resource {
+                margin-left: auto;
+                background: none;
+                border: none;
+                cursor: pointer;
+                padding: 4px;
+                color: #d63638;
+                font-size: 18px;
+            }
+
+            .remove-resource:hover {
+                color: #b32d2e;
+            }
+
+            .resource-content {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .resource-field label {
+                display: block;
+                font-weight: 600;
+                font-size: 13px;
+                margin-bottom: 6px;
+            }
+
+            .resource-field input[type="text"],
+            .resource-field input[type="url"],
+            .resource-field select {
+                width: 100%;
+                max-width: 500px;
+            }
+
+            .pdf-preview {
+                margin-top: 10px;
+                padding: 10px;
+                background: #f0f0f1;
+                border-radius: 4px;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .pdf-preview a {
+                text-decoration: none;
+                font-weight: 500;
+            }
+
+            .pdf-preview a:hover {
+                text-decoration: underline;
+            }
+
+            .remove-pdf {
+                background: none;
+                border: none;
+                color: #d63638;
+                font-size: 18px;
+                cursor: pointer;
+                padding: 0 4px;
+            }
+
+            .url-hint {
+                font-size: 12px;
+                color: #646970;
+                margin-top: 5px;
+            }
+
+            #add-resource-btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+        </style>
 
         <script>
-            jQuery(document).ready(function($) {
-                // Media Uploader
-                let fileFrame;
+            (function() {
+                let resourceIndex = <?php echo count(get_post_meta(get_the_ID(), '_activity_resources', true) ?: []); ?>;
+                const maxResources = 5;
+                let draggedElement = null;
 
-                $('#upload_file_button').on('click', function(e) {
-                    e.preventDefault();
+                // Actualizar contador
+                function updateCounter() {
+                    const count = document.querySelectorAll('.resource-row').length;
+                    document.getElementById('resource-counter').textContent = `${count}/${maxResources}`;
+                    document.getElementById('add-resource-btn').disabled = (count >= maxResources);
+                }
 
-                    if (fileFrame) {
-                        fileFrame.open();
-                        return;
+                // Actualizar números
+                function updateResourceNumbers() {
+                    document.querySelectorAll('.resource-row').forEach((row, index) => {
+                        row.dataset.index = index;
+                        row.querySelector('.resource-number').textContent = `#${index + 1}`;
+                        row.querySelector('.resource-order').value = index;
+
+                        // Actualizar nombres de inputs
+                        row.querySelectorAll('[name^="activity_resources"]').forEach(input => {
+                            const name = input.getAttribute('name');
+                            input.setAttribute('name', name.replace(/\[\d+\]/, `[${index}]`));
+                        });
+                    });
+                }
+
+                // Agregar recurso
+                document.getElementById('add-resource-btn').addEventListener('click', function() {
+                    if (document.querySelectorAll('.resource-row').length >= maxResources) return;
+
+                    fetch(ajaxurl, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                        body: `action=openmind_render_resource_row&index=${resourceIndex}&nonce=<?php echo wp_create_nonce('openmind_resource_row'); ?>`
+                    })
+                        .then(res => res.text())
+                        .then(html => {
+                            const container = document.getElementById('resources-container');
+                            container.insertAdjacentHTML('beforeend', html);
+                            resourceIndex++;
+                            updateCounter();
+                            updateResourceNumbers();
+                            initResourceRow(container.lastElementChild);
+                        });
+                });
+
+                // Eliminar recurso
+                document.addEventListener('click', function(e) {
+                    if (e.target.closest('.remove-resource')) {
+                        if (confirm('¿Eliminar este recurso?')) {
+                            e.target.closest('.resource-row').remove();
+                            updateCounter();
+                            updateResourceNumbers();
+                        }
                     }
 
-                    fileFrame = wp.media({
-                        title: 'Seleccionar PDF',
-                        button: { text: 'Usar este PDF' },
-                        multiple: false,
-                        library: {
-                            type: 'application/pdf'
+                    if (e.target.closest('.remove-pdf')) {
+                        const row = e.target.closest('.resource-row');
+                        row.querySelector('.pdf-file-id').value = '';
+                        row.querySelector('.pdf-preview').style.display = 'none';
+                    }
+                });
+
+                // Drag & Drop
+                document.addEventListener('dragstart', function(e) {
+                    if (e.target.classList.contains('resource-row')) {
+                        draggedElement = e.target;
+                        e.target.classList.add('dragging');
+                    }
+                });
+
+                document.addEventListener('dragend', function(e) {
+                    if (e.target.classList.contains('resource-row')) {
+                        e.target.classList.remove('dragging');
+                        document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+                    }
+                });
+
+                document.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    const afterElement = getDragAfterElement(document.getElementById('resources-container'), e.clientY);
+                    const dragging = document.querySelector('.dragging');
+
+                    if (afterElement == null) {
+                        document.getElementById('resources-container').appendChild(dragging);
+                    } else {
+                        document.getElementById('resources-container').insertBefore(dragging, afterElement);
+                    }
+                });
+
+                document.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    updateResourceNumbers();
+                });
+
+                function getDragAfterElement(container, y) {
+                    const draggableElements = [...container.querySelectorAll('.resource-row:not(.dragging)')];
+
+                    return draggableElements.reduce((closest, child) => {
+                        const box = child.getBoundingClientRect();
+                        const offset = y - box.top - box.height / 2;
+
+                        if (offset < 0 && offset > closest.offset) {
+                            return { offset: offset, element: child };
+                        } else {
+                            return closest;
+                        }
+                    }, { offset: Number.NEGATIVE_INFINITY }).element;
+                }
+
+                // Inicializar row
+                function initResourceRow(row) {
+                    const typeSelect = row.querySelector('.resource-type-select');
+                    const fileField = row.querySelector('.file-upload-field');
+                    const urlField = row.querySelector('.url-input-field');
+                    const urlHint = row.querySelector('.url-hint');
+
+                    typeSelect.addEventListener('change', function() {
+                        const type = this.value;
+
+                        if (type === 'pdf') {
+                            fileField.style.display = 'block';
+                            urlField.style.display = 'none';
+                        } else {
+                            fileField.style.display = 'none';
+                            urlField.style.display = 'block';
+
+                            if (type === 'youtube') {
+                                urlHint.textContent = 'Ejemplo: https://www.youtube.com/watch?v=VIDEO_ID';
+                            } else {
+                                urlHint.textContent = 'URL completa del recurso externo';
+                            }
                         }
                     });
 
-                    fileFrame.on('select', function() {
-                        const attachment = fileFrame.state().get('selection').first().toJSON();
-                        $('#activity_file_id').val(attachment.id);
+                    // Upload PDF
+                    const uploadBtn = row.querySelector('.upload-pdf-btn');
+                    uploadBtn.addEventListener('click', function() {
+                        let frame = wp.media({
+                            title: 'Seleccionar PDF',
+                            button: { text: 'Usar este PDF' },
+                            multiple: false,
+                            library: { type: 'application/pdf' }
+                        });
 
-                        $('#file_preview').html(
-                            '<div style="padding: 12px; background: #f0f0f1; border-radius: 4px; display: inline-block;">' +
-                            '<span class="dashicons dashicons-media-default" style="vertical-align: middle; color: #2271b1;"></span> ' +
-                            '<a href="' + attachment.url + '" target="_blank" style="text-decoration: none; font-weight: 500;">' +
-                            attachment.filename +
-                            '</a> ' +
-                            '<button type="button" class="button-link-delete" id="remove_file_button" style="color: #d63638; margin-left: 10px;">Eliminar</button>' +
-                            '</div>'
-                        ).show();
-                    });
+                        frame.on('select', function() {
+                            const attachment = frame.state().get('selection').first().toJSON();
+                            row.querySelector('.pdf-file-id').value = attachment.id;
+                            row.querySelector('.pdf-preview').innerHTML = `
+                            <span class="dashicons dashicons-media-document"></span>
+                            <a href="${attachment.url}" target="_blank">${attachment.filename}</a>
+                            <button type="button" class="remove-pdf">×</button>
+                        `;
+                            row.querySelector('.pdf-preview').style.display = 'inline-flex';
+                        });
 
-                    fileFrame.open();
-                });
-
-                // Remover archivo
-                $(document).on('click', '#remove_file_button', function(e) {
-                    e.preventDefault();
-                    $('#activity_file_id').val('');
-                    $('#file_preview').html('').hide();
-                });
-
-                // Highlight del radio seleccionado
-                function updateRadioStyles() {
-                    $('input[name="activity_type"]').parent().css({
-                        'border-color': '#ddd',
-                        'background': 'transparent'
-                    });
-                    $('input[name="activity_type"]:checked').parent().css({
-                        'border-color': '#2271b1',
-                        'background': '#f0f6fc'
+                        frame.open();
                     });
                 }
 
-                $('input[name="activity_type"]').on('change', updateRadioStyles);
-                updateRadioStyles();
-            });
-
-            // Toggle entre File Upload y URL Input
-            function toggleResourceInput(type) {
-                const fileSection = document.getElementById('file-upload-section');
-                const urlSection = document.getElementById('url-input-section');
-                const urlHintYoutube = document.getElementById('url-hint-youtube');
-                const urlHintLink = document.getElementById('url-hint-link');
-
-                if (type === 'pdf') {
-                    fileSection.style.display = 'block';
-                    urlSection.style.display = 'none';
-                } else {
-                    fileSection.style.display = 'none';
-                    urlSection.style.display = 'block';
-
-                    if (type === 'youtube') {
-                        urlHintYoutube.style.display = 'inline';
-                        urlHintLink.style.display = 'none';
-                    } else {
-                        urlHintYoutube.style.display = 'none';
-                        urlHintLink.style.display = 'inline';
-                    }
-                }
-            }
-
-            // Hacer función global
-            window.toggleResourceInput = toggleResourceInput;
+                // Inicializar rows existentes
+                document.querySelectorAll('.resource-row').forEach(initResourceRow);
+                updateCounter();
+            })();
         </script>
-
-        <style>
-            .dashicons { vertical-align: middle; }
-            #file_preview a:hover { text-decoration: underline !important; }
-            input[name="activity_type"]:hover + span {
-                opacity: 0.8;
-            }
-        </style>
         <?php
     }
 
     public static function save($post_id, $post): void {
-        // Verificar nonce
         if (!isset($_POST['openmind_activity_nonce']) ||
-            !wp_verify_nonce($_POST['openmind_activity_nonce'], 'openmind_activity_meta')) {
+                !wp_verify_nonce($_POST['openmind_activity_nonce'], 'openmind_activity_meta')) {
             return;
         }
 
-        // Verificar autosave
-        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
-            return;
-        }
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+        if (!current_user_can('manage_activity_library')) return;
 
-        // Verificar permisos
-        if (!current_user_can('manage_activity_library')) {
-            return;
-        }
+        $resources = [];
 
-        // Guardar tipo
-        if (isset($_POST['activity_type'])) {
-            $type = sanitize_text_field($_POST['activity_type']);
-            update_post_meta($post_id, '_activity_type', $type);
+        if (isset($_POST['activity_resources']) && is_array($_POST['activity_resources'])) {
+            foreach ($_POST['activity_resources'] as $resource) {
+                $type = sanitize_text_field($resource['type'] ?? '');
 
-            // Guardar archivo o URL según el tipo
-            if ($type === 'pdf') {
-                if (isset($_POST['activity_file']) && !empty($_POST['activity_file'])) {
-                    update_post_meta($post_id, '_activity_file', absint($_POST['activity_file']));
-                } else {
-                    delete_post_meta($post_id, '_activity_file');
+                if (!in_array($type, ['pdf', 'youtube', 'link'])) continue;
+
+                $clean_resource = [
+                        'type' => $type,
+                        'file_id' => absint($resource['file_id'] ?? 0),
+                        'url' => esc_url_raw($resource['url'] ?? ''),
+                        'title' => sanitize_text_field($resource['title'] ?? ''),
+                        'order' => absint($resource['order'] ?? 0)
+                ];
+
+                // Validar que tenga contenido
+                if ($type === 'pdf' && $clean_resource['file_id'] > 0) {
+                    $resources[] = $clean_resource;
+                } elseif (in_array($type, ['youtube', 'link']) && !empty($clean_resource['url'])) {
+                    $resources[] = $clean_resource;
                 }
-                delete_post_meta($post_id, '_activity_url');
-            } else {
-                if (isset($_POST['activity_url']) && !empty($_POST['activity_url'])) {
-                    update_post_meta($post_id, '_activity_url', esc_url_raw($_POST['activity_url']));
-                } else {
-                    delete_post_meta($post_id, '_activity_url');
-                }
-                delete_post_meta($post_id, '_activity_file');
             }
+
+            // Limitar a 5
+            $resources = array_slice($resources, 0, 5);
         }
+
+        update_post_meta($post_id, '_activity_resources', $resources);
+    }
+
+    // AJAX: Renderizar nueva fila
+    public static function ajaxRenderResourceRow(): void {
+        check_ajax_referer('openmind_resource_row', 'nonce');
+
+        if (!current_user_can('manage_activity_library')) {
+            wp_die('No autorizado');
+        }
+
+        $index = absint($_GET['index'] ?? 0);
+        self::renderResourceRow($index);
+        wp_die();
     }
 }
