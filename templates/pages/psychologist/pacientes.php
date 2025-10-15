@@ -1,5 +1,4 @@
-<?php
-// templates/pages/psychologist/pacientes.php
+<?php // templates/pages/psychologist/pacientes.php
 if (!defined('ABSPATH')) exit;
 
 $user_id = get_current_user_id();
@@ -29,10 +28,12 @@ $patients = get_users([
                 <?php echo count($patients); ?> paciente<?php echo count($patients) !== 1 ? 's' : ''; ?> registrado<?php echo count($patients) !== 1 ? 's' : ''; ?>
             </p>
         </div>
-        <button class="btn-primary" id="add-patient">
-            <i class="fa-solid fa-user-plus mr-2"></i>
-            Agregar Paciente
-        </button>
+        <div class="flex gap-3">
+            <button class="bg-primary-500 text-white px-6 py-3 rounded-xl"
+                    onclick="openAssignPatientModal()">
+                Asignar Paciente Existente
+            </button>
+        </div>
     </div>
 
     <?php if (empty($patients)): ?>
@@ -44,12 +45,19 @@ $patients = get_users([
                 No tienes pacientes asignados
             </h3>
             <p class="text-gray-600 m-0 mb-6">
-                Comienza agregando tu primer paciente
+                Puedes crear un nuevo paciente o asignar uno existente
             </p>
-            <button class="btn-primary" id="add-first-patient">
-                <i class="fa-solid fa-user-plus mr-2"></i>
-                Agregar Primer Paciente
-            </button>
+            <div class="flex gap-4 justify-center">
+                <button class="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-xl transition-colors"
+                        onclick="openAssignPatientModal()">
+                    <i class="fa-solid fa-user-check mr-2"></i>
+                    Asignar Paciente
+                </button>
+                <button class="btn-primary" id="add-first-patient">
+                    <i class="fa-solid fa-user-plus mr-2"></i>
+                    Crear Paciente
+                </button>
+            </div>
         </div>
     <?php else: ?>
         <!-- Tabla Modernizada -->
@@ -76,6 +84,8 @@ $patients = get_users([
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                 <?php foreach ($patients as $patient):
+                    $status = get_user_meta($patient->ID, 'openmind_status', true);
+                    $is_active = $status === 'active';
                     $last_activity = get_user_meta($patient->ID, 'last_activity_date', true);
                     $pending_count = count(get_posts([
                             'post_type' => 'activity',
@@ -114,9 +124,9 @@ $patients = get_users([
                             <?php echo date('d/m/Y', strtotime($patient->user_registered)); ?>
                         </td>
                         <td class="px-6 py-4">
-                                <span class="inline-flex items-center gap-1 text-xs font-medium px-3 py-1 rounded-full <?php echo $last_activity ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'; ?>">
-                                    <?php echo $last_activity ? '🟢 Activo' : '⚪ Inactivo'; ?>
-                                </span>
+                            <span class="inline-flex items-center gap-1 text-xs font-medium px-3 py-1 rounded-full <?php echo $is_active ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'; ?>">
+                                <?php echo $is_active ? '🟢 Activo' : '🟡 Inactivo'; ?>
+                            </span>
                         </td>
                         <td class="px-6 py-4">
                             <div class="flex justify-end gap-2">
@@ -141,16 +151,159 @@ $patients = get_users([
     <?php endif; ?>
 </div>
 
-<script>
-    document.getElementById('add-patient')?.addEventListener('click', () => {
-        if (typeof OpenmindApp !== 'undefined') {
-            OpenmindApp.showAddPatientModal();
-        }
-    });
+<!-- Modal: Asignar Paciente Existente -->
+<div id="assign-patient-modal" class="fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50" style="display: none;">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+        <!-- Header -->
+        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+            <div>
+                <h3 class="text-xl font-bold text-gray-800">Asignar Paciente</h3>
+                <p class="text-sm text-gray-600 mt-1">Asigna un paciente existente y actívalo</p>
+            </div>
+            <button type="button"
+                    onclick="closeAssignPatientModal()"
+                    class="text-gray-400 hover:text-gray-600 transition-colors">
+                <i class="fa-solid fa-xmark text-2xl"></i>
+            </button>
+        </div>
 
-    document.getElementById('add-first-patient')?.addEventListener('click', () => {
-        if (typeof OpenmindApp !== 'undefined') {
-            OpenmindApp.showAddPatientModal();
+        <!-- Body -->
+        <form id="assign-patient-form" class="p-6">
+            <div class="mb-6">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                    Email del paciente <span class="text-red-500">*</span>
+                </label>
+                <input type="email"
+                       name="patient_email"
+                       id="assign-patient-email"
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                       placeholder="paciente@ejemplo.com"
+                       required>
+                <p class="text-xs text-gray-500 mt-2">
+                    <i class="fa-solid fa-info-circle mr-1"></i>
+                    El paciente debe estar registrado en el sistema
+                </p>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <div class="flex gap-3">
+                    <i class="fa-solid fa-lightbulb text-blue-600 text-xl"></i>
+                    <div class="text-sm text-blue-800">
+                        <strong>Importante:</strong> El paciente será asignado y <strong>activado automáticamente</strong> para que pueda acceder a todas las funcionalidades.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="flex gap-3">
+                <button type="button"
+                        onclick="closeAssignPatientModal()"
+                        class="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-colors">
+                    Cancelar
+                </button>
+                <button type="submit"
+                        class="flex-1 px-4 py-3 bg-primary-500 text-white rounded-lg">
+                    Asignar y Activar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Modal de asignación
+    window.openAssignPatientModal = function() {
+        document.getElementById('assign-patient-modal').style.display = 'flex';
+        document.getElementById('assign-patient-email').focus();
+    }
+
+    window.closeAssignPatientModal = function() {
+        document.getElementById('assign-patient-modal').style.display = 'none';
+        document.getElementById('assign-patient-form').reset();
+    }
+
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+        // Cerrar modal con ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeAssignPatientModal();
+            }
+        });
+
+        // Cerrar al hacer clic fuera
+        const modal = document.getElementById('assign-patient-modal');
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeAssignPatientModal();
+                }
+            });
         }
+
+        // Submit del formulario de asignación
+        const assignForm = document.getElementById('assign-patient-form');
+        if (assignForm) {
+            assignForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const email = document.getElementById('assign-patient-email').value.trim();
+
+                if (!email) {
+                    Toast.show('Por favor ingresa un email', 'error');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('action', 'openmind_assign_patient');
+                formData.append('nonce', openmindData.nonce);
+                formData.append('patient_email', email);
+
+                const submitBtn = assignForm.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Asignando...';
+
+                try {
+                    const response = await fetch(openmindData.ajaxUrl, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        Toast.show(data.data.message || 'Paciente asignado y activado correctamente', 'success');
+                        closeAssignPatientModal();
+
+                        // Recargar página después de 1 segundo
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        Toast.show(data.data || 'Error al asignar paciente', 'error');
+                    }
+                } catch (error) {
+                    Toast.show('Error de conexión', 'error');
+                    console.error(error);
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            });
+        }
+
+        // Botones de agregar paciente (funcionalidad existente)
+        document.getElementById('add-patient')?.addEventListener('click', () => {
+            if (typeof OpenmindApp !== 'undefined') {
+                OpenmindApp.showAddPatientModal();
+            }
+        });
+
+        document.getElementById('add-first-patient')?.addEventListener('click', () => {
+            if (typeof OpenmindApp !== 'undefined') {
+                OpenmindApp.showAddPatientModal();
+            }
+        });
     });
 </script>

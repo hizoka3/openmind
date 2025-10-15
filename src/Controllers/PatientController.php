@@ -1,6 +1,8 @@
 <?php // src/Controllers/PatientController.php
 namespace Openmind\Controllers;
 
+use Openmind\Core\AccessControl;
+
 class PatientController {
 
     public static function init(): void {
@@ -8,6 +10,75 @@ class PatientController {
         add_action('wp_ajax_openmind_remove_patient', [self::class, 'removePatient']);
         add_action('wp_ajax_openmind_get_patient_info', [self::class, 'getPatientInfo']);
         add_action('wp_ajax_openmind_get_patients', [self::class, 'getPatients']);
+        add_action('wp_ajax_openmind_assign_patient', [self::class, 'assignPatient']);
+    }
+
+    public static function assignPatient(): void {
+        check_ajax_referer('openmind_nonce', 'nonce');
+
+        if (!current_user_can('manage_patients')) {
+            wp_send_json_error('Sin permisos', 403);
+        }
+
+        $psychologist_id = get_current_user_id();
+        $patient_email = sanitize_email($_POST['patient_email'] ?? '');
+
+        if (empty($patient_email) || !is_email($patient_email)) {
+            wp_send_json_error('Email inválido');
+        }
+
+        // Buscar paciente
+        $patient = get_user_by('email', $patient_email);
+
+        if (!$patient) {
+            wp_send_json_error('El paciente no existe en el sistema');
+        }
+
+        // Verificar que sea paciente
+        if (!in_array('patient', $patient->roles)) {
+            wp_send_json_error('El usuario no es un paciente');
+        }
+
+        // Verificar que NO tenga psicólogo asignado
+        $current_psych = get_user_meta($patient->ID, 'psychologist_id', true);
+        if ($current_psych) {
+            wp_send_json_error('El paciente ya tiene un psicólogo asignado');
+        }
+
+        // Verificar que esté inactivo
+        $status = get_user_meta($patient->ID, 'openmind_status', true);
+        if ($status === 'active') {
+            wp_send_json_error('El paciente ya está activo');
+        }
+
+        // Asignar psicólogo
+        global $wpdb;
+        $inserted = $wpdb->replace(
+            $wpdb->prefix . 'openmind_relationships',
+            [
+                'psychologist_id' => $psychologist_id,
+                'patient_id' => $patient->ID
+            ],
+            ['%d', '%d']
+        );
+
+        if ($inserted === false) {
+            wp_send_json_error('Error al asignar paciente');
+        }
+
+        update_user_meta($patient->ID, 'psychologist_id', $psychologist_id);
+
+        // Activar automáticamente
+        AccessControl::activatePatient($patient->ID);
+
+        wp_send_json_success([
+            'message' => 'Paciente asignado y activado correctamente',
+            'patient' => [
+                'id' => $patient->ID,
+                'name' => $patient->display_name,
+                'email' => $patient->user_email
+            ]
+        ]);
     }
 
     public static function getPatients(): void {
@@ -31,7 +102,8 @@ class PatientController {
                 'ID' => $patient->ID,
                 'display_name' => $patient->display_name,
                 'user_email' => $patient->user_email,
-                'avatar' => get_avatar_url($patient->ID, ['size' => 40])
+                'avatar' => get_avatar_url($patient->ID, ['size' => 40]),
+                'status' => get_user_meta($patient->ID, 'openmind_status', true) ?: 'inactive'
             ];
         }, $patients);
 
@@ -117,8 +189,11 @@ class PatientController {
         if ($inserted !== false) {
             update_user_meta($patient_id, 'psychologist_id', $psychologist_id);
 
+            // Activar automáticamente al asignar
+            AccessControl::activatePatient($patient_id);
+
             wp_send_json_success([
-                'message' => 'Paciente agregado',
+                'message' => 'Paciente agregado y activado',
                 'patient' => [
                     'id' => $patient->ID,
                     'name' => $patient->display_name,

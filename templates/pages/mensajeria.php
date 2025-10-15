@@ -4,6 +4,8 @@
  * Funciona para psicólogos y pacientes
  */
 
+use Openmind\Core\AccessControl;
+
 if (!defined('ABSPATH')) exit;
 
 $user_id = get_current_user_id();

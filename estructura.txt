@@ -14,6 +14,7 @@
 │       ├── activity-detail.js
 │       ├── fontawesome-all.min.js
 │       ├── main.js
+│       ├── profile-uploader.js
 │       └── toast.js
 ├── build-deploy.sh
 ├── composer.json
@@ -46,10 +47,17 @@
 │   ├── openmind-v1.0.8.zip
 │   ├── openmind-v1.0.9.zip
 │   ├── openmind-v2.0.0.zip
-│   └── openmind-v2.0.1.zip
+│   ├── openmind-v2.0.1.zip
+│   ├── openmind-v2.0.2.zip
+│   ├── openmind-v2.0.3.zip
+│   ├── openmind-v2.0.4.zip
+│   ├── openmind-v2.0.5.zip
+│   ├── openmind-v2.0.6.zip
+│   └── openmind-v2.0.7.zip
 ├── src
 │   ├── Admin
-│   │   └── ActivityMetaboxes.php
+│   │   ├── ActivityMetaboxes.php
+│   │   └── PsychologistProfile.php
 │   ├── Controllers
 │   │   ├── ActivityController.php
 │   │   ├── AttachmentController.php
@@ -81,6 +89,7 @@
 │   │   │   ├── response-form.php
 │   │   │   └── response-item.php
 │   │   ├── activity-card.php
+│   │   ├── activity-resources.php
 │   │   ├── bitacora-form.php
 │   │   ├── bitacora-list.php
 │   │   ├── diary-list.php
@@ -138,4 +147,4 @@
     ├── fa-solid-900.woff
     └── fa-solid-900.woff2
 
-19 directories, 120 files
+19 directories, 129 files

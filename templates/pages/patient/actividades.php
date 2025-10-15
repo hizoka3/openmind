@@ -1,5 +1,4 @@
-<?php
-// templates/pages/patient/actividades.php
+<?php // templates/pages/patient/actividades.php
 if (!defined('ABSPATH')) exit;
 
 $user_id = get_current_user_id();

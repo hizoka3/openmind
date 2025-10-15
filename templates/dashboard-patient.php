@@ -1,8 +1,27 @@
 <?php // templates/dashboard-patient.php
 if (!current_user_can('patient')) wp_die('Acceso denegado');
 
+// Control de acceso temprano: verificar ANTES de cargar cualquier template
+use Openmind\Core\AccessControl;
+
 $user_id = get_current_user_id();
-$current_page = $_GET['view'] ?? 'inicio'; // 👈 Cambio: default a 'inicio'
+$current_page = $_GET['view'] ?? 'inicio';
+
+// Páginas que requieren cuenta activa
+$protected_pages = ['actividades', 'actividad-detalle', 'mensajeria', 'bitacora', 'bitacora-detalle', 'diario', 'diario-nuevo', 'diario-detalle'];
+
+// Si el paciente intenta acceder a página protegida y está inactivo
+if (in_array($current_page, $protected_pages) && !AccessControl::patientCanAccess($current_page)) {
+    // Guardar mensaje
+    set_transient('openmind_toast_' . $user_id, [
+            'message' => 'Debes activar tu cuenta para acceder a esta sección',
+            'type' => 'error'
+    ], 10);
+
+    // Redirect (aquí SÍ funciona porque es antes de get_header)
+    wp_redirect(home_url('/dashboard-paciente/?view=inicio'));
+    exit;
+}
 
 get_header();
 include OPENMIND_PATH . 'templates/components/toast.php';
@@ -17,7 +36,7 @@ include OPENMIND_PATH . 'templates/components/toast.php';
                 <?php
                 // Mapeo de vistas a archivos
                 $view_files = [
-                        'inicio' => 'inicio.php', // 👈 Nuevo mapeo
+                        'inicio' => 'inicio.php',
                         'actividades' => 'actividades.php',
                         'actividad-detalle' => 'actividad-detalle.php',
                         'mensajeria' => 'mensajeria.php',
@@ -43,18 +62,36 @@ include OPENMIND_PATH . 'templates/components/toast.php';
                             include $general_path;
                         } else {
                             echo '<div class="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-center my-6">
-                        <i class="fa-solid fa-triangle-exclamation mr-2"></i>
-                        Página no encontrada: ' . esc_html($current_page) . '
-                    </div>';
+                    <i class="fa-solid fa-triangle-exclamation mr-2"></i>
+                    Página no encontrada: ' . esc_html($current_page) . '
+                </div>';
                         }
                     }
                 } else {
                     // Vista no reconocida, cargar inicio
-                    include OPENMIND_PATH . 'templates/pages/patient/inicio.php'; // 👈 Cambio: fallback a inicio
+                    include OPENMIND_PATH . 'templates/pages/patient/inicio.php';
                 }
                 ?>
             </div>
         </div>
     </div>
+
+    <script>
+        // Mostrar Toast de transient si existe
+        document.addEventListener('DOMContentLoaded', function() {
+            <?php
+            $toast_data = get_transient('openmind_toast_' . $user_id);
+
+            if ($toast_data) {
+            delete_transient('openmind_toast_' . $user_id);
+            ?>
+            if (typeof Toast !== 'undefined') {
+                Toast.show('<?php echo esc_js($toast_data['message']); ?>', '<?php echo esc_js($toast_data['type']); ?>');
+            }
+            <?php
+            }
+            ?>
+        });
+    </script>
 
 <?php get_footer(); ?>
