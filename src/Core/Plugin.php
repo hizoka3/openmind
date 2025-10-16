@@ -99,7 +99,50 @@ class Plugin {
         add_filter('template_include', [self::class, 'loadTemplate']);
         add_filter('login_redirect', [self::class, 'redirectAfterLogin'], 10, 3);
         add_filter('get_avatar_url', [self::class, 'customAvatarUrl'], 10, 3);
+
+        // === NUEVOS HOOKS PARA BLOQUEAR ACCESO A WP-ADMIN Y OCULTAR BARRA ===
+        add_action('after_setup_theme', [self::class, 'hideAdminBar']);
+        add_action('admin_init', [self::class, 'restrictAdminAccess']);
+        add_filter('show_admin_bar', [self::class, 'shouldShowAdminBar']);
     }
+
+    // === NUEVOS MÉTODOS PARA RESTRICCIÓN ===
+    public static function hideAdminBar(): void {
+        if (!current_user_can('administrator')) {
+            $user = wp_get_current_user();
+            if (in_array('psychologist', $user->roles) || in_array('patient', $user->roles)) {
+                show_admin_bar(false);
+            }
+        }
+    }
+
+    public static function shouldShowAdminBar($show): bool {
+        if (!is_user_logged_in()) return false;
+
+        $user = wp_get_current_user();
+        if (in_array('psychologist', $user->roles) || in_array('patient', $user->roles)) {
+            return false;
+        }
+        return $show;
+    }
+
+    public static function restrictAdminAccess(): void {
+        if (!defined('DOING_AJAX') || !DOING_AJAX) {
+            $user = wp_get_current_user();
+
+            // Si es psicólogo o paciente, redirigir fuera de wp-admin
+            if (!empty($user->roles)) {
+                if (in_array('psychologist', $user->roles)) {
+                    wp_redirect(home_url('/dashboard-psicologo/'));
+                    exit;
+                } elseif (in_array('patient', $user->roles)) {
+                    wp_redirect(home_url('/dashboard-paciente/'));
+                    exit;
+                }
+            }
+        }
+    }
+    // === FIN NUEVOS MÉTODOS ===
 
     public static function loadTemplate(string $template): string {
         if (is_page('auth')) {
