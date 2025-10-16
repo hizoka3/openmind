@@ -27,26 +27,22 @@ class AuthController {
             wp_send_json_error(['message' => 'Email y contraseña son requeridos'], 400);
         }
 
-        // Buscar usuario por email
         $user = get_user_by('email', $email);
 
-        if (!$user) {
-            wp_send_json_error(['message' => 'Credenciales incorrectas'], 401);
+        if (!$user || !wp_check_password($password, $user->user_pass, $user->ID)) {
+            wp_send_json_error(['message' => 'Correo o contraseña incorrectos'], 401);
         }
 
-        // Verificar contraseña
-        if (!wp_check_password($password, $user->user_pass, $user->ID)) {
-            wp_send_json_error(['message' => 'Credenciales incorrectas'], 401);
-        }
-
-        // Login exitoso
         wp_set_current_user($user->ID);
         wp_set_auth_cookie($user->ID, $remember);
 
-        // Determinar redirect según rol
-        $redirect_url = in_array('psychologist', $user->roles)
-            ? home_url('/dashboard-psicologo/')
-            : home_url('/dashboard-paciente/');
+        if (in_array('administrator', $user->roles)) {
+            $redirect_url = admin_url();
+        } elseif (in_array('psychologist', $user->roles)) {
+            $redirect_url = home_url('/dashboard-psicologo/');
+        } else {
+            $redirect_url = home_url('/dashboard-paciente/');
+        }
 
         wp_send_json_success([
             'message' => '¡Bienvenido!',
@@ -67,7 +63,6 @@ class AuthController {
         $email = sanitize_email($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
 
-        // Validaciones
         if (empty($name) || empty($email) || empty($password)) {
             wp_send_json_error(['message' => 'Todos los campos son requeridos'], 400);
         }
@@ -76,22 +71,20 @@ class AuthController {
             wp_send_json_error(['message' => 'Email inválido'], 400);
         }
 
-        if (strlen($password) < 8) {
-            wp_send_json_error(['message' => 'La contraseña debe tener al menos 8 caracteres'], 400);
+        // Validar fuerza de contraseña: 8+ chars, 1 mayúscula, 1 número
+        if (!preg_match('/^(?=.*[A-Z])(?=.*\d).{8,}$/', $password)) {
+            wp_send_json_error(['message' => 'La contraseña debe tener al menos 8 caracteres, una mayúscula y un número'], 400);
         }
 
-        // Verificar si el email ya existe
         if (email_exists($email)) {
-            wp_send_json_error(['message' => 'Este email ya está registrado'], 400);
+            wp_send_json_error(['message' => 'Este correo ya está registrado. ¿Olvidaste tu contraseña?'], 400);
         }
 
-        // Generar username único
         $username = sanitize_user(strtolower(str_replace(' ', '', $name)));
         if (username_exists($username)) {
             $username .= '_' . wp_rand(100, 999);
         }
 
-        // Crear usuario paciente
         $user_id = wp_insert_user([
             'user_login' => $username,
             'user_email' => $email,
@@ -105,11 +98,9 @@ class AuthController {
             wp_send_json_error(['message' => $user_id->get_error_message()], 500);
         }
 
-        // Login automático después del registro
         wp_set_current_user($user_id);
         wp_set_auth_cookie($user_id, true);
 
-        // Email de bienvenida
         wp_mail(
             $email,
             'Bienvenido a OpenMind',
@@ -143,20 +134,18 @@ class AuthController {
             wp_send_json_error(['message' => 'Todos los campos son requeridos'], 400);
         }
 
-        if (strlen($new_password) < 8) {
-            wp_send_json_error(['message' => 'La contraseña debe tener al menos 8 caracteres'], 400);
+        // Misma validación de fuerza
+        if (!preg_match('/^(?=.*[A-Z])(?=.*\d).{8,}$/', $new_password)) {
+            wp_send_json_error(['message' => 'La contraseña debe tener al menos 8 caracteres, una mayúscula y un número'], 400);
         }
 
-        // Verificar contraseña actual
         $user = get_userdata($user_id);
         if (!wp_check_password($current_password, $user->user_pass, $user_id)) {
             wp_send_json_error(['message' => 'La contraseña actual es incorrecta'], 401);
         }
 
-        // Cambiar contraseña
         wp_set_password($new_password, $user_id);
 
-        // Email de confirmación
         wp_mail(
             $user->user_email,
             'Contraseña cambiada - OpenMind',
@@ -197,25 +186,21 @@ class AuthController {
             wp_send_json_error(['message' => 'Email inválido'], 400);
         }
 
-        // Buscar usuario por email
         $user = get_user_by('email', $email);
 
         if (!$user) {
-            // Por seguridad, no revelar si el email existe o no
+            // Por seguridad, no revelar si el email existe
             wp_send_json_success(['message' => 'Si el correo existe, recibirás un enlace de recuperación']);
         }
 
-        // Generar token de recuperación
         $reset_key = get_password_reset_key($user);
 
         if (is_wp_error($reset_key)) {
             wp_send_json_error(['message' => 'Error al generar enlace de recuperación'], 500);
         }
 
-        // Crear URL de reset
         $reset_url = network_site_url("wp-login.php?action=rp&key=$reset_key&login=" . rawurlencode($user->user_login), 'login');
 
-        // Enviar email
         $subject = 'Recuperar contraseña - OpenMind';
         $message = sprintf(
             "Hola %s,\n\nRecibimos una solicitud para restablecer tu contraseña.\n\nHaz clic en el siguiente enlace para crear una nueva contraseña:\n%s\n\nEste enlace expirará en 24 horas.\n\nSi no solicitaste esto, puedes ignorar este correo.\n\n--\nEquipo OpenMind",
@@ -225,11 +210,7 @@ class AuthController {
 
         $sent = wp_mail($email, $subject, $message);
 
-        if ($sent) {
-            wp_send_json_success(['message' => 'Si el correo existe, recibirás un enlace de recuperación']);
-        } else {
-            wp_send_json_error(['message' => 'Error al enviar el correo'], 500);
-        }
+        wp_send_json_success(['message' => 'Si el correo existe, recibirás un enlace de recuperación']);
     }
 
     public static function uploadAvatar(): void {
@@ -243,28 +224,23 @@ class AuthController {
 
         $file = $_FILES['avatar'];
 
-        // Validar tipo de archivo
         $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
         if (!in_array($file['type'], $allowed_types)) {
             wp_send_json_error(['message' => 'Tipo de archivo no permitido. Solo JPG, PNG, GIF o WebP'], 400);
         }
 
-        // Validar tamaño (2MB max)
         if ($file['size'] > 2 * 1024 * 1024) {
             wp_send_json_error(['message' => 'La imagen no puede superar 2MB'], 400);
         }
 
-        // Verificar errores de subida
         if ($file['error'] !== UPLOAD_ERR_OK) {
             wp_send_json_error(['message' => 'Error al subir el archivo'], 500);
         }
 
-        // Usar la función de WordPress para manejar la subida
         require_once(ABSPATH . 'wp-admin/includes/file.php');
         require_once(ABSPATH . 'wp-admin/includes/image.php');
         require_once(ABSPATH . 'wp-admin/includes/media.php');
 
-        // Configurar el archivo
         $upload_overrides = [
             'test_form' => false,
             'mimes' => [
@@ -275,14 +251,12 @@ class AuthController {
             ]
         ];
 
-        // Subir archivo
         $uploaded_file = wp_handle_upload($file, $upload_overrides);
 
         if (isset($uploaded_file['error'])) {
             wp_send_json_error(['message' => $uploaded_file['error']], 500);
         }
 
-        // Crear attachment en la biblioteca de medios
         $attachment = [
             'post_mime_type' => $uploaded_file['type'],
             'post_title' => 'Avatar - ' . get_userdata($user_id)->display_name,
@@ -296,11 +270,9 @@ class AuthController {
             wp_send_json_error(['message' => 'Error al crear attachment'], 500);
         }
 
-        // Generar metadata del attachment
         $attachment_data = wp_generate_attachment_metadata($attachment_id, $uploaded_file['file']);
         wp_update_attachment_metadata($attachment_id, $attachment_data);
 
-        // Guardar el ID del avatar en user meta
         update_user_meta($user_id, 'openmind_avatar_id', $attachment_id);
 
         wp_send_json_success([

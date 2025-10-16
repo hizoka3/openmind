@@ -5,14 +5,21 @@ if (!defined('ABSPATH')) exit;
 // Redirigir si ya está logueado
 if (is_user_logged_in()) {
     $user = wp_get_current_user();
-    $redirect = in_array('psychologist', $user->roles)
-            ? home_url('/dashboard-psicologo/')
-            : home_url('/dashboard-paciente/');
-    wp_redirect($redirect);
+
+    if (in_array('administrator', $user->roles)) {
+        // Redirige al panel de administración
+        wp_redirect(admin_url());
+    } elseif (in_array('psychologist', $user->roles)) {
+        wp_redirect(home_url('/dashboard-psicologo/'));
+    } else {
+        wp_redirect(home_url('/dashboard-paciente/'));
+    }
+
     exit;
 }
 
 get_header();
+include OPENMIND_PATH . 'templates/components/toast.php';
 ?>
 
     <div class="min-h-screen flex items-center justify-center py-12 px-4">
@@ -48,16 +55,22 @@ get_header();
                                 </label>
                                 <input type="email" name="email" required
                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all shadow-none"
-                                       placeholder="tu@email.com">
+                                       placeholder="tu@email.com" autocomplete="username">
+                                <span class="text-xs text-red-500 mt-1 hidden" data-error="email"></span>
                             </div>
 
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">
                                     Contraseña
                                 </label>
-                                <input type="password" name="password" required
-                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all shadow-none"
-                                       placeholder="••••••••">
+                                <div class="relative">
+                                    <input type="password" name="password" required
+                                           class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all shadow-none"
+                                           placeholder="••••••••" autocomplete="current-password">
+                                    <button type="button" class="password-toggle absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 bg-transparent border-0 cursor-pointer shadow-none outline-none p-1">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
                             </div>
 
                             <div class="flex items-center justify-between text-sm">
@@ -96,20 +109,71 @@ get_header();
                                     Correo electrónico
                                 </label>
                                 <input type="email" name="email" required
-                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all shadow-none"
-                                       placeholder="tu@email.com">
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all shadow-none email-validation"
+                                       placeholder="tu@email.com"
+                                       autocomplete="username"
+                                >
+                                <span class="text-xs text-red-500 mt-1 hidden" data-error="register-email"></span>
                             </div>
 
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">
                                     Contraseña
                                 </label>
-                                <input type="password" name="password" required minlength="8"
-                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all shadow-none"
-                                       placeholder="Mínimo 8 caracteres">
-                                <p class="mt-2 text-xs text-gray-500">
-                                    La contraseña debe tener al menos 8 caracteres
-                                </p>
+                                <div class="relative">
+                                    <input type="password" name="password" required minlength="8"
+                                           class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all shadow-none"
+                                           id="register-password"
+                                           placeholder="Mínimo 8 caracteres"
+                                           autocomplete="new-password"
+                                    >
+                                    <button type="button" class="password-toggle absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 bg-transparent border-0 cursor-pointer shadow-none outline-none p-1">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
+                                <!-- Indicador de fuerza de contraseña -->
+                                <div class="mt-3 space-y-2">
+                                    <div class="flex gap-1">
+                                        <div class="h-1 flex-1 bg-gray-200 rounded-full overflow-hidden">
+                                            <div class="password-strength-bar h-full w-0 transition-all duration-300"></div>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs password-strength-text text-gray-500">
+                                        Ingresa al menos 8 caracteres
+                                    </p>
+                                    <ul class="text-xs space-y-1 text-gray-600" id="password-requirements">
+                                        <li data-req="length">
+                                            <span class="req-indicator w-2 h-2 rounded-full mr-2 bg-gray-300 inline-block"></span>
+                                            Mínimo 8 caracteres
+                                        </li>
+                                        <li data-req="uppercase">
+                                            <span class="req-indicator w-2 h-2 rounded-full mr-2 bg-gray-300 inline-block"></span>
+                                            Una letra mayúscula
+                                        </li>
+                                        <li data-req="number">
+                                            <span class="req-indicator w-2 h-2 rounded-full mr-2 bg-gray-300 inline-block"></span>
+                                            Un número
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Confirmar contraseña
+                                </label>
+                                <div class="relative">
+                                    <input type="password" name="password_confirm" required minlength="8"
+                                           class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all shadow-none"
+                                           id="register-password-confirm"
+                                           placeholder="Repite tu contraseña"
+                                           autocomplete="new-password"
+                                    >
+                                    <button type="button" class="password-toggle absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 bg-transparent border-0 cursor-pointer shadow-none outline-none p-1">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
+                                <span class="text-xs text-red-500 mt-1 hidden" data-error="password-match">Las contraseñas no coinciden</span>
                             </div>
 
                             <div class="flex items-start">
@@ -161,6 +225,7 @@ get_header();
                     </label>
                     <input type="email" name="email" required
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all shadow-none"
+                           id="forgot-email"
                            placeholder="tu@email.com">
                 </div>
 
@@ -179,13 +244,35 @@ get_header();
     </div>
 
     <script>
-        // Tabs
-        document.querySelectorAll('.auth-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                const targetTab = this.dataset.tab;
+        // Sistema de tabs con sincronización de URL
+        const TabSystem = {
+            init() {
+                this.checkUrlTab();
+                this.bindTabEvents();
+                this.handlePopState();
+            },
 
+            checkUrlTab() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const tab = urlParams.get('tab');
+                if (tab === 'register' || tab === 'login') {
+                    this.switchToTab(tab);
+                }
+            },
+
+            bindTabEvents() {
+                document.querySelectorAll('.auth-tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        const targetTab = tab.dataset.tab;
+                        this.switchToTab(targetTab);
+                        this.updateUrl(targetTab);
+                    });
+                });
+            },
+
+            switchToTab(tabName) {
                 document.querySelectorAll('.auth-tab').forEach(t => {
-                    const isActive = t.dataset.tab === targetTab;
+                    const isActive = t.dataset.tab === tabName;
                     t.classList.toggle('border-primary-600', isActive);
                     t.classList.toggle('text-primary-600', isActive);
                     t.classList.toggle('bg-white', isActive);
@@ -195,16 +282,162 @@ get_header();
                 });
 
                 document.querySelectorAll('.auth-content').forEach(content => {
-                    content.classList.toggle('hidden', content.dataset.content !== targetTab);
+                    content.classList.toggle('hidden', content.dataset.content !== tabName);
                 });
+            },
+
+            updateUrl(tab) {
+                const url = new URL(window.location);
+                url.searchParams.set('tab', tab);
+                window.history.pushState({tab}, '', url);
+            },
+
+            handlePopState() {
+                window.addEventListener('popstate', () => this.checkUrlTab());
+            }
+        };
+
+        // Sistema de validación de contraseña
+        const PasswordValidator = {
+            init() {
+                const passwordInput = document.getElementById('register-password');
+                const confirmInput = document.getElementById('register-password-confirm');
+
+                if (passwordInput) {
+                    passwordInput.addEventListener('input', (e) => this.checkStrength(e.target.value));
+                }
+
+                if (confirmInput) {
+                    confirmInput.addEventListener('input', () => this.checkMatch());
+                }
+            },
+
+            checkStrength(password) {
+                const requirements = {
+                    length: password.length >= 8,
+                    uppercase: /[A-Z]/.test(password),
+                    number: /\d/.test(password)
+                };
+
+                // Actualizar indicadores visuales
+                Object.keys(requirements).forEach(req => {
+                    const li = document.querySelector(`[data-req="${req}"]`);
+                    if (!li) return;
+                    const indicator = li.querySelector('.req-indicator');
+
+                    if (requirements[req]) {
+                        indicator.classList.remove('bg-gray-300');
+                        indicator.classList.add('bg-green-500');
+                        li.classList.add('text-green-600');
+                        li.classList.remove('text-gray-600');
+                    } else {
+                        indicator.classList.add('bg-gray-300');
+                        indicator.classList.remove('bg-green-500');
+                        li.classList.remove('text-green-600');
+                        li.classList.add('text-gray-600');
+                    }
+                });
+
+                // Calcular fuerza
+                const strength = Object.values(requirements).filter(Boolean).length;
+                this.updateStrengthBar(strength, password.length > 0);
+            },
+
+            updateStrengthBar(strength, hasPassword) {
+                const bar = document.querySelector('.password-strength-bar');
+                const text = document.querySelector('.password-strength-text');
+
+                if (!bar || !text) return;
+
+                const configs = {
+                    0: { width: '0%', color: 'bg-gray-200', text: 'Ingresa al menos 8 caracteres' },
+                    1: { width: '33%', color: 'bg-red-500', text: 'Contraseña débil' },
+                    2: { width: '66%', color: 'bg-yellow-500', text: 'Contraseña media' },
+                    3: { width: '100%', color: 'bg-green-500', text: 'Contraseña fuerte' }
+                };
+
+                const config = hasPassword ? configs[strength] : configs[0];
+
+                bar.className = `password-strength-bar h-full transition-all duration-300 ${config.color}`;
+                bar.style.width = config.width;
+                text.textContent = config.text;
+                text.className = `text-xs password-strength-text ${
+                    strength === 0 ? 'text-gray-500' :
+                        strength === 1 ? 'text-red-500' :
+                            strength === 2 ? 'text-yellow-600' :
+                                'text-green-600'
+                }`;
+            },
+
+            checkMatch() {
+                const password = document.getElementById('register-password').value;
+                const confirm = document.getElementById('register-password-confirm').value;
+                const errorSpan = document.querySelector('[data-error="password-match"]');
+
+                if (confirm && password !== confirm) {
+                    errorSpan.classList.remove('hidden');
+                } else {
+                    errorSpan.classList.add('hidden');
+                }
+            }
+        };
+
+        // Toggle mostrar/ocultar contraseña - Modificado para trabajar con SVG de FontAwesome Kit
+        document.querySelectorAll('.password-toggle').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const input = this.parentElement.querySelector('input');
+
+                // Buscar el SVG que FontAwesome Kit genera
+                const svg = this.querySelector('svg');
+
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    // Cambiar el data-icon del SVG
+                    if (svg) {
+                        svg.setAttribute('data-icon', 'eye-slash');
+                    }
+                } else {
+                    input.type = 'password';
+                    // Cambiar el data-icon del SVG
+                    if (svg) {
+                        svg.setAttribute('data-icon', 'eye');
+                    }
+                }
             });
         });
+
+        // Validación de email en tiempo real
+        document.querySelectorAll('.email-validation').forEach(input => {
+            input.addEventListener('blur', function() {
+                const email = this.value;
+                const errorSpan = document.querySelector('[data-error="register-email"]');
+
+                if (email && !isValidEmail(email)) {
+                    if (errorSpan) {
+                        errorSpan.textContent = 'Formato de email inválido';
+                        errorSpan.classList.remove('hidden');
+                    }
+                } else {
+                    if (errorSpan) errorSpan.classList.add('hidden');
+                }
+            });
+        });
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
 
         // Modal
         const openForgotPasswordModal = () => {
             const modal = document.getElementById('forgot-password-modal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+
+            // Auto-fill email si hay uno en el campo de login
+            const loginEmail = document.querySelector('#login-form input[name="email"]').value;
+            if (loginEmail) {
+                document.getElementById('forgot-email').value = loginEmail;
+            }
         };
 
         const closeForgotPasswordModal = () => {
@@ -295,6 +528,23 @@ get_header();
         // Register form
         document.getElementById('register-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            // Validar que las contraseñas coincidan
+            const password = document.getElementById('register-password').value;
+            const confirm = document.getElementById('register-password-confirm').value;
+
+            if (password !== confirm) {
+                Toast.show('Las contraseñas no coinciden', 'error');
+                return;
+            }
+
+            // Validar formato de email
+            const email = e.target.querySelector('input[name="email"]').value;
+            if (!isValidEmail(email)) {
+                Toast.show('Por favor ingresa un email válido', 'error');
+                return;
+            }
+
             const btn = e.target.querySelector('button[type="submit"]');
             const originalText = btn.textContent;
             btn.disabled = true;
@@ -304,6 +554,7 @@ get_header();
                 const formData = new FormData(e.target);
                 formData.append('action', 'openmind_register');
                 formData.append('nonce', '<?php echo wp_create_nonce("openmind_auth"); ?>');
+                // No enviamos password_confirm al servidor
 
                 const response = await fetch('<?php echo admin_url("admin-ajax.php"); ?>', {
                     method: 'POST',
@@ -327,6 +578,12 @@ get_header();
                 btn.disabled = false;
                 btn.textContent = originalText;
             }
+        });
+
+        // Inicializar sistemas
+        document.addEventListener('DOMContentLoaded', () => {
+            TabSystem.init();
+            PasswordValidator.init();
         });
     </script>
 

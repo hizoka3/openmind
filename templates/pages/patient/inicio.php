@@ -31,6 +31,65 @@ $unread_messages = \Openmind\Repositories\MessageRepository::getUnreadCount($use
         </div>
     </div>
 
+    <?php if ($has_psychologist): ?>
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <!-- Mi Psicólogo Card -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm">
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 bg-primary-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-user-doctor text-3xl text-white"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <?php if ($psychologist): ?>
+                            <h3 class="text-lg font-medium text-gray-900 m-0 mb-1 truncate">
+                                <?php echo esc_html($psychologist->display_name); ?>
+                            </h3>
+                            <p class="text-gray-600 text-sm m-0">Mi Psicólogo</p>
+                        <?php else: ?>
+                            <p class="text-gray-600 text-sm m-0">Sin psicólogo asignado</p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actividades Card -->
+            <a href="<?php echo add_query_arg('view', 'actividades', $base_url); ?>"
+               class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all"
+               style="text-decoration: none;">
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 bg-primary-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-clipboard-list text-3xl text-white"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <h3 class="text-3xl font-normal text-gray-900 m-0 mb-1"><?php echo count($assignments); ?></h3>
+                        <p class="text-gray-600 text-sm m-0">Mis Actividades</p>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Mensajes Card -->
+            <a href="<?php echo add_query_arg('view', 'mensajeria', $base_url); ?>"
+               class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-all <?php echo $unread_messages > 0 ? 'border-2 border-primary-600' : ''; ?>"
+               style="text-decoration: none;">
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 bg-primary-500 rounded-xl flex items-center justify-center flex-shrink-0 relative">
+                        <i class="fa-solid fa-message text-3xl text-white"></i>
+                        <?php if ($unread_messages > 0): ?>
+                            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-normal rounded-full w-6 h-6 flex items-center justify-center">
+                            <?php echo $unread_messages; ?>
+                        </span>
+                        <?php endif; ?>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <h3 class="text-3xl font-normal text-gray-900 m-0 mb-1"><?php echo $unread_messages; ?></h3>
+                        <p class="text-gray-600 text-sm m-0">Mensajes sin leer</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    <?php endif; ?>
+
     <?php if (!$has_psychologist): ?>
         <!-- Sin psicólogo: Card de Reserva Full Width -->
         <div class="bg-primary-500 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all group border-2 border-transparent hover:border-primary-200 mb-6">
@@ -55,7 +114,7 @@ $unread_messages = \Openmind\Repositories\MessageRepository::getUnreadCount($use
     <?php endif; ?>
 
     <!-- Cards de Capacidades - SIEMPRE VISIBLES -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <!-- Card Actividades -->
         <a href="<?php echo add_query_arg('view', 'actividades', $base_url); ?>"
            class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all group border-2 border-transparent hover:border-primary-200"
