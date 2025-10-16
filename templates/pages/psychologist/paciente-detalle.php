@@ -144,9 +144,8 @@ $active_tab = $_GET['tab'] ?? 'actividades';
 
                 <?php if (empty($all_assignments)): ?>
                     <div class="text-center py-16 text-gray-400">
-                        <div class="text-6xl mb-4">📋</div>
                         <p class="text-lg mb-4 not-italic text-gray-600">No hay actividades asignadas a este paciente.</p>
-                        <button onclick="openAssignModal(<?php echo $patient_id; ?>)" class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
+                        <button onclick="openAssignModal(<?php echo $patient_id; ?>)" class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-500 text-white rounded-lg">
                             <i class="fa-solid fa-plus"></i>
                             Asignar Primera Actividad
                         </button>

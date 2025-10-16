@@ -28,8 +28,7 @@ $dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 ?>
 
 <?php if (empty($entries)): ?>
-    <div class="text-center py-16 text-gray-400">
-        <div class="text-6xl mb-4">📖</div>
+    <div class="bg-white rounded-xl shadow-sm p-16 text-center">
         <p class="text-lg not-italic text-gray-600">Aún no hay entradas de bitácora.</p>
     </div>
 <?php else: ?>

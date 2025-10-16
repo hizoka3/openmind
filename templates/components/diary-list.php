@@ -55,8 +55,7 @@ $mood_emojis = [
 ?>
 
 <?php if (empty($entries)): ?>
-    <div class="text-center py-16">
-        <div class="text-6xl mb-4">✍️</div>
+    <div class="bg-white rounded-xl shadow-sm p-16 text-center">
         <p class="text-lg text-gray-600 mb-6 m-0">
             <?php echo $is_psychologist
                     ? 'Este paciente aún no ha compartido entradas.'
@@ -64,7 +63,7 @@ $mood_emojis = [
         </p>
         <?php if (!$is_psychologist): ?>
             <a href="<?php echo add_query_arg('view', 'diario-nuevo', home_url('/dashboard-paciente/')); ?>"
-               class="inline-flex items-center gap-2 px-5 py-2.5 bg-purple-500 text-white rounded-lg border-0 text-sm font-medium transition-all hover:bg-purple-600 shadow-none no-underline">
+               class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-500 text-white rounded-lg border-0 text-sm font-medium transition-all hover:bg-purple-600 shadow-none no-underline">
                 <i class="fa-solid fa-pen"></i>
                 Comenzar a escribir
             </a>

@@ -6,6 +6,10 @@ $current_user = wp_get_current_user();
 $has_psychologist = get_user_meta($user_id, 'psychologist_id', true);
 $is_active = get_user_meta($user_id, 'openmind_status', true) === 'active';
 $base_url = get_permalink();
+
+// Stats - USAR MÉTODO ACTUALIZADO
+$assignments = \Openmind\Controllers\ActivityController::getPatientAssignments($user_id);
+$unread_messages = \Openmind\Repositories\MessageRepository::getUnreadCount($user_id);
 ?>
 
 <div class="max-w-7xl mx-auto">
@@ -31,8 +35,8 @@ $base_url = get_permalink();
         <!-- Sin psicólogo: Card de Reserva Full Width -->
         <div class="bg-primary-500 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all group border-2 border-transparent hover:border-primary-200 mb-6">
             <div class="flex items-start gap-4">
-                <div class="mt-2 w-14 h-14 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                    <i class="fa-solid fa-calendar text-2xl text-white"></i>
+                <div class="mt-2 w-14 h-14 bg-white rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-calendar text-2xl text-primary-500"></i>
                 </div>
                 <div class="flex-1">
                     <h2 class="text-2xl text-white mb-3">Agenda tu primera cita</h2>
@@ -57,8 +61,8 @@ $base_url = get_permalink();
            class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all group border-2 border-transparent hover:border-primary-200"
            style="text-decoration: none;">
             <div class="flex items-start gap-4">
-                <div class="mt-2 w-14 h-14 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                    <i class="fa-solid fa-tasks text-2xl text-primary-500"></i>
+                <div class="mt-2 w-14 h-14 bg-primary-500 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-tasks text-2xl text-white"></i>
                 </div>
                 <div class="flex-1">
                     <h3 class="text-lg font-semibold text-gray-900 mb-1">Actividades</h3>
@@ -74,8 +78,8 @@ $base_url = get_permalink();
            class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all group border-2 border-transparent hover:border-primary-200"
            style="text-decoration: none;">
             <div class="flex items-start gap-4">
-                <div class="mt-2 w-14 h-14 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                    <i class="fa-solid fa-comments text-2xl text-primary-500"></i>
+                <div class="mt-2 w-14 h-14 bg-primary-500 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-comments text-2xl text-white"></i>
                 </div>
                 <div class="flex-1">
                     <h3 class="text-lg font-semibold text-gray-900 mb-1">Mensajería</h3>
@@ -91,8 +95,8 @@ $base_url = get_permalink();
            class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all group border-2 border-transparent hover:border-primary-200"
            style="text-decoration: none;">
             <div class="flex items-start gap-4">
-                <div class="mt-2 w-14 h-14 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                    <i class="fa-solid fa-clipboard-check text-2xl text-primary-500"></i>
+                <div class="mt-2 w-14 h-14 bg-primary-500 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-clipboard-check text-2xl text-white"></i>
                 </div>
                 <div class="flex-1">
                     <h3 class="text-lg font-semibold text-gray-900 mb-1">Bitácora</h3>
@@ -108,8 +112,8 @@ $base_url = get_permalink();
            class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all group border-2 border-transparent hover:border-primary-200"
            style="text-decoration: none;">
             <div class="flex items-start gap-4">
-                <div class="mt-2 w-14 h-14 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                    <i class="fa-solid fa-book-open text-2xl text-primary-500"></i>
+                <div class="mt-2 w-14 h-14 bg-primary-500 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-book-open text-2xl text-white"></i>
                 </div>
                 <div class="flex-1">
                     <h3 class="text-lg font-semibold text-gray-900 mb-1">Diario de Vida</h3>

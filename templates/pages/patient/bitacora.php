@@ -43,12 +43,11 @@ $base_url = add_query_arg(['view' => 'bitacora'], home_url('/dashboard-paciente/
     <?php endif; ?>
 
     <?php if (empty($entries)): ?>
-        <div class="text-center py-16 text-gray-400">
-            <div class="text-6xl mb-4">📖</div>
-            <p class="text-lg not-italic text-gray-600">
+        <div class="bg-white rounded-xl shadow-sm p-16 text-center">
+            <h3 class="text-xl text-dark-gray-300 mb-2">
                 Aún no hay sesiones registradas.
-            </p>
-            <p class="text-sm text-gray-500 mt-2">
+            </h3>
+            <p class="text-gray-600">
                 Las entradas aparecerán aquí después de cada sesión con tu psicólogo/a.
             </p>
         </div>
