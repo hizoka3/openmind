@@ -7,6 +7,10 @@ $has_psychologist = get_user_meta($user_id, 'psychologist_id', true);
 $is_active = get_user_meta($user_id, 'openmind_status', true) === 'active';
 $base_url = get_permalink();
 
+// Psicólogo asignado
+$psychologist_id = get_user_meta($user_id, 'psychologist_id', true);
+$psychologist = $psychologist_id ? get_userdata($psychologist_id) : null;
+
 // Stats - USAR MÉTODO ACTUALIZADO
 $assignments = \Openmind\Controllers\ActivityController::getPatientAssignments($user_id);
 $unread_messages = \Openmind\Repositories\MessageRepository::getUnreadCount($user_id);
