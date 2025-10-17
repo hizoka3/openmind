@@ -157,14 +157,11 @@ $assignments = get_posts([
 
                         <!-- Botones de acción -->
                         <div class="flex gap-2 pt-4 border-t border-gray-100">
-                            <?php if ($resource_url): ?>
-                                <a href="<?php echo esc_url($resource_url); ?>"
-                                   target="_blank"
-                                   class="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium transition-all hover:bg-gray-200 no-underline">
-                                    <i class="fa-solid fa-eye"></i>
-                                    Ver
-                                </a>
-                            <?php endif; ?>
+                            <a href="<?php echo add_query_arg(['view' => 'biblioteca-detalle', 'library_id' => $activity->ID], home_url('/dashboard-psicologo/')); ?>"
+                               class="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium transition-all hover:bg-gray-200 no-underline">
+                                <i class="fa-solid fa-eye"></i>
+                                Ver Detalle
+                            </a>
                             <button class="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium transition-all hover:bg-primary-700 border-0 cursor-pointer"
                                     onclick="openAssignModal(<?php echo $activity->ID; ?>, '<?php echo esc_js($activity->post_title); ?>')">
                                 <i class="fa-solid fa-user-plus"></i>
@@ -267,7 +264,7 @@ $assignments = get_posts([
                             </div>
 
                             <!-- Botón ver detalle -->
-                            <a href="<?php echo add_query_arg(['view' => 'actividad-detalle', 'activity_id' => $assignment->ID], home_url('/dashboard-psicologo/')); ?>"
+                            <a href="<?php echo add_query_arg(['view' => 'actividad-detalle', 'activity_id' => $assignment->ID, 'from' => 'actividades'], home_url('/dashboard-psicologo/')); ?>"
                                class="inline-flex items-center justify-center w-9 h-9 rounded-lg border-0 bg-primary-100 text-primary-600 cursor-pointer transition-all hover:bg-primary-200 no-underline">
                                 <i class="fa-solid fa-arrow-right"></i>
                             </a>

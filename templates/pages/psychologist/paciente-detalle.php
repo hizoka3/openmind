@@ -163,7 +163,7 @@ $active_tab = $_GET['tab'] ?? 'actividades';
                                     $completed_at = get_post_meta($assignment->ID, 'completed_at', true);
                                     $response_count = get_post_meta($assignment->ID, 'response_count', true);
                                     ?>
-                                    <a href="<?php echo add_query_arg(['view' => 'actividad-detalle', 'activity_id' => $assignment->ID], home_url('/dashboard-psicologo/')); ?>"
+                                    <a href="<?php echo add_query_arg(['view' => 'actividad-detalle', 'activity_id' => $assignment->ID, 'from' => 'paciente'], home_url('/dashboard-psicologo/')); ?>"
                                        class="bg-gray-50 border border-gray-200 rounded-xl p-5 hover:shadow-md transition-all no-underline">
                                         <div class="flex justify-between items-start">
                                             <div class="flex-1">
@@ -200,7 +200,7 @@ $active_tab = $_GET['tab'] ?? 'actividades';
                                     $due_date = get_post_meta($assignment->ID, 'due_date', true);
                                     $response_count = get_post_meta($assignment->ID, 'response_count', true);
                                     ?>
-                                    <a href="<?php echo add_query_arg(['view' => 'actividad-detalle', 'activity_id' => $assignment->ID], home_url('/dashboard-psicologo/')); ?>"
+                                    <a href="<?php echo add_query_arg(['view' => 'actividad-detalle', 'activity_id' => $assignment->ID, 'from' => 'paciente'], home_url('/dashboard-psicologo/')); ?>"
                                        class="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition-all no-underline">
                                         <div class="flex justify-between items-start mb-3">
                                             <div class="flex-1">

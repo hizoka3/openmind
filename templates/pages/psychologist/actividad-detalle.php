@@ -60,6 +60,12 @@ $responses = get_comments([
 <div class="max-w-4xl mx-auto">
 
     <?php
+    // Leer parámetro y construir back_url dinámicamente
+    $from = $_GET['from'] ?? 'paciente';
+    $back_url = $from === 'actividades'
+            ? add_query_arg('view', 'actividades', home_url('/dashboard-psicologo/'))
+            : add_query_arg(['view' => 'paciente-detalle', 'patient_id' => $patient_id], home_url('/dashboard-psicologo/'));
+    $back_text = $from === 'paciente' ? 'Volver a ' .  $patient->display_name : 'Volver a actividades';
     // Header
     $header_args = [
             'assignment' => $assignment,
@@ -67,8 +73,8 @@ $responses = get_comments([
             'status' => $status,
             'due_date' => $due_date,
             'completed_at' => $completed_at,
-            'back_url' => add_query_arg(['view' => 'paciente-detalle', 'patient_id' => $patient_id], home_url('/dashboard-psicologo/')),
-            'back_text' => 'Volver a ' . $patient->display_name
+            'back_url' => $back_url,
+            'back_text' => $back_text
     ];
     include OPENMIND_PATH . 'templates/components/activity/header.php';
     ?>
