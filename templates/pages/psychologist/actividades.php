@@ -91,36 +91,56 @@ $assignments = get_posts([
             <!-- Grid de actividades -->
             <div id="activities-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <?php foreach ($library_activities as $activity):
-                    $type = get_post_meta($activity->ID, '_activity_type', true);
-                    $file_id = get_post_meta($activity->ID, '_activity_file', true);
-                    $url = get_post_meta($activity->ID, '_activity_url', true);
+                    // ✅ NUEVO - Obtener recursos y extraer tipos únicos
+                    $resources = get_post_meta($activity->ID, '_activity_resources', true) ?: [];
 
+                    // Fallback para actividades antiguas
+                    if (empty($resources)) {
+                        $old_type = get_post_meta($activity->ID, '_activity_type', true);
+                        if ($old_type) {
+                            $resources = [[
+                                    'type' => $old_type,
+                                    'file_id' => get_post_meta($activity->ID, '_activity_file', true) ?: '',
+                                    'url' => get_post_meta($activity->ID, '_activity_url', true) ?: ''
+                            ]];
+                        }
+                    }
+
+                    // Extraer todos los tipos únicos
+                    $types = array_unique(array_column($resources, 'type'));
+                    $types_string = implode(',', $types); // Para data-types
+                    $first_type = $types[0] ?? 'file'; // Para mostrar badge
+
+                    // Iconos por tipo
                     $type_icons = [
                             'pdf' => '<i class="fa-solid fa-file-pdf text-red-500 text-2xl"></i>',
                             'youtube' => '<i class="fa-brands fa-youtube text-red-600 text-2xl"></i>',
                             'link' => '<i class="fa-solid fa-link text-blue-500 text-2xl"></i>'
                     ];
 
+                    // URL del primer recurso para botón "Ver"
+                    $first_resource = $resources[0] ?? null;
                     $resource_url = '';
-                    if ($type === 'pdf' && $file_id) {
-                        $resource_url = wp_get_attachment_url($file_id);
-                    } elseif (in_array($type, ['youtube', 'link']) && $url) {
-                        $resource_url = $url;
+                    if ($first_resource) {
+                        if ($first_resource['type'] === 'pdf' && !empty($first_resource['file_id'])) {
+                            $resource_url = wp_get_attachment_url($first_resource['file_id']);
+                        } elseif (in_array($first_resource['type'], ['youtube', 'link']) && !empty($first_resource['url'])) {
+                            $resource_url = $first_resource['url'];
+                        }
                     }
                     ?>
                     <div class="activity-card bg-white border border-gray-200 rounded-xl p-5 transition-all hover:shadow-lg hover:-translate-y-1"
-                         data-type="<?php echo esc_attr($type); ?>"
+                         data-types="<?php echo esc_attr($types_string); ?>"
                          data-title="<?php echo esc_attr(strtolower($activity->post_title)); ?>"
                          data-description="<?php echo esc_attr(strtolower(strip_tags($activity->post_content))); ?>">
 
                         <!-- Icono de tipo -->
-                        <div class="flex items-start justify-between mb-3">
-                            <div class="flex items-center justify-center w-12 h-12 bg-gray-50 rounded-lg">
-                                <?php echo $type_icons[$type] ?? '<i class="fa-solid fa-file text-gray-400 text-2xl"></i>'; ?>
-                            </div>
-                            <span class="text-xs font-medium px-2 py-1 bg-gray-100 text-gray-600 rounded-full uppercase">
-                                <?php echo esc_html($type); ?>
-                            </span>
+                        <div class="flex items-start mb-3 gap-x-3">
+                            <?php foreach ($types as $type): ?>
+                                <div class="flex items-center justify-center w-12 h-12 bg-gray-50 rounded-lg">
+                                    <?php echo $type_icons[$type]; ?>
+                                </div>
+                            <?php endforeach; ?>
                         </div>
 
                         <!-- Título -->
@@ -180,41 +200,34 @@ $assignments = get_posts([
                     $status = get_post_meta($assignment->ID, 'status', true);
                     $due_date = get_post_meta($assignment->ID, 'due_date', true);
                     $completed_at = get_post_meta($assignment->ID, 'completed_at', true);
-                    $type = get_post_meta($library_id, '_activity_type', true);
 
-                    // DEBUG: Ver qué valor tiene due_date
-                    // error_log("Assignment ID {$assignment->ID}: due_date = " . var_export($due_date, true));
+                    // Obtener tipos de la actividad de biblioteca
+                    $resources = get_post_meta($library_id, '_activity_resources', true) ?: [];
+                    $types = array_unique(array_column($resources, 'type'));
+                    $first_type = $types[0] ?? 'file';
 
-                    // Solo está vencida si TIENE fecha límite válida Y ya pasó Y NO está completada
                     $is_overdue = !empty($due_date) && $due_date !== 'null' && strtotime($due_date) !== false && strtotime($due_date) < current_time('timestamp') && $status !== 'completed';
                     ?>
                     <div class="bg-white border border-gray-200 rounded-xl p-6 transition-all hover:shadow-md <?php echo $is_overdue ? 'border-l-4 border-l-red-500' : ''; ?>">
-                        <!-- DEBUG temporal - ELIMINAR después -->
-                        <?php if (current_user_can('administrator')): ?>
-                            <div class="text-xs bg-yellow-100 p-2 mb-2 rounded">
-                                DEBUG: due_date = "<?php echo esc_html($due_date); ?>" |
-                                empty? <?php echo empty($due_date) ? 'YES' : 'NO'; ?> |
-                                is_overdue? <?php echo $is_overdue ? 'YES' : 'NO'; ?>
-                            </div>
-                        <?php endif; ?>
-                        <!-- FIN DEBUG -->
-
                         <div class="flex justify-between items-start mb-4">
                             <div class="flex-1">
                                 <div class="flex items-center gap-3 mb-2">
                                     <h3 class="text-lg font-semibold text-gray-900">
                                         <?php echo esc_html($assignment->post_title); ?>
                                     </h3>
-                                    <span class="text-xs font-medium px-2 py-1 bg-gray-100 text-gray-600 rounded-full uppercase">
-                                        <?php echo esc_html($type); ?>
-                                    </span>
+                                    <div class="flex gap-1">
+                                        <?php foreach ($types as $type): ?>
+                                            <span class="text-xs font-medium px-2 py-1 bg-gray-100 text-gray-600 rounded-full uppercase">
+                                                <?php echo esc_html($type); ?>
+                                            </span>
+                                        <?php endforeach; ?>
+                                    </div>
                                 </div>
 
                                 <!-- Paciente -->
                                 <?php if ($patient): ?>
                                     <div class="flex items-center gap-2 mb-2">
-                                        <img id="avatar-preview"
-                                             src="<?php echo esc_url(get_avatar_url($patient->ID, ['size' => 24])); ?>"
+                                        <img src="<?php echo esc_url(get_avatar_url($patient->ID, ['size' => 24])); ?>"
                                              alt="Avatar"
                                              class="w-6 h-6 rounded-full border-4 border-primary-100 object-cover">
                                         <span class="text-sm font-medium text-gray-700">
@@ -323,8 +336,7 @@ $assignments = get_posts([
                                        name="patient_ids[]"
                                        value="<?php echo $patient->ID; ?>"
                                        class="patient-checkbox rounded border-gray-300 text-primary-600 focus:ring-primary-500">
-                                <img id="avatar-preview"
-                                     src="<?php echo esc_url(get_avatar_url($patient->ID, ['size' => 32])); ?>"
+                                <img src="<?php echo esc_url(get_avatar_url($patient->ID, ['size' => 32])); ?>"
                                      alt="Avatar"
                                      class="w-8 h-8 rounded-full object-cover">
                                 <span class="text-sm font-medium text-gray-700">
@@ -440,13 +452,9 @@ $assignments = get_posts([
         btn.addEventListener('click', function() {
             const tab = this.dataset.tab;
 
-            // Update buttons
-            document.querySelectorAll('.tab-activity').forEach(b => {
-                b.classList.remove('active');
-            });
+            document.querySelectorAll('.tab-activity').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
 
-            // Update content
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.style.display = 'none';
             });
@@ -457,7 +465,7 @@ $assignments = get_posts([
         });
     });
 
-    // Filtros de tipo
+    // Filtros de tipo - ✅ ACTUALIZADO para multi-tipo
     document.querySelectorAll('.filter-type').forEach(btn => {
         btn.addEventListener('click', function() {
             document.querySelectorAll('.filter-type').forEach(b => b.classList.remove('active'));
@@ -476,11 +484,13 @@ $assignments = get_posts([
         let visibleCount = 0;
 
         cards.forEach(card => {
-            const cardType = card.dataset.type;
+            // ✅ NUEVO - Obtener array de tipos de la tarjeta
+            const cardTypes = card.dataset.types ? card.dataset.types.split(',') : [];
             const cardTitle = card.dataset.title;
             const cardDescription = card.dataset.description;
 
-            const matchesType = activeType === 'all' || cardType === activeType;
+            // ✅ NUEVO - Verificar si alguno de los tipos coincide
+            const matchesType = activeType === 'all' || cardTypes.includes(activeType);
             const matchesSearch = searchTerm === '' || cardTitle.includes(searchTerm) || cardDescription.includes(searchTerm);
 
             if (matchesType && matchesSearch) {
