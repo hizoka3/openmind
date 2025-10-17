@@ -9,6 +9,7 @@ class AuthController {
         add_action('wp_ajax_nopriv_openmind_login', [self::class, 'login']);
         add_action('wp_ajax_nopriv_openmind_register', [self::class, 'register']);
         add_action('wp_ajax_nopriv_openmind_forgot_password', [self::class, 'forgotPassword']);
+        add_action('wp_ajax_nopriv_openmind_reset_password', [self::class, 'resetPassword']); // NUEVO
 
         // Endpoints privados (requieren autenticación)
         add_action('wp_ajax_openmind_change_password', [self::class, 'changePassword']);
@@ -71,7 +72,6 @@ class AuthController {
             wp_send_json_error(['message' => 'Email inválido'], 400);
         }
 
-        // Validar fuerza de contraseña: 8+ chars, 1 mayúscula, 1 número
         if (!preg_match('/^(?=.*[A-Z])(?=.*\d).{8,}$/', $password)) {
             wp_send_json_error(['message' => 'La contraseña debe tener al menos 8 caracteres, una mayúscula y un número'], 400);
         }
@@ -97,6 +97,9 @@ class AuthController {
         if (is_wp_error($user_id)) {
             wp_send_json_error(['message' => $user_id->get_error_message()], 500);
         }
+
+        // Notificar al admin (WordPress no lo hace automáticamente cuando se pasa user_pass)
+        wp_new_user_notification($user_id, null, 'admin');
 
         wp_set_current_user($user_id);
         wp_set_auth_cookie($user_id, true);
@@ -134,7 +137,6 @@ class AuthController {
             wp_send_json_error(['message' => 'Todos los campos son requeridos'], 400);
         }
 
-        // Misma validación de fuerza
         if (!preg_match('/^(?=.*[A-Z])(?=.*\d).{8,}$/', $new_password)) {
             wp_send_json_error(['message' => 'La contraseña debe tener al menos 8 caracteres, una mayúscula y un número'], 400);
         }
@@ -189,7 +191,6 @@ class AuthController {
         $user = get_user_by('email', $email);
 
         if (!$user) {
-            // Por seguridad, no revelar si el email existe
             wp_send_json_success(['message' => 'Si el correo existe, recibirás un enlace de recuperación']);
         }
 
@@ -199,7 +200,8 @@ class AuthController {
             wp_send_json_error(['message' => 'Error al generar enlace de recuperación'], 500);
         }
 
-        $reset_url = network_site_url("wp-login.php?action=rp&key=$reset_key&login=" . rawurlencode($user->user_login), 'login');
+        // CAMBIO: Apuntar a /auth/ en lugar de wp-login.php
+        $reset_url = home_url("/auth/?action=reset&key=$reset_key&login=" . rawurlencode($user->user_login));
 
         $subject = 'Recuperar contraseña - OpenMind';
         $message = sprintf(
@@ -208,9 +210,46 @@ class AuthController {
             $reset_url
         );
 
-        $sent = wp_mail($email, $subject, $message);
+        wp_mail($email, $subject, $message);
 
         wp_send_json_success(['message' => 'Si el correo existe, recibirás un enlace de recuperación']);
+    }
+
+    // NUEVO MÉTODO
+    public static function resetPassword(): void {
+        check_ajax_referer('openmind_auth', 'nonce');
+
+        $login = sanitize_user($_POST['login'] ?? '');
+        $key = sanitize_text_field($_POST['key'] ?? '');
+        $new_password = $_POST['new_password'] ?? '';
+
+        if (empty($login) || empty($key) || empty($new_password)) {
+            wp_send_json_error(['message' => 'Datos incompletos'], 400);
+        }
+
+        $user = check_password_reset_key($key, $login);
+
+        if (is_wp_error($user)) {
+            wp_send_json_error(['message' => 'El enlace es inválido o ha expirado'], 401);
+        }
+
+        if (!preg_match('/^(?=.*[A-Z])(?=.*\d).{8,}$/', $new_password)) {
+            wp_send_json_error(['message' => 'La contraseña debe tener al menos 8 caracteres, una mayúscula y un número'], 400);
+        }
+
+        reset_password($user, $new_password);
+
+        wp_mail(
+            $user->user_email,
+            'Contraseña restablecida - OpenMind',
+            sprintf(
+                "Hola %s,\n\nTu contraseña ha sido restablecida exitosamente.\n\nYa puedes iniciar sesión con tu nueva contraseña en: %s\n\nSi no realizaste este cambio, contacta al administrador inmediatamente.\n\n--\nEquipo OpenMind",
+                $user->display_name,
+                home_url('/auth/')
+            )
+        );
+
+        wp_send_json_success(['message' => 'Contraseña restablecida exitosamente']);
     }
 
     public static function uploadAvatar(): void {

@@ -10,12 +10,28 @@
 │   │   │   ├── custom.css
 │   │   │   └── tailwind.css
 │   │   └── style.css
-│   └── js
-│       ├── activity-detail.js
-│       ├── fontawesome-all.min.js
-│       ├── main.js
-│       ├── profile-uploader.js
-│       └── toast.js
+│   ├── js
+│   │   ├── activity-detail.js
+│   │   ├── fontawesome-all.min.js
+│   │   ├── main.js
+│   │   ├── profile-uploader.js
+│   │   └── toast.js
+│   └── webfonts
+│       ├── fa-brands-400.eot
+│       ├── fa-brands-400.svg
+│       ├── fa-brands-400.ttf
+│       ├── fa-brands-400.woff
+│       ├── fa-brands-400.woff2
+│       ├── fa-regular-400.eot
+│       ├── fa-regular-400.svg
+│       ├── fa-regular-400.ttf
+│       ├── fa-regular-400.woff
+│       ├── fa-regular-400.woff2
+│       ├── fa-solid-900.eot
+│       ├── fa-solid-900.svg
+│       ├── fa-solid-900.ttf
+│       ├── fa-solid-900.woff
+│       └── fa-solid-900.woff2
 ├── build-deploy.sh
 ├── composer.json
 ├── composer.lock
@@ -26,6 +42,96 @@
 ├── package-lock.json
 ├── package.json
 ├── releases
+│   ├── openmind
+│   │   ├── README.md
+│   │   ├── assets
+│   │   │   ├── css
+│   │   │   │   ├── activity-detail.css
+│   │   │   │   ├── all.min.css
+│   │   │   │   ├── fontawesome-all.css
+│   │   │   │   └── style.css
+│   │   │   └── js
+│   │   │       ├── activity-detail.js
+│   │   │       ├── fontawesome-all.min.js
+│   │   │       ├── main.js
+│   │   │       ├── profile-uploader.js
+│   │   │       └── toast.js
+│   │   ├── composer.json
+│   │   ├── openmind.php
+│   │   ├── src
+│   │   │   ├── Admin
+│   │   │   │   ├── ActivityMetaboxes.php
+│   │   │   │   └── PsychologistProfile.php
+│   │   │   ├── Controllers
+│   │   │   │   ├── ActivityController.php
+│   │   │   │   ├── AttachmentController.php
+│   │   │   │   ├── AuthController.php
+│   │   │   │   ├── DiaryController.php
+│   │   │   │   ├── MessageController.php
+│   │   │   │   ├── PatientController.php
+│   │   │   │   ├── ResponseController.php
+│   │   │   │   └── SessionNoteController.php
+│   │   │   ├── Core
+│   │   │   │   ├── Installer.php
+│   │   │   │   └── Plugin.php
+│   │   │   ├── Repositories
+│   │   │   │   ├── AttachmentRepository.php
+│   │   │   │   ├── DiaryRepository.php
+│   │   │   │   ├── MessageRepository.php
+│   │   │   │   └── SessionNoteRepository.php
+│   │   │   ├── Services
+│   │   │   │   └── ImageUploadService.php
+│   │   │   └── helpers.php
+│   │   ├── templates
+│   │   │   ├── auth.php
+│   │   │   ├── components
+│   │   │   │   ├── activity
+│   │   │   │   │   ├── attachments.php
+│   │   │   │   │   ├── header.php
+│   │   │   │   │   ├── resource-viewer.php
+│   │   │   │   │   ├── response-form.php
+│   │   │   │   │   └── response-item.php
+│   │   │   │   ├── activity-card.php
+│   │   │   │   ├── bitacora-form.php
+│   │   │   │   ├── bitacora-list.php
+│   │   │   │   ├── diary-list.php
+│   │   │   │   ├── header.php
+│   │   │   │   ├── modal-asignar-actividad.php
+│   │   │   │   ├── modal-edit-response.php
+│   │   │   │   ├── modal-hide-response.php
+│   │   │   │   ├── mood-selector.php
+│   │   │   │   ├── profile-card.php
+│   │   │   │   ├── sidebar-patient.php
+│   │   │   │   ├── sidebar-psychologist.php
+│   │   │   │   └── toast.php
+│   │   │   ├── dashboard-patient.php
+│   │   │   ├── dashboard-psychologist.php
+│   │   │   └── pages
+│   │   │       ├── diario-detalle.php
+│   │   │       ├── mensajeria.php
+│   │   │       ├── patient
+│   │   │       │   ├── actividad-detalle.php
+│   │   │       │   ├── actividades.php
+│   │   │       │   ├── bitacora-detalle.php
+│   │   │       │   ├── bitacora.php
+│   │   │       │   ├── diario-detalle.php
+│   │   │       │   ├── diario-nuevo.php
+│   │   │       │   ├── diario.php
+│   │   │       │   ├── inicio.php
+│   │   │       │   └── perfil.php
+│   │   │       └── psychologist
+│   │   │           ├── actividad-detalle.php
+│   │   │           ├── actividades.php
+│   │   │           ├── bitacora-detalle.php
+│   │   │           ├── bitacora-editar.php
+│   │   │           ├── bitacora-nueva.php
+│   │   │           ├── bitacora-paciente.php
+│   │   │           ├── bitacora.php
+│   │   │           ├── inicio.php
+│   │   │           ├── paciente-detalle.php
+│   │   │           ├── pacientes.php
+│   │   │           └── perfil.php
+│   │   └── test-setup.php
 │   ├── openmind-v1.0.1.zip
 │   ├── openmind-v1.0.10.zip
 │   ├── openmind-v1.0.11.zip
@@ -53,7 +159,14 @@
 │   ├── openmind-v2.0.4.zip
 │   ├── openmind-v2.0.5.zip
 │   ├── openmind-v2.0.6.zip
-│   └── openmind-v2.0.7.zip
+│   ├── openmind-v2.0.7.zip
+│   ├── openmind-v2.1.1.zip
+│   ├── openmind-v2.2.0.zip
+│   ├── openmind-v2.2.1.zip
+│   ├── openmind-v2.2.2.zip
+│   ├── openmind-v2.2.3.zip
+│   ├── openmind-v2.2.4.zip
+│   └── openmind-v2.2.5.zip
 ├── src
 │   ├── Admin
 │   │   ├── ActivityMetaboxes.php
@@ -68,7 +181,10 @@
 │   │   ├── ResponseController.php
 │   │   └── SessionNoteController.php
 │   ├── Core
+│   │   ├── AccessControl.php
+│   │   ├── Cron.php
 │   │   ├── Installer.php
+│   │   ├── Migration.php
 │   │   └── Plugin.php
 │   ├── Repositories
 │   │   ├── AttachmentRepository.php
@@ -99,6 +215,7 @@
 │   │   ├── modal-hide-response.php
 │   │   ├── mood-selector.php
 │   │   ├── profile-card.php
+│   │   ├── reservo-modal.php
 │   │   ├── sidebar-patient.php
 │   │   ├── sidebar-psychologist.php
 │   │   └── toast.php
@@ -129,22 +246,6 @@
 │           ├── paciente-detalle.php
 │           ├── pacientes.php
 │           └── perfil.php
-├── test-setup.php
-└── webfonts
-    ├── fa-brands-400.eot
-    ├── fa-brands-400.svg
-    ├── fa-brands-400.ttf
-    ├── fa-brands-400.woff
-    ├── fa-brands-400.woff2
-    ├── fa-regular-400.eot
-    ├── fa-regular-400.svg
-    ├── fa-regular-400.ttf
-    ├── fa-regular-400.woff
-    ├── fa-regular-400.woff2
-    ├── fa-solid-900.eot
-    ├── fa-solid-900.svg
-    ├── fa-solid-900.ttf
-    ├── fa-solid-900.woff
-    └── fa-solid-900.woff2
+└── test-setup.php
 
-19 directories, 129 files
+35 directories, 214 files

@@ -71,6 +71,43 @@ class PatientController {
         // Activar automáticamente
         AccessControl::activatePatient($patient->ID);
 
+        // Obtener datos del psicólogo para los emails
+        $psychologist = get_userdata($psychologist_id);
+
+        // Email al administrador
+        $admin_email = get_option('admin_email');
+        wp_mail(
+            $admin_email,
+            'Paciente asignado - OpenMind',
+            sprintf(
+                "Asignación realizada en OpenMind\n\n" .
+                "Psicólogo: %s (%s)\n" .
+                "Paciente: %s (%s)\n" .
+                "Fecha: %s\n\n" .
+                "El paciente ha sido activado automáticamente.",
+                $psychologist->display_name,
+                $psychologist->user_email,
+                $patient->display_name,
+                $patient->user_email,
+                current_time('d/m/Y H:i')
+            )
+        );
+
+        // Email al paciente
+        wp_mail(
+            $patient->user_email,
+            'Tu psicólogo habilitó tu espacio OpenMind',
+            sprintf(
+                "Hola %s,\n\n" .
+                "Tu psicólogo %s habilitó tu espacio OpenMind.\n\n" .
+                "Ya puedes acceder a tu panel y comenzar tu proceso:\n%s\n\n" .
+                "¡Bienvenido a OpenMind!",
+                $patient->display_name,
+                $psychologist->display_name,
+                home_url('/dashboard-paciente/')
+            )
+        );
+
         wp_send_json_success([
             'message' => 'Paciente asignado y activado correctamente',
             'patient' => [
