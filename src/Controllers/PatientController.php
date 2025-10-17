@@ -307,4 +307,80 @@ class PatientController {
             ]
         ]);
     }
+
+    public static function filterPatients(): void {
+        check_ajax_referer('openmind_nonce', 'nonce');
+
+        if (!current_user_can('manage_patients')) {
+            wp_send_json_error('No tienes permisos');
+        }
+
+        $user_id = get_current_user_id();
+        $search = isset($_POST['search']) ? sanitize_text_field($_POST['search']) : '';
+        $status_filter = isset($_POST['status']) ? sanitize_text_field($_POST['status']) : 'all';
+
+        // Query filtrada
+        $args = [
+            'role' => 'patient',
+            'meta_query' => [
+                ['key' => 'psychologist_id', 'value' => $user_id, 'compare' => '=']
+            ]
+        ];
+
+        if (!empty($search)) {
+            $args['search'] = '*' . $search . '*';
+            $args['search_columns'] = ['display_name', 'user_email'];
+        }
+
+        if ($status_filter !== 'all') {
+            $args['meta_query'][] = [
+                'key' => 'openmind_status',
+                'value' => $status_filter,
+                'compare' => '='
+            ];
+        }
+
+        $patients = get_users($args);
+
+        // Contar todos los pacientes por estado (sin filtros de búsqueda/estado)
+        $all_patients = get_users([
+            'role' => 'patient',
+            'meta_query' => [
+                ['key' => 'psychologist_id', 'value' => $user_id, 'compare' => '=']
+            ],
+            'fields' => 'ID'
+        ]);
+
+        $active_count = 0;
+        $inactive_count = 0;
+
+        foreach ($all_patients as $patient_id) {
+            $status = get_user_meta($patient_id, 'openmind_status', true);
+            if ($status === 'active') {
+                $active_count++;
+            } else {
+                $inactive_count++;
+            }
+        }
+
+        $total_count = count($all_patients);
+
+        // Generar texto del contador
+        $count_text = $total_count . ' paciente' . ($total_count !== 1 ? 's' : '');
+        $count_text .= ' <span class="text-sm">';
+        $count_text .= '(<span class="text-green-600 font-medium">' . $active_count . ' activo' . ($active_count !== 1 ? 's' : '') . '</span>, ';
+        $count_text .= '<span class="text-yellow-600 font-medium">' . $inactive_count . ' inactivo' . ($inactive_count !== 1 ? 's' : '') . '</span>)';
+        $count_text .= '</span>';
+
+        // Capturar HTML de la tabla
+        ob_start();
+        include OPENMIND_PATH . 'templates/components/patients-table.php';
+        $html = ob_get_clean();
+
+        wp_send_json_success([
+            'html' => $html,
+            'count' => count($patients),
+            'count_text' => $count_text
+        ]);
+    }
 }

@@ -6,12 +6,20 @@ $user_id = get_current_user_id();
 $current_user = wp_get_current_user();
 
 // Stats
-$patients = get_users([
+$all_patients = get_users([
         'role' => 'patient',
         'meta_query' => [
                 ['key' => 'psychologist_id', 'value' => $user_id, 'compare' => '=']
-        ]
+        ],
+        'fields' => 'ID'
 ]);
+$active_count = 0;
+foreach ($all_patients as $patient_id) {
+    $status = get_user_meta($patient_id, 'openmind_status', true);
+    if ($status === 'active') {
+        $active_count++;
+    }
+}
 
 $activities = get_posts([
         'post_type' => 'activity',
@@ -55,8 +63,8 @@ $base_url = get_permalink();
                     <i class="fa-solid fa-users text-3xl text-white"></i>
                 </div>
                 <div class="min-w-16 flex-1">
-                    <h3 class="text-3xl font-normal text-gray-900 m-0 mb-1"><?php echo count($patients); ?></h3>
-                    <p class="text-gray-600 text-sm m-0">Pacientes</p>
+                    <h3 class="text-3xl font-normal text-gray-900 m-0 mb-1"><?php echo $active_count; ?></h3>
+                    <p class="text-gray-600 text-sm m-0">Pacientes activos</p>
                 </div>
             </div>
         </a>

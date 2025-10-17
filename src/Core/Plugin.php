@@ -50,6 +50,11 @@ class Plugin {
     }
 
     private static function registerAjaxActions(): void {
+        // ===== FILTROS DE PACIENTES =====
+        add_action('wp_ajax_openmind_filter_patients', [
+            '\Openmind\Controllers\PatientController',
+            'filterPatients'
+        ]);
         // ===== RESPUESTAS DE ACTIVIDADES (Unificado en ResponseController) =====
 
         // Crear/Editar respuesta del paciente
