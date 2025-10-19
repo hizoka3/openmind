@@ -47,6 +47,10 @@ class Plugin {
             '\Openmind\Controllers\DiaryController',
             'savePatientDiary'
         ]);
+
+        // DEBUG TEMPORAL - VERIFICAR QUE EL HOOK EXISTE
+        error_log('=== HOOKS REGISTRADOS ===');
+        error_log('admin_post_openmind_save_session_note registrado: ' . (has_action('admin_post_openmind_save_session_note') ? 'SI' : 'NO'));
     }
 
     private static function registerAjaxActions(): void {
@@ -132,18 +136,26 @@ class Plugin {
     }
 
     public static function restrictAdminAccess(): void {
-        if (!defined('DOING_AJAX') || !DOING_AJAX) {
-            $user = wp_get_current_user();
+        // NO REDIRIGIR si es AJAX o admin-post.php
+        if (defined('DOING_AJAX') && DOING_AJAX) {
+            return;
+        }
 
-            // Si es psicólogo o paciente, redirigir fuera de wp-admin
-            if (!empty($user->roles)) {
-                if (in_array('psychologist', $user->roles)) {
-                    wp_redirect(home_url('/dashboard-psicologo/'));
-                    exit;
-                } elseif (in_array('patient', $user->roles)) {
-                    wp_redirect(home_url('/dashboard-paciente/'));
-                    exit;
-                }
+        // NO REDIRIGIR si es admin-post.php
+        global $pagenow;
+        if ($pagenow === 'admin-post.php') {
+            return;
+        }
+
+        $user = wp_get_current_user();
+
+        if (!empty($user->roles)) {
+            if (in_array('psychologist', $user->roles)) {
+                wp_redirect(home_url('/dashboard-psicologo/'));
+                exit;
+            } elseif (in_array('patient', $user->roles)) {
+                wp_redirect(home_url('/dashboard-paciente/'));
+                exit;
             }
         }
     }

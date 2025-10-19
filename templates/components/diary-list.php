@@ -63,7 +63,7 @@ $mood_emojis = [
         </p>
         <?php if (!$is_psychologist): ?>
             <a href="<?php echo add_query_arg('view', 'diario-nuevo', home_url('/dashboard-paciente/')); ?>"
-               class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-500 text-white rounded-lg border-0 text-sm font-medium transition-all hover:bg-purple-600 shadow-none no-underline">
+               class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-500 text-white rounded-lg border-0 text-sm font-medium no-underline">
                 <i class="fa-solid fa-pen"></i>
                 Comenzar a escribir
             </a>

@@ -51,13 +51,14 @@ class Installer {
             KEY is_private (is_private)
         ) $charset;";
 
-        // Tabla session notes (bitácora psicólogo)
+        // Tabla session notes (bitácora psicólogo) - ESTRUCTURA NUEVA
         $sql[] = "CREATE TABLE {$wpdb->prefix}openmind_session_notes (
             id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
             psychologist_id bigint(20) unsigned NOT NULL,
             patient_id bigint(20) unsigned NOT NULL,
             session_number int unsigned NOT NULL DEFAULT 0,
-            content text NOT NULL,
+            private_notes text NOT NULL,
+            public_content text,
             mood_assessment varchar(50),
             next_steps text,
             created_at datetime DEFAULT CURRENT_TIMESTAMP,
@@ -91,12 +92,6 @@ class Installer {
         // Migrar datos existentes
         self::migrateToSessionNotes();
 
-        // Agregar capability a administrator
-        $admin = get_role('administrator');
-        if ($admin) {
-            $admin->add_cap('manage_activity_library');
-        }
-
         update_option('openmind_db_version', OPENMIND_VERSION);
         self::createPages();
     }
@@ -109,55 +104,72 @@ class Installer {
             return;
         }
 
-        // Migrar bitácoras (author_id != patient_id) → session_notes
-        $wpdb->query("
-            INSERT INTO {$wpdb->prefix}openmind_session_notes 
-            (psychologist_id, patient_id, session_number, content, mood_assessment, created_at, updated_at)
-            SELECT 
-                author_id as psychologist_id,
-                patient_id,
-                0 as session_number,
-                content,
-                mood as mood_assessment,
-                created_at,
-                updated_at
-            FROM {$wpdb->prefix}openmind_diary
-            WHERE author_id != patient_id
-        ");
-
-        // Recalcular session_number para cada paciente
-        $patients = $wpdb->get_col("
-            SELECT DISTINCT patient_id 
-            FROM {$wpdb->prefix}openmind_session_notes
-        ");
-
-        foreach ($patients as $patient_id) {
-            $notes = $wpdb->get_results($wpdb->prepare("
-                SELECT id 
-                FROM {$wpdb->prefix}openmind_session_notes
-                WHERE patient_id = %d
-                ORDER BY created_at ASC
-            ", $patient_id));
-
-            $session_num = 1;
-            foreach ($notes as $note) {
-                $wpdb->update(
-                    $wpdb->prefix . 'openmind_session_notes',
-                    ['session_number' => $session_num++],
-                    ['id' => $note->id],
-                    ['%d'],
-                    ['%d']
-                );
-            }
+        // Verificar si existe la tabla y tiene la columna 'content' (estructura antigua)
+        $table_exists = $wpdb->get_var("SHOW TABLES LIKE '{$wpdb->prefix}openmind_session_notes'");
+        if (!$table_exists) {
+            return; // Tabla no existe, es instalación nueva
         }
 
-        // Eliminar bitácoras de wp_openmind_diary
-        $wpdb->query("
-            DELETE FROM {$wpdb->prefix}openmind_diary
-            WHERE author_id != patient_id
-        ");
+        $columns = $wpdb->get_col("DESCRIBE {$wpdb->prefix}openmind_session_notes");
 
-        update_option('openmind_session_notes_migrated', true);
+        // Si ya tiene 'private_notes', significa que ya está actualizada
+        if (in_array('private_notes', $columns)) {
+            update_option('openmind_session_notes_migrated', true);
+            return;
+        }
+
+        // Si tiene 'content', migrar desde openmind_diary
+        if (in_array('content', $columns)) {
+            // Migrar bitácoras (author_id != patient_id) → session_notes
+            $wpdb->query("
+                INSERT INTO {$wpdb->prefix}openmind_session_notes 
+                (psychologist_id, patient_id, session_number, content, mood_assessment, created_at, updated_at)
+                SELECT 
+                    author_id as psychologist_id,
+                    patient_id,
+                    0 as session_number,
+                    content,
+                    mood as mood_assessment,
+                    created_at,
+                    updated_at
+                FROM {$wpdb->prefix}openmind_diary
+                WHERE author_id != patient_id
+            ");
+
+            // Recalcular session_number para cada paciente
+            $patients = $wpdb->get_col("
+                SELECT DISTINCT patient_id 
+                FROM {$wpdb->prefix}openmind_session_notes
+            ");
+
+            foreach ($patients as $patient_id) {
+                $notes = $wpdb->get_results($wpdb->prepare("
+                    SELECT id 
+                    FROM {$wpdb->prefix}openmind_session_notes
+                    WHERE patient_id = %d
+                    ORDER BY created_at ASC
+                ", $patient_id));
+
+                $session_num = 1;
+                foreach ($notes as $note) {
+                    $wpdb->update(
+                        $wpdb->prefix . 'openmind_session_notes',
+                        ['session_number' => $session_num++],
+                        ['id' => $note->id],
+                        ['%d'],
+                        ['%d']
+                    );
+                }
+            }
+
+            // Eliminar bitácoras de wp_openmind_diary
+            $wpdb->query("
+                DELETE FROM {$wpdb->prefix}openmind_diary
+                WHERE author_id != patient_id
+            ");
+
+            update_option('openmind_session_notes_migrated', true);
+        }
     }
 
     private static function createPages(): void {

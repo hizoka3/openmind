@@ -3,7 +3,7 @@ namespace Openmind\Repositories;
 
 class SessionNoteRepository {
 
-    public static function create(int $psychologist_id, int $patient_id, string $content, string $mood = '', string $next_steps = ''): int {
+    public static function create(int $psychologist_id, int $patient_id, string $private_notes, string $public_content = '', string $mood = ''): int {
         global $wpdb;
 
         $session_number = self::getNextSessionNumber($patient_id);
@@ -14,9 +14,9 @@ class SessionNoteRepository {
                 'psychologist_id' => $psychologist_id,
                 'patient_id' => $patient_id,
                 'session_number' => $session_number,
-                'content' => $content,
-                'mood_assessment' => $mood,
-                'next_steps' => $next_steps
+                'private_notes' => $private_notes,
+                'public_content' => $public_content,
+                'mood_assessment' => $mood
             ],
             ['%d', '%d', '%d', '%s', '%s', '%s']
         );
@@ -74,18 +74,19 @@ class SessionNoteRepository {
         ", $patient_id));
     }
 
-    public static function update(int $id, string $content, string $mood = '', string $next_steps = ''): bool {
+    public static function update(int $id, string $private_notes, string $public_content = '', string $mood = '', string $next_steps = ''): bool {
         global $wpdb;
 
         $updated = $wpdb->update(
             $wpdb->prefix . 'openmind_session_notes',
             [
-                'content' => $content,
+                'private_notes' => $private_notes,
+                'public_content' => $public_content,
                 'mood_assessment' => $mood,
                 'next_steps' => $next_steps
             ],
             ['id' => $id],
-            ['%s', '%s', '%s'],
+            ['%s', '%s', '%s', '%s'],
             ['%d']
         );
 

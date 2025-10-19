@@ -20,13 +20,17 @@ class SessionNoteController {
 
         $psychologist_id = get_current_user_id();
         $patient_id = intval($_POST['patient_id'] ?? 0);
-        $content = wp_kses_post($_POST['content'] ?? '');
+
+        // CRÍTICO: Obtener contenido de WP Editor usando el nombre correcto
+        $private_notes = isset($_POST['private_notes']) ? wp_kses_post($_POST['private_notes']) : '';
+        $public_content = isset($_POST['public_content']) ? wp_kses_post($_POST['public_content']) : '';
+
         $mood = sanitize_text_field($_POST['mood'] ?? '');
         $next_steps = wp_kses_post($_POST['next_steps'] ?? '');
         $return = sanitize_text_field($_POST['return'] ?? 'lista');
 
-        if (empty($content)) {
-            wp_die('El contenido es requerido');
+        if (empty($private_notes)) {
+            wp_die('Las notas privadas son requeridas');
         }
 
         // Verificar relación
@@ -35,10 +39,9 @@ class SessionNoteController {
             wp_die('No tienes acceso a este paciente');
         }
 
-        $note_id = SessionNoteRepository::create($psychologist_id, $patient_id, $content, $mood, $next_steps);
+        $note_id = SessionNoteRepository::create($psychologist_id, $patient_id, $private_notes, $public_content, $mood, $next_steps);
 
         if ($note_id) {
-            // Procesar imágenes si hay
             self::processAttachments($note_id, $_FILES['attachments'] ?? []);
 
             $redirect = $return === 'detalle'
@@ -62,7 +65,11 @@ class SessionNoteController {
         }
 
         $note_id = intval($_POST['note_id'] ?? 0);
-        $content = wp_kses_post($_POST['content'] ?? '');
+
+        // CRÍTICO: Obtener contenido de WP Editor usando el nombre correcto
+        $private_notes = isset($_POST['private_notes']) ? wp_kses_post($_POST['private_notes']) : '';
+        $public_content = isset($_POST['public_content']) ? wp_kses_post($_POST['public_content']) : '';
+
         $mood = sanitize_text_field($_POST['mood'] ?? '');
         $next_steps = wp_kses_post($_POST['next_steps'] ?? '');
         $patient_id = intval($_POST['patient_id'] ?? 0);
@@ -73,10 +80,9 @@ class SessionNoteController {
             wp_die('No tienes permisos para editar esta bitácora');
         }
 
-        $updated = SessionNoteRepository::update($note_id, $content, $mood, $next_steps);
+        $updated = SessionNoteRepository::update($note_id, $private_notes, $public_content, $mood, $next_steps);
 
         if ($updated) {
-            // Procesar nuevas imágenes
             self::processAttachments($note_id, $_FILES['attachments'] ?? []);
 
             $redirect = $return === 'detalle'
@@ -107,7 +113,6 @@ class SessionNoteController {
         $deleted = SessionNoteRepository::delete($note_id, $psychologist_id);
 
         if ($deleted) {
-            // Eliminar attachments
             \Openmind\Repositories\AttachmentRepository::deleteByEntry('session_note', $note_id);
             wp_send_json_success(['message' => 'Bitácora eliminada']);
         }

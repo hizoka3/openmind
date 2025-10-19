@@ -46,11 +46,11 @@ $dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
             // URL de detalle
             if ($context === 'patient') {
                 $detail_url = add_query_arg(['view' => 'bitacora-detalle', 'note_id' => $entry->id], home_url('/dashboard-paciente/'));
+                $preview = wp_trim_words(strip_tags($entry->public_content), 20, '...');
             } else {
                 $detail_url = add_query_arg(['view' => 'bitacora-detalle', 'note_id' => $entry->id, 'patient_id' => $patient_id], home_url('/dashboard-psicologo/'));
+                $preview = wp_trim_words(strip_tags($entry->private_notes), 20, '...');
             }
-
-            $preview = wp_trim_words(strip_tags($entry->content), 20, '...');
 
             // Obtener día, mes, año
             $dia_numero = date('d', strtotime($entry->created_at));
@@ -61,7 +61,7 @@ $dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 
             <div class="relative group">
                 <!-- Contenedor principal -->
-                <div class="py-3 px-3 bg-white border-2 border-gray-200 rounded-xl transition-all hover:shadow-lg hover:border-primary-300 cursor-pointer flex"
+                <div class="py-3 px-3 bg-white border border-primary-200 rounded-xl transition-all hover:shadow-lg hover:border-primary-300 cursor-pointer flex"
                      onclick="window.location.href='<?php echo esc_url($detail_url); ?>'">
 
                     <!-- Fecha grande (izquierda) -->
@@ -106,9 +106,26 @@ $dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
                             <!-- Columna derecha: Preview, footer, botones -->
                             <div class="flex-1 pr-4 min-w-0">
                                 <!-- Preview del contenido -->
-                                <div class="text-gray-600 text-sm mb-2 line-clamp-2 leading-snug">
-                                    <?php echo esc_html($preview); ?>
-                                </div>
+                                <?php if ($context === 'patient' && empty(trim($entry->public_content ?? ''))): ?>
+                                    <!-- Mensaje cuando no hay contenido público -->
+                                    <div class="bg-primary-50 border border-primary-200 rounded-lg p-3 mb-2">
+                                        <p class="text-xs text-dark-gray-300 m-0 leading-relaxed">
+                                            <strong>Tu psicólogo registró esta sesión.</strong><br>
+                                            Aún no hay retroalimentación compartida. Pregúntale vía mensajes o en tu próxima sesión.
+                                        </p>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="text-gray-600 text-sm mb-2 line-clamp-2 leading-snug">
+                                        <?php echo esc_html($preview); ?>
+                                    </div>
+
+                                    <!-- Badge "Compartido" solo para psicólogo -->
+                                    <?php if ($context !== 'patient' && !empty(trim($entry->public_content ?? ''))): ?>
+                                        <span class="inline-flex items-center bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-medium mb-2">
+                                            Compartido
+                                        </span>
+                                    <?php endif; ?>
+                                <?php endif; ?>
 
                                 <!-- Footer con indicadores y botones -->
                                 <div class="flex items-center justify-between">

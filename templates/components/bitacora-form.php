@@ -20,7 +20,8 @@ $is_edit = $form_action === 'update';
 $action = $is_edit ? 'openmind_update_session_note' : 'openmind_save_session_note';
 $nonce_action = $is_edit ? 'update_session_note' : 'save_session_note';
 
-$content = $entry->content ?? '';
+$private_notes = $entry->private_notes ?? '';
+$public_content = $entry->public_content ?? '';
 $mood = $entry->mood_assessment ?? '';
 $next_steps = $entry->next_steps ?? '';
 $note_id = $entry->id ?? 0;
@@ -29,20 +30,9 @@ $note_id = $entry->id ?? 0;
 $attachments = $is_edit
         ? \Openmind\Repositories\AttachmentRepository::getByEntry('session_note', $note_id)
         : [];
-
-$mood_options = [
-        '' => 'Seleccionar...',
-        'feliz' => '😊 Feliz',
-        'triste' => '😢 Triste',
-        'ansioso' => '😰 Ansioso/a',
-        'neutral' => '😐 Neutral',
-        'enojado' => '😠 Enojado/a',
-        'calmado' => '😌 Calmado/a'
-];
 ?>
 
 <style>
-    /* Fix para el editor dentro del dashboard */
     .wp-editor-wrap {
         border-radius: 8px;
         overflow: hidden;
@@ -87,16 +77,18 @@ $mood_options = [
         <?php endif; ?>
     </div>
 
-    <!-- Contenido -->
+    <!-- Notas Privadas -->
     <div class="mb-6">
         <label class="block text-sm font-semibold text-gray-700 mb-2">
-            Contenido de la sesión *
+            <i class="fa-solid fa-lock mr-1 text-gray-500"></i>
+            Notas Privadas *
+            <span class="text-xs font-normal text-gray-500">(Solo tú puedes ver esto)</span>
         </label>
         <div class="border border-gray-300 rounded-lg overflow-hidden">
             <?php
-            $editor_settings = [
-                    'textarea_name' => 'content',
-                    'textarea_rows' => 15,
+            wp_editor($private_notes, 'private_notes', [
+                    'textarea_name' => 'private_notes',
+                    'textarea_rows' => 12,
                     'media_buttons' => true,
                     'teeny' => false,
                     'quicktags' => true,
@@ -104,18 +96,53 @@ $mood_options = [
                             'toolbar1' => 'formatselect,bold,italic,underline,strikethrough,bullist,numlist,blockquote,alignleft,aligncenter,alignright,link,unlink,wp_adv',
                             'toolbar2' => 'forecolor,backcolor,pastetext,removeformat,charmap,outdent,indent,undo,redo,wp_help',
                             'content_css' => OPENMIND_URL . 'assets/css/editor-style.css',
-                            'height' => 400,
+                            'height' => 350,
                             'menubar' => false,
                             'statusbar' => true,
                             'resize' => true,
                             'branding' => false,
                             'elementpath' => false
                     ]
-            ];
-            wp_editor($content, 'session_content', $editor_settings);
+            ]);
             ?>
         </div>
-        <p class="text-xs text-gray-500 mt-2">Describe lo trabajado en la sesión, observaciones y avances del paciente.</p>
+        <p class="text-xs text-gray-500 mt-2">
+            Tus observaciones clínicas, análisis, diagnóstico y notas profesionales. Este contenido es confidencial.
+        </p>
+    </div>
+
+    <!-- Retroalimentación para el Paciente -->
+    <div class="mb-6">
+        <label class="block text-sm font-semibold text-gray-700 mb-2">
+            <i class="fa-solid fa-eye mr-1 text-primary-500"></i>
+            Retroalimentación para el Paciente
+            <span class="text-xs font-normal text-gray-500">(Opcional - visible para el paciente)</span>
+        </label>
+        <div class="border border-primary-200 rounded-lg overflow-hidden bg-primary-50/30">
+            <?php
+            wp_editor($public_content, 'public_content', [
+                    'textarea_name' => 'public_content',
+                    'textarea_rows' => 10,
+                    'media_buttons' => true,
+                    'teeny' => false,
+                    'quicktags' => true,
+                    'tinymce' => [
+                            'toolbar1' => 'formatselect,bold,italic,underline,strikethrough,bullist,numlist,blockquote,alignleft,aligncenter,alignright,link,unlink,wp_adv',
+                            'toolbar2' => 'forecolor,backcolor,pastetext,removeformat,charmap,outdent,indent,undo,redo,wp_help',
+                            'content_css' => OPENMIND_URL . 'assets/css/editor-style.css',
+                            'height' => 300,
+                            'menubar' => false,
+                            'statusbar' => true,
+                            'resize' => true,
+                            'branding' => false,
+                            'elementpath' => false
+                    ]
+            ]);
+            ?>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">
+            Resumen, logros alcanzados, tareas o reflexiones que quieras compartir con tu paciente sobre esta sesión.
+        </p>
     </div>
 
     <!-- Estado anímico -->
@@ -128,7 +155,6 @@ $mood_options = [
     ];
     include OPENMIND_PATH . 'templates/components/mood-selector.php';
     ?>
-
 
     <!-- Imágenes -->
     <div class="mb-6">
@@ -146,7 +172,6 @@ $mood_options = [
                              class="w-full h-32 object-cover rounded-lg">
                         <button type="button"
                                 class="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                                data-attachment-id="<?php echo $att->id; ?>"
                                 onclick="deleteAttachment(<?php echo $att->id; ?>, this)">
                             ×
                         </button>
