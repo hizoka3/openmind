@@ -76,63 +76,101 @@ class MessageRepository {
 
         $current_psychologist_id = get_user_meta($patient_id, 'psychologist_id', true);
 
-        $results = $wpdb->get_results($wpdb->prepare("
-        SELECT 
-            CASE 
-                WHEN m.sender_id = %d THEN m.receiver_id
-                ELSE m.sender_id
-            END as psychologist_id,
-            MAX(m.created_at) as last_message_at
-        FROM {$wpdb->prefix}openmind_messages m
-        WHERE m.sender_id = %d OR m.receiver_id = %d
-        GROUP BY psychologist_id
-        ORDER BY last_message_at DESC
-    ", $patient_id, $patient_id, $patient_id));
+        // Obtener psicólogos con historial de mensajes
+        $psychologists_with_messages = $wpdb->get_results($wpdb->prepare("
+            SELECT 
+                CASE 
+                    WHEN m.sender_id = %d THEN m.receiver_id
+                    ELSE m.sender_id
+                END as psychologist_id,
+                MAX(m.created_at) as last_message_at
+            FROM {$wpdb->prefix}openmind_messages m
+            WHERE m.sender_id = %d OR m.receiver_id = %d
+            GROUP BY psychologist_id
+        ", $patient_id, $patient_id, $patient_id));
 
-        foreach ($results as $conv) {
+        $conversations = [];
+        $psychologist_ids_with_history = [];
+
+        // Procesar psicólogos con mensajes
+        foreach ($psychologists_with_messages as $conv) {
+            $psychologist_ids_with_history[] = $conv->psychologist_id;
+
             $user = get_userdata($conv->psychologist_id);
             $conv->display_name = $user ? $user->display_name : 'Usuario desconocido';
             $conv->is_current = ($conv->psychologist_id == $current_psychologist_id);
 
             $conv->unread_count = (int) $wpdb->get_var($wpdb->prepare("
-            SELECT COUNT(*) 
-            FROM {$wpdb->prefix}openmind_messages
-            WHERE receiver_id = %d 
-            AND sender_id = %d 
-            AND is_read = 0
-        ", $patient_id, $conv->psychologist_id));
+                SELECT COUNT(*) 
+                FROM {$wpdb->prefix}openmind_messages
+                WHERE receiver_id = %d 
+                AND sender_id = %d 
+                AND is_read = 0
+            ", $patient_id, $conv->psychologist_id));
+
+            $conversations[] = $conv;
         }
 
-        return $results;
+        // Si tiene psicólogo actual y NO está en la lista, agregarlo
+        if ($current_psychologist_id && !in_array($current_psychologist_id, $psychologist_ids_with_history)) {
+            $user = get_userdata($current_psychologist_id);
+
+            // Fecha de asignación desde relationships
+            $relationship = $wpdb->get_row($wpdb->prepare("
+                SELECT created_at 
+                FROM {$wpdb->prefix}openmind_relationships
+                WHERE psychologist_id = %d AND patient_id = %d
+            ", $current_psychologist_id, $patient_id));
+
+            $conversations[] = (object) [
+                'psychologist_id' => $current_psychologist_id,
+                'display_name' => $user ? $user->display_name : 'Usuario desconocido',
+                'last_message_at' => $relationship->created_at ?? current_time('mysql'),
+                'is_current' => true,
+                'unread_count' => 0
+            ];
+        }
+
+        // Ordenar: actual primero, luego por fecha
+        usort($conversations, function($a, $b) {
+            if ($a->is_current) return -1;
+            if ($b->is_current) return 1;
+            return strtotime($b->last_message_at) - strtotime($a->last_message_at);
+        });
+
+        return $conversations;
     }
 
     public static function getPsychologistConversations(int $psychologist_id): array {
         global $wpdb;
 
         $results = $wpdb->get_results($wpdb->prepare("
-        SELECT 
-            CASE 
-                WHEN m.sender_id = %d THEN m.receiver_id
-                ELSE m.sender_id
-            END as patient_id,
-            MAX(m.created_at) as last_message_at
-        FROM {$wpdb->prefix}openmind_messages m
-        WHERE m.sender_id = %d OR m.receiver_id = %d
-        GROUP BY patient_id
-        ORDER BY last_message_at DESC
-    ", $psychologist_id, $psychologist_id, $psychologist_id));
+            SELECT 
+                r.patient_id,
+                COALESCE(msg.last_message_at, r.created_at) as last_message_at,
+                COALESCE(unread.cnt, 0) as unread_count
+            FROM {$wpdb->prefix}openmind_relationships r
+            LEFT JOIN (
+                SELECT 
+                    CASE WHEN sender_id = %d THEN receiver_id ELSE sender_id END as patient_id,
+                    MAX(created_at) as last_message_at
+                FROM {$wpdb->prefix}openmind_messages
+                WHERE sender_id = %d OR receiver_id = %d
+                GROUP BY patient_id
+            ) msg ON msg.patient_id = r.patient_id
+            LEFT JOIN (
+                SELECT sender_id as patient_id, COUNT(*) as cnt
+                FROM {$wpdb->prefix}openmind_messages
+                WHERE receiver_id = %d AND is_read = 0
+                GROUP BY sender_id
+            ) unread ON unread.patient_id = r.patient_id
+            WHERE r.psychologist_id = %d
+            ORDER BY last_message_at DESC
+        ", $psychologist_id, $psychologist_id, $psychologist_id, $psychologist_id, $psychologist_id));
 
         foreach ($results as $conv) {
             $user = get_userdata($conv->patient_id);
             $conv->display_name = $user ? $user->display_name : 'Usuario desconocido';
-
-            $conv->unread_count = (int) $wpdb->get_var($wpdb->prepare("
-            SELECT COUNT(*) 
-            FROM {$wpdb->prefix}openmind_messages
-            WHERE receiver_id = %d 
-            AND sender_id = %d 
-            AND is_read = 0
-        ", $psychologist_id, $conv->patient_id));
         }
 
         return $results;
