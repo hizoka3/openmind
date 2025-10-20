@@ -28,6 +28,7 @@ class Plugin {
         \Openmind\Controllers\AuthController::init();
 
         \Openmind\Admin\PsychologistProfile::register();
+        \Openmind\Admin\PatientsAdmin::init();
     }
 
     private static function registerFormActions(): void {
