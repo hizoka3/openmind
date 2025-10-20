@@ -38,6 +38,7 @@ if ($status_filter !== 'all') {
 
 $patients = get_users($args);
 $total_patients = count($patients);
+
 // Contar pacientes por estado
 $all_patients = get_users([
         'role' => 'patient',
@@ -64,63 +65,62 @@ $total_count = count($all_patients);
 
 <div class="max-w-7xl mx-auto">
     <!-- Header -->
-    <div class="flex justify-between items-center mb-6">
-        <div>
-            <h1 class="text-2xl font-normal text-gray-900 m-0">
-                Mis Pacientes
-            </h1>
-            <p class="text-gray-600 m-0" id="patients-count">
-                <?php echo $total_count; ?> paciente<?php echo $total_count !== 1 ? 's' : ''; ?>
-                <span class="text-sm">
-                    (<span class="font-medium"><?php echo $active_count; ?> activo<?php echo $active_count !== 1 ? 's' : ''; ?></span>,
-                    <span class="font-medium"><?php echo $inactive_count; ?> inactivo<?php echo $inactive_count !== 1 ? 's' : ''; ?></span>)
-                </span>
-            </p>
-        </div>
-        <div class="flex gap-3">
-            <button class="bg-primary-500 text-white px-6 py-3 rounded-xl"
+    <div class="mb-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-normal text-gray-900 m-0">
+                    Mis Pacientes
+                </h1>
+                <p class="text-gray-600 m-0 text-sm md:text-base" id="patients-count">
+                    <?php echo $total_count; ?> paciente<?php echo $total_count !== 1 ? 's' : ''; ?>
+                    <span class="text-xs md:text-sm">
+                        (<span class="font-medium"><?php echo $active_count; ?> activo<?php echo $active_count !== 1 ? 's' : ''; ?></span>,
+                        <span class="font-medium"><?php echo $inactive_count; ?> inactivo<?php echo $inactive_count !== 1 ? 's' : ''; ?></span>)
+                    </span>
+                </p>
+            </div>
+            <button class="bg-primary-500 text-white px-4 md:px-6 py-2 md:py-3 rounded-xl text-sm md:text-base w-full md:w-auto"
                     onclick="openAssignPatientModal()">
-                Asignar Paciente Existente
+                <i class="fa-solid fa-user-check mr-2"></i>
+                Asignar Paciente
             </button>
         </div>
     </div>
 
     <!-- Filtros -->
-    <div class="bg-white border border-gray-200 rounded-xl p-4 mb-6 shadow-sm">
-        <div class="flex flex-col md:flex-row gap-4">
+    <div class="bg-white border border-gray-200 rounded-xl p-3 md:p-4 mb-6 shadow-sm">
+        <div class="flex flex-col gap-3">
             <!-- Buscador -->
-            <div class="flex-1">
-                <div class="relative">
-                    <i class="fa-solid fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                    <input type="text"
-                           id="patient-search"
-                           value="<?php echo esc_attr($search); ?>"
-                           placeholder="Buscar por nombre o correo..."
-                           class="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                    <?php if (!empty($search)): ?>
-                        <button onclick="clearSearch()"
-                                class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
-                    <?php endif; ?>
-                </div>
+            <div class="relative">
+                <i class="fa-solid fa-search absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="text"
+                       id="patient-search"
+                       value="<?php echo esc_attr($search); ?>"
+                       placeholder="Buscar por nombre o correo..."
+                       class="w-full pl-9 md:pl-11 pr-4 py-2 md:py-3 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                <?php if (!empty($search)): ?>
+                    <button onclick="clearSearch()"
+                            class="absolute right-3 md:right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                <?php endif; ?>
             </div>
 
             <!-- Pills de Estado -->
-            <div class="flex gap-2">
+            <div class="flex gap-2 overflow-x-auto">
                 <button onclick="filterByStatus('all')"
                         data-status="all"
-                        class="status-pill px-4 py-3 rounded-lg font-medium transition-colors <?php echo $status_filter === 'all' ? 'bg-primary-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'; ?>">
+                        class="status-pill px-3 md:px-4 py-2 md:py-3 rounded-lg font-medium transition-colors text-sm whitespace-nowrap <?php echo $status_filter === 'all' ? 'bg-primary-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'; ?>">
                     Todos
                 </button>
                 <button onclick="filterByStatus('active')"
                         data-status="active"
-                        class="status-pill px-4 py-3 rounded-lg font-medium transition-colors <?php echo $status_filter === 'active' ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'; ?>">
+                        class="status-pill px-3 md:px-4 py-2 md:py-3 rounded-lg font-medium transition-colors text-sm whitespace-nowrap <?php echo $status_filter === 'active' ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'; ?>">
                     Activos
                 </button>
                 <button onclick="filterByStatus('inactive')"
                         data-status="inactive"
-                        class="status-pill px-4 py-3 rounded-lg font-medium transition-colors <?php echo $status_filter === 'inactive' ? 'bg-yellow-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'; ?>">
+                        class="status-pill px-3 md:px-4 py-2 md:py-3 rounded-lg font-medium transition-colors text-sm whitespace-nowrap <?php echo $status_filter === 'inactive' ? 'bg-yellow-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'; ?>">
                     Inactivos
                 </button>
             </div>
@@ -133,25 +133,21 @@ $total_count = count($all_patients);
         // Estado vacío sin pacientes y sin filtros
         if (empty($patients) && empty($search) && $status_filter === 'all'):
             ?>
-            <div class="bg-white border border-gray-200 rounded-xl p-16 text-center">
+            <div class="bg-white border border-gray-200 rounded-xl p-8 md:p-16 text-center">
                 <div class="mb-6">
-                    <i class="fa-solid fa-users text-6xl text-gray-300"></i>
+                    <i class="fa-solid fa-users text-4xl md:text-6xl text-gray-300"></i>
                 </div>
-                <h3 class="text-xl font-semibold text-gray-800 mb-2 m-0">
+                <h3 class="text-lg md:text-xl font-semibold text-gray-800 mb-2 m-0">
                     No tienes pacientes asignados
                 </h3>
-                <p class="text-gray-600 m-0 mb-6">
+                <p class="text-sm md:text-base text-gray-600 m-0 mb-6">
                     Puedes crear un nuevo paciente o asignar uno existente
                 </p>
-                <div class="flex gap-4 justify-center">
-                    <button class="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-xl transition-colors"
+                <div class="flex flex-col md:flex-row gap-3 md:gap-4 justify-center">
+                    <button class="bg-primary-500 hover:bg-primary-600 text-white font-semibold px-6 py-3 rounded-xl transition-colors w-full md:w-auto"
                             onclick="openAssignPatientModal()">
                         <i class="fa-solid fa-user-check mr-2"></i>
                         Asignar Paciente
-                    </button>
-                    <button class="btn-primary" id="add-first-patient">
-                        <i class="fa-solid fa-user-plus mr-2"></i>
-                        Crear Paciente
                     </button>
                 </div>
             </div>
@@ -162,21 +158,21 @@ $total_count = count($all_patients);
 </div>
 
 <!-- Modal: Asignar Paciente Existente -->
-<div id="assign-patient-modal" class="fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50" style="display: none;">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
-        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+<div id="assign-patient-modal" class="fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50 p-4" style="display: none;">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+        <div class="flex items-center justify-between p-4 md:p-6 border-b border-gray-200">
             <div>
-                <h3 class="text-xl font-bold text-gray-800">Asignar Paciente</h3>
-                <p class="text-sm text-gray-600 mt-1">Asigna un paciente existente y actívalo</p>
+                <h3 class="text-lg md:text-xl font-bold text-gray-800">Asignar Paciente</h3>
+                <p class="text-xs md:text-sm text-gray-600 mt-1">Asigna un paciente existente y actívalo</p>
             </div>
             <button type="button"
                     onclick="closeAssignPatientModal()"
                     class="text-gray-400 hover:text-gray-600 transition-colors">
-                <i class="fa-solid fa-xmark text-2xl"></i>
+                <i class="fa-solid fa-xmark text-xl md:text-2xl"></i>
             </button>
         </div>
 
-        <form id="assign-patient-form" class="p-6">
+        <form id="assign-patient-form" class="p-4 md:p-6">
             <div class="mb-6">
                 <label class="block text-sm font-semibold text-gray-700 mb-2">
                     Email del paciente <span class="text-red-500">*</span>
@@ -184,7 +180,7 @@ $total_count = count($all_patients);
                 <input type="email"
                        name="patient_email"
                        id="assign-patient-email"
-                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                       class="w-full px-4 py-3 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                        placeholder="paciente@ejemplo.com"
                        required>
                 <p class="text-xs text-gray-500 mt-2">
@@ -193,10 +189,10 @@ $total_count = count($all_patients);
                 </p>
             </div>
 
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                <div class="flex gap-3">
-                    <i class="fa-solid fa-lightbulb text-blue-600 text-xl"></i>
-                    <div class="text-sm text-blue-800">
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 md:p-4 mb-6">
+                <div class="flex gap-2 md:gap-3">
+                    <i class="fa-solid fa-lightbulb text-blue-600 text-lg md:text-xl flex-shrink-0"></i>
+                    <div class="text-xs md:text-sm text-blue-800">
                         <strong>Importante:</strong> El paciente será asignado y <strong>activado automáticamente</strong>.
                     </div>
                 </div>
@@ -205,12 +201,12 @@ $total_count = count($all_patients);
             <div class="flex gap-3">
                 <button type="button"
                         onclick="closeAssignPatientModal()"
-                        class="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-colors">
+                        class="flex-1 px-4 py-2 md:py-3 text-sm md:text-base bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-colors">
                     Cancelar
                 </button>
                 <button type="submit"
-                        class="flex-1 px-4 py-3 bg-primary-500 text-white rounded-lg">
-                    Asignar y Activar
+                        class="flex-1 px-4 py-2 md:py-3 text-sm md:text-base bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition-colors">
+                    Asignar
                 </button>
             </div>
         </form>
@@ -282,7 +278,7 @@ $total_count = count($all_patients);
     function updateActivePills(status) {
         document.querySelectorAll('.status-pill').forEach(pill => {
             const pillStatus = pill.dataset.status;
-            pill.className = 'status-pill px-4 py-3 rounded-lg font-medium transition-colors';
+            pill.className = 'status-pill px-3 md:px-4 py-2 md:py-3 rounded-lg font-medium transition-colors text-sm whitespace-nowrap';
 
             if (pillStatus === status) {
                 if (status === 'all') {
@@ -393,15 +389,6 @@ $total_count = count($all_patients);
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalText;
             }
-        });
-
-        // Botones de agregar paciente
-        document.getElementById('add-patient')?.addEventListener('click', () => {
-            if (typeof OpenmindApp !== 'undefined') OpenmindApp.showAddPatientModal();
-        });
-
-        document.getElementById('add-first-patient')?.addEventListener('click', () => {
-            if (typeof OpenmindApp !== 'undefined') OpenmindApp.showAddPatientModal();
         });
     });
 </script>

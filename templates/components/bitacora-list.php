@@ -61,11 +61,11 @@ $dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 
             <div class="relative group">
                 <!-- Contenedor principal -->
-                <div class="py-3 px-3 bg-white border border-primary-200 rounded-xl transition-all hover:shadow-lg hover:border-primary-300 cursor-pointer flex"
+                <div class="py-3 px-3 bg-white border border-primary-200 rounded-xl transition-all hover:shadow-lg hover:border-primary-300 cursor-pointer flex flex-col md:flex-row gap-3"
                      onclick="window.location.href='<?php echo esc_url($detail_url); ?>'">
 
-                    <!-- Fecha grande (izquierda) -->
-                    <div class="flex-shrink-0 rounded-xl min-w-32 w-32 bg-primary-500 flex flex-col items-center justify-center">
+                    <!-- Fecha grande (izquierda en desktop, arriba en mobile) -->
+                    <div class="flex-shrink-0 rounded-xl w-full md:min-w-32 md:w-32 bg-primary-500 flex flex-col items-center justify-center py-3 md:py-0">
                         <div class="text-4xl font-bold text-white leading-none">
                             <?php echo $dia_numero; ?>
                         </div>
@@ -75,89 +75,87 @@ $dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
                     </div>
 
                     <!-- Contenido principal -->
-                    <div class="flex-1 min-w-0">
-                        <div class="flex gap-4">
-                            <!-- Columna izquierda: Hora, día, sesión, mood -->
-                            <div class="flex-shrink-0 px-4">
-                                <!-- Hora y día -->
-                                <div class="mb-2">
-                                    <div class="text-lg font-normal text-gray-900 leading-none">
-                                        <?php echo date('H:i', strtotime($entry->created_at)); ?>
-                                    </div>
-                                    <div class="text-xs text-gray-500 mt-0.5">
-                                        <?php echo $dias[$dia_semana_numero]; ?>
-                                    </div>
+                    <div class="flex-1 min-w-0 flex flex-col md:flex-row gap-3 md:gap-4">
+                        <!-- Columna izquierda: Hora, día, sesión, mood -->
+                        <div class="flex md:flex-col justify-between md:justify-start md:flex-shrink-0 md:px-4">
+                            <!-- Hora y día -->
+                            <div class="mb-0 md:mb-2">
+                                <div class="text-lg font-normal text-gray-900 leading-none">
+                                    <?php echo date('H:i', strtotime($entry->created_at)); ?>
                                 </div>
-
-                                <!-- Sesión # y Mood -->
-                                <div class="flex items-center gap-2">
-                                    <span class="inline-flex items-center bg-primary-500 text-white px-3 py-1 rounded-full text-xs font-bold">
-                                        Bitácora #<?php echo $entry->session_number; ?>
-                                    </span>
-
-                                    <?php if ($entry->mood_assessment): ?>
-                                        <span class="text-xl">
-                                            <?php echo $mood_emojis[$entry->mood_assessment] ?? '😐'; ?>
-                                        </span>
-                                    <?php endif; ?>
+                                <div class="text-xs text-gray-500 mt-0.5">
+                                    <?php echo $dias[$dia_semana_numero]; ?>
                                 </div>
                             </div>
 
-                            <!-- Columna derecha: Preview, footer, botones -->
-                            <div class="flex-1 pr-4 min-w-0">
-                                <!-- Preview del contenido -->
-                                <?php if ($context === 'patient' && empty(trim($entry->public_content ?? ''))): ?>
-                                    <!-- Mensaje cuando no hay contenido público -->
-                                    <div class="bg-primary-50 border border-primary-200 rounded-lg p-3 mb-2">
-                                        <p class="text-xs text-dark-gray-300 m-0 leading-relaxed">
-                                            <strong>Tu psicólogo registró esta sesión.</strong><br>
-                                            Aún no hay retroalimentación compartida. Pregúntale vía mensajes o en tu próxima sesión.
-                                        </p>
-                                    </div>
-                                <?php else: ?>
-                                    <div class="text-gray-600 text-sm mb-2 line-clamp-2 leading-snug">
-                                        <?php echo esc_html($preview); ?>
-                                    </div>
+                            <!-- Sesión # y Mood -->
+                            <div class="flex items-center gap-2">
+                                <span class="inline-flex items-center bg-primary-500 text-white px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">
+                                    Bitácora #<?php echo $entry->session_number; ?>
+                                </span>
 
-                                    <!-- Badge "Compartido" solo para psicólogo -->
-                                    <?php if ($context !== 'patient' && !empty(trim($entry->public_content ?? ''))): ?>
-                                        <span class="inline-flex items-center bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-medium mb-2">
-                                            Compartido
-                                        </span>
-                                    <?php endif; ?>
+                                <?php if ($entry->mood_assessment): ?>
+                                    <span class="text-xl flex-shrink-0">
+                                        <?php echo $mood_emojis[$entry->mood_assessment] ?? '😐'; ?>
+                                    </span>
                                 <?php endif; ?>
+                            </div>
+                        </div>
 
-                                <!-- Footer con indicadores y botones -->
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-3 text-xs text-gray-500">
-                                        <?php if ($has_attachments): ?>
-                                            <span class="flex items-center gap-1">
-                                                <i class="fa-solid fa-paperclip"></i>
-                                                <?php echo count($attachments); ?> adjunto<?php echo count($attachments) > 1 ? 's' : ''; ?>
-                                            </span>
-                                        <?php endif; ?>
-
-                                        <span class="text-xs font-semibold text-primary-500 flex items-center gap-1 ml-auto">
-                                            Ver detalles →
-                                        </span>
-                                    </div>
-
-                                    <!-- Botones de acción -->
-                                    <?php if ($show_actions): ?>
-                                        <div class="flex gap-1 ml-4" onclick="event.stopPropagation()">
-                                            <a href="<?php echo add_query_arg(['view' => 'bitacora-editar', 'note_id' => $entry->id, 'patient_id' => $patient_id, 'return' => $context === 'patient-detail' ? 'detalle' : 'lista'], home_url('/dashboard-psicologo/')); ?>"
-                                               class="w-8 h-8 flex items-center justify-center bg-blue-50 text-blue-600 rounded-full transition-all hover:bg-blue-100 no-underline"
-                                               title="Editar">
-                                                <i class="fa-solid fa-pen text-xs"></i>
-                                            </a>
-                                            <button onclick="deleteSessionNote(<?php echo $entry->id; ?>, this)"
-                                                    class="w-8 h-8 flex items-center justify-center bg-red-50 text-red-600 rounded-full transition-all hover:bg-red-100 border-0 cursor-pointer"
-                                                    title="Eliminar">
-                                                <i class="fa-solid fa-trash text-xs"></i>
-                                            </button>
-                                        </div>
-                                    <?php endif; ?>
+                        <!-- Columna derecha: Preview, footer, botones -->
+                        <div class="flex-1 min-w-0">
+                            <!-- Preview del contenido -->
+                            <?php if ($context === 'patient' && empty(trim($entry->public_content ?? ''))): ?>
+                                <!-- Mensaje cuando no hay contenido público -->
+                                <div class="bg-primary-50 border border-primary-200 rounded-lg p-3 mb-2">
+                                    <p class="text-xs text-dark-gray-300 m-0 leading-relaxed">
+                                        <strong>Tu psicólogo registró esta sesión.</strong><br>
+                                        Aún no hay retroalimentación compartida. Pregúntale vía mensajes o en tu próxima sesión.
+                                    </p>
                                 </div>
+                            <?php else: ?>
+                                <div class="text-gray-600 text-sm mb-2 line-clamp-2 leading-snug">
+                                    <?php echo esc_html($preview); ?>
+                                </div>
+
+                                <!-- Badge "Compartido" solo para psicólogo -->
+                                <?php if ($context !== 'patient' && !empty(trim($entry->public_content ?? ''))): ?>
+                                    <span class="inline-flex items-center bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-medium mb-2">
+                                        Compartido
+                                    </span>
+                                <?php endif; ?>
+                            <?php endif; ?>
+
+                            <!-- Footer con indicadores y botones -->
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                                <div class="flex items-center gap-3 text-xs text-gray-500">
+                                    <?php if ($has_attachments): ?>
+                                        <span class="flex items-center gap-1">
+                                            <i class="fa-solid fa-paperclip"></i>
+                                            <?php echo count($attachments); ?> adjunto<?php echo count($attachments) > 1 ? 's' : ''; ?>
+                                        </span>
+                                    <?php endif; ?>
+
+                                    <span class="text-xs font-semibold text-primary-500 flex items-center gap-1">
+                                        Ver detalles →
+                                    </span>
+                                </div>
+
+                                <!-- Botones de acción -->
+                                <?php if ($show_actions): ?>
+                                    <div class="flex gap-1" onclick="event.stopPropagation()">
+                                        <a href="<?php echo add_query_arg(['view' => 'bitacora-editar', 'note_id' => $entry->id, 'patient_id' => $patient_id, 'return' => $context === 'patient-detail' ? 'detalle' : 'lista'], home_url('/dashboard-psicologo/')); ?>"
+                                           class="w-8 h-8 flex items-center justify-center bg-blue-50 text-blue-600 rounded-full transition-all hover:bg-blue-100 no-underline flex-shrink-0"
+                                           title="Editar">
+                                            <i class="fa-solid fa-pen text-xs"></i>
+                                        </a>
+                                        <button onclick="deleteSessionNote(<?php echo $entry->id; ?>, this)"
+                                                class="w-8 h-8 flex items-center justify-center bg-red-50 text-red-600 rounded-full transition-all hover:bg-red-100 border-0 cursor-pointer flex-shrink-0"
+                                                title="Eliminar">
+                                            <i class="fa-solid fa-trash text-xs"></i>
+                                        </button>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>

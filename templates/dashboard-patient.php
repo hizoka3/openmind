@@ -31,7 +31,6 @@ include OPENMIND_PATH . 'templates/components/toast.php';
         <?php include OPENMIND_PATH . 'templates/components/sidebar-patient.php'; ?>
 
         <div class="dashboard-main">
-
             <div class="dashboard-content">
                 <?php
                 // Mapeo de vistas a archivos
@@ -76,22 +75,7 @@ include OPENMIND_PATH . 'templates/components/toast.php';
         </div>
     </div>
 
-    <script>
-        // Mostrar Toast de transient si existe
-        document.addEventListener('DOMContentLoaded', function() {
-            <?php
-            $toast_data = get_transient('openmind_toast_' . $user_id);
-
-            if ($toast_data) {
-            delete_transient('openmind_toast_' . $user_id);
-            ?>
-            if (typeof Toast !== 'undefined') {
-                Toast.show('<?php echo esc_js($toast_data['message']); ?>', '<?php echo esc_js($toast_data['type']); ?>');
-            }
-            <?php
-            }
-            ?>
-        });
-    </script>
+<?php // Bottom Tab Bar - Solo mobile ?>
+<?php include OPENMIND_PATH . 'templates/components/bottom-tab-bar.php'; ?>
 
 <?php get_footer(); ?>

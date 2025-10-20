@@ -24,7 +24,7 @@ $menu_items = array_filter($all_menu_items, function($item) use ($is_active) {
 });
 ?>
 
-<aside class="openmind-sidebar">
+<aside class="openmind-sidebar hidden md:flex">
     <div class="sidebar-header">
         <div class="user-avatar">
             <img id="avatar-preview"

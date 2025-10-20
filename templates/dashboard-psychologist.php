@@ -12,7 +12,6 @@ include OPENMIND_PATH . 'templates/components/toast.php';
         <?php include OPENMIND_PATH . 'templates/components/sidebar-psychologist.php'; ?>
 
         <div class="dashboard-main">
-
             <div class="dashboard-content">
                 <?php
                 // Mapeo de vistas a archivos
@@ -59,5 +58,8 @@ include OPENMIND_PATH . 'templates/components/toast.php';
             </div>
         </div>
     </div>
+
+<?php // Bottom Tab Bar - Solo mobile ?>
+<?php include OPENMIND_PATH . 'templates/components/bottom-tab-bar.php'; ?>
 
 <?php get_footer(); ?>

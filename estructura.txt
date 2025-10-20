@@ -44,6 +44,8 @@
 ├── src
 │   ├── Admin
 │   │   ├── ActivityMetaboxes.php
+│   │   ├── PatientsAdmin.php
+│   │   ├── PatientsListTable.php
 │   │   └── PsychologistProfile.php
 │   ├── Controllers
 │   │   ├── ActivityController.php
@@ -88,6 +90,7 @@
 │   │   ├── modal-edit-response.php
 │   │   ├── modal-hide-response.php
 │   │   ├── mood-selector.php
+│   │   ├── patients-table.php
 │   │   ├── profile-card.php
 │   │   ├── reservo-modal.php
 │   │   ├── sidebar-patient.php
@@ -111,6 +114,7 @@
 │       └── psychologist
 │           ├── actividad-detalle.php
 │           ├── actividades.php
+│           ├── biblioteca-detalle.php
 │           ├── bitacora-detalle.php
 │           ├── bitacora-editar.php
 │           ├── bitacora-nueva.php
@@ -122,4 +126,4 @@
 │           └── perfil.php
 └── test-setup.php
 
-18 directories, 105 files
+18 directories, 109 files

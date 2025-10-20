@@ -15,7 +15,7 @@ $menu_items = [
 ];
 ?>
 
-<aside class="openmind-sidebar">
+<aside class="openmind-sidebar hidden md:flex">
     <div class="sidebar-header">
         <div class="user-avatar">
             <?php echo get_avatar($current_user->ID, 150); ?>
@@ -28,9 +28,6 @@ $menu_items = [
         <?php foreach ($menu_items as $view => $item): ?>
             <a href="<?php echo esc_url(add_query_arg('view', $view, $base_url)); ?>"
                class="menu-item <?php echo $current_view === $view ? 'active' : ''; ?>">
-                <!--<span class="menu-icon">
-                    <i class="fa-solid <?php /*echo $item['icon']; */?>"></i>
-                </span>-->
                 <span class="menu-label"><?php echo esc_html($item['label']); ?></span>
 
                 <?php if ($item['badge'] === 'messages'): ?>

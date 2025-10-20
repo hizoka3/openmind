@@ -25,7 +25,8 @@ $total = count($patients);
         </button>
     </div>
 <?php else: ?>
-    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+    <!-- Desktop Table -->
+    <div class="hidden md:block bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
         <table class="w-full">
             <thead class="bg-gray-50 border-b border-gray-200">
             <tr>
@@ -51,13 +52,13 @@ $total = count($patients);
                 $status = get_user_meta($patient->ID, 'openmind_status', true);
                 $is_active = $status === 'active';
                 $pending_count = count(get_posts([
-                    'post_type' => 'activity',
-                    'meta_query' => [
-                        ['key' => 'assigned_to', 'value' => $patient->ID],
-                        ['key' => 'completed', 'value' => '0']
-                    ],
-                    'posts_per_page' => -1,
-                    'fields' => 'ids'
+                        'post_type' => 'activity',
+                        'meta_query' => [
+                                ['key' => 'assigned_to', 'value' => $patient->ID],
+                                ['key' => 'completed', 'value' => '0']
+                        ],
+                        'posts_per_page' => -1,
+                        'fields' => 'ids'
                 ]));
                 ?>
                 <tr class="transition-colors hover:bg-gray-50">
@@ -96,7 +97,7 @@ $total = count($patients);
                                class="inline-flex items-center gap-1 px-3 py-1.5 bg-primary-500 text-white rounded-lg text-sm font-medium transition-colors hover:bg-primary-600 no-underline"
                                title="Ver detalles">
                                 <i class="fa-solid fa-eye"></i>
-                                <span class="hidden md:inline">Ver</span>
+                                <span>Ver</span>
                             </a>
                             <a href="<?php echo add_query_arg(['view' => 'mensajeria', 'user_id' => $patient->ID], home_url('/dashboard-psicologo/')); ?>"
                                class="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium transition-colors hover:bg-gray-200 no-underline"
@@ -109,5 +110,71 @@ $total = count($patients);
             <?php endforeach; ?>
             </tbody>
         </table>
+    </div>
+
+    <!-- Mobile Cards -->
+    <div class="md:hidden space-y-3">
+        <?php foreach ($patients as $patient):
+            $status = get_user_meta($patient->ID, 'openmind_status', true);
+            $is_active = $status === 'active';
+            $pending_count = count(get_posts([
+                    'post_type' => 'activity',
+                    'meta_query' => [
+                            ['key' => 'assigned_to', 'value' => $patient->ID],
+                            ['key' => 'completed', 'value' => '0']
+                    ],
+                    'posts_per_page' => -1,
+                    'fields' => 'ids'
+            ]));
+            ?>
+            <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+                <!-- Header con avatar y nombre -->
+                <div class="flex items-start gap-3 mb-3">
+                    <img src="<?php echo esc_url(get_avatar_url($patient->ID, ['size' => 48])); ?>"
+                         alt="Avatar"
+                         class="w-12 h-12 rounded-full border-4 border-primary-100 object-cover flex-shrink-0">
+                    <div class="flex-1 min-w-0">
+                        <h3 class="font-semibold text-gray-900 m-0 truncate">
+                            <?php echo esc_html($patient->display_name); ?>
+                        </h3>
+                        <p class="text-sm text-gray-600 m-0 truncate">
+                            <?php echo esc_html($patient->user_email); ?>
+                        </p>
+                    </div>
+                    <!-- Estado -->
+                    <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full flex-shrink-0 <?php echo $is_active ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'; ?>">
+                        <?php echo $is_active ? '🟢' : '🟡'; ?>
+                    </span>
+                </div>
+
+                <!-- Info adicional -->
+                <div class="flex items-center gap-4 text-xs text-gray-500 mb-3">
+                    <span>
+                        <i class="fa-solid fa-calendar-days mr-1"></i>
+                        <?php echo date('d/m/Y', strtotime($patient->user_registered)); ?>
+                    </span>
+                    <?php if ($pending_count > 0): ?>
+                        <span class="text-orange-600">
+                            <i class="fa-solid fa-clipboard-list mr-1"></i>
+                            <?php echo $pending_count; ?> pendiente<?php echo $pending_count !== 1 ? 's' : ''; ?>
+                        </span>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="flex gap-2">
+                    <a href="<?php echo add_query_arg(['view' => 'pacientes', 'patient_id' => $patient->ID], home_url('/dashboard-psicologo/')); ?>"
+                       class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg text-sm font-medium transition-colors hover:bg-primary-600 no-underline">
+                        <i class="fa-solid fa-eye"></i>
+                        Ver Perfil
+                    </a>
+                    <a href="<?php echo add_query_arg(['view' => 'mensajeria', 'user_id' => $patient->ID], home_url('/dashboard-psicologo/')); ?>"
+                       class="inline-flex items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium transition-colors hover:bg-gray-200 no-underline"
+                       title="Enviar mensaje">
+                        <i class="fa-solid fa-message"></i>
+                    </a>
+                </div>
+            </div>
+        <?php endforeach; ?>
     </div>
 <?php endif; ?>
