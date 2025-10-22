@@ -94,7 +94,7 @@ $dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
                                     Bitácora #<?php echo $entry->session_number; ?>
                                 </span>
 
-                                <?php if ($entry->mood_assessment): ?>
+                                <?php if ($entry->mood_assessment && $entry->show_actions): ?>
                                     <span class="text-xl flex-shrink-0">
                                         <?php echo $mood_emojis[$entry->mood_assessment] ?? '😐'; ?>
                                     </span>

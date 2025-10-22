@@ -23,6 +23,8 @@ class ComposerStaticInit6d41af1f30d54c9276827afc41c6b883
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Openmind\\Admin\\ActivityMetaboxes' => __DIR__ . '/../..' . '/src/Admin/ActivityMetaboxes.php',
+        'Openmind\\Admin\\PatientsAdmin' => __DIR__ . '/../..' . '/src/Admin/PatientsAdmin.php',
+        'Openmind\\Admin\\PatientsListTable' => __DIR__ . '/../..' . '/src/Admin/PatientsListTable.php',
         'Openmind\\Admin\\PsychologistProfile' => __DIR__ . '/../..' . '/src/Admin/PsychologistProfile.php',
         'Openmind\\Controllers\\ActivityController' => __DIR__ . '/../..' . '/src/Controllers/ActivityController.php',
         'Openmind\\Controllers\\AttachmentController' => __DIR__ . '/../..' . '/src/Controllers/AttachmentController.php',
