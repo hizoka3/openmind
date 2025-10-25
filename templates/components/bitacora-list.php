@@ -46,10 +46,10 @@ $dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
             // URL de detalle
             if ($context === 'patient') {
                 $detail_url = add_query_arg(['view' => 'bitacora-detalle', 'note_id' => $entry->id], home_url('/dashboard-paciente/'));
-                $preview = wp_trim_words(strip_tags($entry->public_content), 20, '...');
+                $preview = $entry->public_content ? wp_trim_words(strip_tags($entry->public_content), 20, '...') : '';
             } else {
                 $detail_url = add_query_arg(['view' => 'bitacora-detalle', 'note_id' => $entry->id, 'patient_id' => $patient_id], home_url('/dashboard-psicologo/'));
-                $preview = wp_trim_words(strip_tags($entry->private_notes), 20, '...');
+                $preview = $entry->private_notes ? wp_trim_words(strip_tags($entry->private_notes), 20, '...') : '';
             }
 
             // Obtener día, mes, año
@@ -94,7 +94,7 @@ $dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
                                     Bitácora #<?php echo $entry->session_number; ?>
                                 </span>
 
-                                <?php if ($entry->mood_assessment && $entry->show_actions): ?>
+                                <?php if ($entry->mood_assessment && $show_actions): ?>
                                     <span class="text-xl flex-shrink-0">
                                         <?php echo $mood_emojis[$entry->mood_assessment] ?? '😐'; ?>
                                     </span>

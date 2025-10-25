@@ -71,6 +71,18 @@ class PatientController {
         // Activar automáticamente
         AccessControl::activatePatient($patient->ID);
 
+        $wpdb->insert(
+            $wpdb->prefix . 'openmind_messages',
+            [
+                'sender_id' => $psychologist_id,
+                'receiver_id' => $patient->ID,
+                'message' => '¡Hola! Bienvenido/a a OpenMind. Estaré acompañándote en este proceso. Puedes escribirme cuando lo necesites.',
+                'is_read' => 0,
+                'created_at' => current_time('mysql')
+            ],
+            ['%d', '%d', '%s', '%d', '%s']
+        );
+
         // Obtener datos del psicólogo para los emails
         $psychologist = get_userdata($psychologist_id);
 

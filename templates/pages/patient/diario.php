@@ -37,7 +37,7 @@ $psychologist = $psychologist_id ? get_userdata($psychologist_id) : null;
     <!-- Botón Nueva Entrada -->
     <div class="mb-8">
         <a href="<?php echo add_query_arg('view', 'diario-nuevo', home_url('/dashboard-paciente/')); ?>"
-           class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-lg border-0 text-sm font-semibold transition-all hover:-translate-y-0.5 hover:shadow-lg shadow-none no-underline">
+           class="inline-flex items-center gap-2 px-6 py-3 bg-primary-500 text-white rounded-lg border-0 text-sm font-semibold transition-all hover:-translate-y-0.5 hover:shadow-lg shadow-none no-underline">
             <i class="fa-solid fa-plus"></i>
             Nueva Entrada
         </a>
