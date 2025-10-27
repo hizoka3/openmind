@@ -189,10 +189,10 @@ $total_count = count($all_patients);
                 </p>
             </div>
 
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 md:p-4 mb-6">
+            <div class="bg-primary-50 border border-primary-200 rounded-lg p-3 md:p-4 mb-6">
                 <div class="flex gap-2 md:gap-3">
-                    <i class="fa-solid fa-lightbulb text-blue-600 text-lg md:text-xl flex-shrink-0"></i>
-                    <div class="text-xs md:text-sm text-blue-800">
+                    <i class="fa-solid fa-lightbulb text-primary-500 text-lg md:text-xl flex-shrink-0"></i>
+                    <div class="text-xs md:text-sm text-dark-gray-300">
                         <strong>Importante:</strong> El paciente será asignado y <strong>activado automáticamente</strong>.
                     </div>
                 </div>

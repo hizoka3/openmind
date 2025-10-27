@@ -6,18 +6,41 @@ class PatientsAdmin {
     public static function init(): void {
         add_action('admin_menu', [self::class, 'registerMenu']);
         add_action('wp_ajax_openmind_admin_unlink_patient', [self::class, 'unlinkPatient']);
+        add_filter('set-screen-option', [self::class, 'saveScreenOptions'], 10, 3);
     }
 
     public static function registerMenu(): void {
-        add_menu_page(
-            'Pacientes OpenMind',           // Page title
-            'Pacientes OpenMind',           // Menu title
-            'manage_options',               // Capability
-            'openmind-patients',            // Menu slug
-            [self::class, 'renderPage'],    // Callback
-            'dashicons-groups',             // Icon
-            26                              // Position (después de Actividades)
+        $hook = add_menu_page(
+                'Pacientes OpenMind',
+                'Pacientes OpenMind',
+                'manage_options',
+                'openmind-patients',
+                [self::class, 'renderPage'],
+                'dashicons-groups',
+                26
         );
+
+        // CRÍTICO: Hook para agregar screen options cuando la página se carga
+        add_action("load-{$hook}", [self::class, 'addScreenOptions']);
+    }
+
+    public static function addScreenOptions(): void {
+        add_screen_option('per_page', [
+                'label' => 'Pacientes por página',
+                'default' => 20,
+                'option' => 'patients_per_page'
+        ]);
+
+        // Instanciar la tabla aquí para que WP la reconozca
+        $table = new PatientsListTable();
+    }
+
+    public static function saveScreenOptions($status, string $option, $value) {
+        // Validar que sea nuestra opción y retornar el valor
+        if ($option === 'patients_per_page') {
+            return (int) $value;
+        }
+        return $status;
     }
 
     public static function renderPage(): void {
@@ -119,9 +142,9 @@ class PatientsAdmin {
         // Eliminar relación
         global $wpdb;
         $deleted = $wpdb->delete(
-            $wpdb->prefix . 'openmind_relationships',
-            ['patient_id' => $patient_id],
-            ['%d']
+                $wpdb->prefix . 'openmind_relationships',
+                ['patient_id' => $patient_id],
+                ['%d']
         );
 
         if ($deleted) {

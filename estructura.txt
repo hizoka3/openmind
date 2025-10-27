@@ -35,7 +35,6 @@
 ├── build-deploy.sh
 ├── composer.json
 ├── composer.lock
-├── create-test-messages.php
 ├── estructura.txt
 ├── flatten.sh
 ├── openmind.php
@@ -84,6 +83,7 @@
 │   │   ├── activity-resources.php
 │   │   ├── bitacora-form.php
 │   │   ├── bitacora-list.php
+│   │   ├── bottom-tab-bar.php
 │   │   ├── diary-list.php
 │   │   ├── header.php
 │   │   ├── modal-asignar-actividad.php

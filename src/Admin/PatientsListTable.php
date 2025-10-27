@@ -26,13 +26,32 @@ class PatientsListTable extends \WP_List_Table {
         ];
     }
 
+    public function get_sortable_columns(): array {
+        return [
+            'name' => ['display_name', true],
+            'email' => ['user_email', false],
+            'registered' => ['user_registered', false]
+        ];
+    }
+
     public function prepare_items(): void {
-        $per_page = 20;
+        // Leer preferencia del usuario o usar default
+        $per_page = $this->get_items_per_page('patients_per_page', 20);
         $current_page = $this->get_pagenum();
         $search = isset($_REQUEST['s']) ? sanitize_text_field($_REQUEST['s']) : '';
 
+        // Ordenamiento
+        $orderby = isset($_REQUEST['orderby']) ? sanitize_text_field($_REQUEST['orderby']) : 'display_name';
+        $order = isset($_REQUEST['order']) && $_REQUEST['order'] === 'desc' ? 'DESC' : 'ASC';
+
         // Query de pacientes
-        $args = ['role' => 'patient', 'number' => $per_page, 'offset' => ($current_page - 1) * $per_page];
+        $args = [
+            'role' => 'patient',
+            'number' => $per_page,
+            'offset' => ($current_page - 1) * $per_page,
+            'orderby' => $orderby,
+            'order' => $order
+        ];
 
         if (!empty($search)) {
             $args['search'] = '*' . $search . '*';
@@ -51,7 +70,8 @@ class PatientsListTable extends \WP_List_Table {
             'total_pages' => ceil($total_items / $per_page)
         ]);
 
-        $this->_column_headers = [$this->get_columns(), [], []];
+        // CRÍTICO: pasar las columnas ordenables como tercer parámetro
+        $this->_column_headers = [$this->get_columns(), [], $this->get_sortable_columns()];
     }
 
     public function column_name($patient): string {
