@@ -10,7 +10,7 @@ $library_activities = \Openmind\Controllers\ActivityController::getLibraryActivi
     <div class="bg-white rounded-xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
         <div class="p-6 border-b border-gray-200">
             <h2 class="text-2xl font-bold text-gray-900">Asignar Actividad</h2>
-            <p class="text-sm text-gray-600 mt-1">Selecciona una actividad de la biblioteca y personalízala</p>
+            <p class="text-sm text-gray-600 mt-1">Selecciona una actividad de la biblioteca y personalÃ­zala</p>
         </div>
 
         <form id="assign-activity-form" class="p-6 space-y-6">
@@ -29,10 +29,10 @@ $library_activities = \Openmind\Controllers\ActivityController::getLibraryActivi
                         <?php foreach ($library_activities as $activity):
                             $type = get_post_meta($activity->ID, '_activity_type', true);
                             $type_icons = [
-                                'pdf' => 'fa-file-pdf text-red-600',
-                                'video' => 'fa-video text-blue-600',
-                                'link' => 'fa-link text-green-600',
-                                'youtube' => 'fa-brands fa-youtube text-red-600'
+                                    'pdf' => 'fa-file-pdf text-red-600',
+                                    'video' => 'fa-video text-blue-600',
+                                    'link' => 'fa-link text-green-600',
+                                    'youtube' => 'fa-brands fa-youtube text-red-600'
                             ];
                             ?>
                             <label class="library-activity-option flex items-start gap-3 p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary-500 transition-all">
@@ -54,32 +54,32 @@ $library_activities = \Openmind\Controllers\ActivityController::getLibraryActivi
                 </div>
             </div>
 
-            <!-- Título personalizado -->
+            <!-- TÃ­tulo personalizado -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Título personalizado
-                    <span class="text-gray-500 font-normal">(opcional - se usa el de biblioteca si está vacío)</span>
+                    TÃ­tulo personalizado
+                    <span class="text-gray-500 font-normal">(opcional - se usa el de biblioteca si estÃ¡ vacÃ­o)</span>
                 </label>
                 <input type="text" id="assign-custom-title" name="custom_title" placeholder="Ej: Ayuda para controlar tu ansiedad" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
             </div>
 
-            <!-- Descripción personalizada -->
+            <!-- DescripciÃ³n personalizada -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     Mensaje para el paciente
                     <span class="text-gray-500 font-normal">(opcional)</span>
                 </label>
-                <textarea id="assign-custom-description" name="custom_description" rows="4" placeholder="Ej: María, te dejé esta actividad para que complementemos la sesión..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"></textarea>
+                <textarea id="assign-custom-description" name="custom_description" rows="4" placeholder="Ej: MarÃ­a, te dejÃ© esta actividad para que complementemos la sesiÃ³n..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"></textarea>
             </div>
 
-            <!-- Fecha límite (OPCIONAL) -->
+            <!-- Fecha lÃ­mite (OPCIONAL) -->
             <div>
                 <label class="flex items-center gap-2 mb-3">
                     <input type="checkbox" id="has-due-date" onchange="toggleDueDate()" class="rounded border-gray-300">
-                    <span class="text-sm font-medium text-gray-700">Agregar fecha límite (opcional)</span>
+                    <span class="text-sm font-medium text-gray-700">Agregar fecha lÃ­mite (opcional)</span>
                 </label>
                 <input type="date" id="assign-due-date" name="due_date" disabled class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed">
-                <p class="text-xs text-gray-500 mt-1">💡 Tip: Evita presionar al paciente con fechas si no es necesario</p>
+                <p class="text-xs text-gray-500 mt-1">ðŸ’¡ Tip: Evita presionar al paciente con fechas si no es necesario</p>
             </div>
 
             <!-- Botones -->
@@ -101,11 +101,11 @@ $library_activities = \Openmind\Controllers\ActivityController::getLibraryActivi
         document.getElementById('assign-activity-form').reset();
         document.getElementById('has-due-date').checked = false;
         document.getElementById('assign-due-date').disabled = true;
-        document.getElementById('assign-activity-modal').classList.remove('hidden');
+        ModalUtils.openModal('assign-activity-modal');
     }
 
     function closeAssignModal() {
-        document.getElementById('assign-activity-modal').classList.add('hidden');
+        ModalUtils.closeModal('assign-activity-modal');
     }
 
     function toggleDueDate() {
@@ -155,7 +155,7 @@ $library_activities = \Openmind\Controllers\ActivityController::getLibraryActivi
             }
         } catch (error) {
             console.error(error);
-            alert('Error de conexión');
+            alert('Error de conexiÃ³n');
         }
     });
 

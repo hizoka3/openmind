@@ -10,21 +10,21 @@ if (!defined('ABSPATH')) exit;
             <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
                 <i class="fa-solid fa-eye-slash text-orange-600 text-xl"></i>
             </div>
-            <h3 class="text-xl font-bold text-[#333333] m-0">¿Ocultar este mensaje?</h3>
+            <h3 class="text-xl font-bold text-[#333333] m-0">Â¿Ocultar este mensaje?</h3>
         </div>
 
         <div class="mb-6 space-y-3">
             <div class="flex items-start gap-2">
                 <i class="fa-solid fa-check text-green-600 mt-1"></i>
-                <p class="text-sm text-gray-700 m-0">Se ocultará de tu vista</p>
+                <p class="text-sm text-gray-700 m-0">Se ocultarÃ¡ de tu vista</p>
             </div>
             <div class="flex items-start gap-2">
                 <i class="fa-solid fa-user-doctor text-primary-500 mt-1"></i>
-                <p class="text-sm text-gray-700 m-0">Tu psicólogo seguirá viéndolo</p>
+                <p class="text-sm text-gray-700 m-0">Tu psicÃ³logo seguirÃ¡ viÃ©ndolo</p>
             </div>
             <div class="flex items-start gap-2">
                 <i class="fa-solid fa-shield-halved text-primary-400 mt-1"></i>
-                <p class="text-sm text-gray-700 m-0">Se conserva por motivos clínicos y legales</p>
+                <p class="text-sm text-gray-700 m-0">Se conserva por motivos clÃ­nicos y legales</p>
             </div>
         </div>
 
@@ -43,3 +43,17 @@ if (!defined('ABSPATH')) exit;
         </div>
     </div>
 </div>
+
+<script>
+    // Cerrar modal con botón Cancelar
+    document.getElementById('cancel-hide')?.addEventListener('click', () => {
+        ModalUtils.closeModal('hide-response-modal');
+    });
+
+    // Cerrar al hacer clic fuera del contenido
+    document.getElementById('hide-response-modal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'hide-response-modal') {
+            ModalUtils.closeModal('hide-response-modal');
+        }
+    });
+</script>

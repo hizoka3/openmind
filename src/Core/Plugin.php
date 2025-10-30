@@ -285,7 +285,11 @@ class Plugin {
 
                 // Scripts globales
                 wp_enqueue_script('openmind-font-awesome', OPENMIND_URL . 'assets/js/fontawesome-all.min.js', ['jquery'], '6.1.1', true);
-                wp_enqueue_script('openmind-main', OPENMIND_URL . 'assets/js/main.js', ['jquery'], OPENMIND_VERSION, true);
+
+                // Modal Utils - DEBE CARGARSE ANTES que main.js y activity-detail.js
+                wp_enqueue_script('openmind-modal-utils', OPENMIND_URL . 'assets/js/modal-utils.js', ['jquery'], OPENMIND_VERSION, true);
+
+                wp_enqueue_script('openmind-main', OPENMIND_URL . 'assets/js/main.js', ['jquery', 'openmind-modal-utils'], OPENMIND_VERSION, true);
                 wp_enqueue_script('openmind-toast', OPENMIND_URL . 'assets/js/toast.js', ['jquery'], OPENMIND_VERSION, true);
 
                 // Script específico para detalle de actividad
@@ -293,7 +297,7 @@ class Plugin {
                     wp_enqueue_script(
                         'openmind-activity-detail',
                         OPENMIND_URL . 'assets/js/activity-detail.js',
-                        ['jquery'],
+                        ['jquery', 'openmind-modal-utils'],
                         OPENMIND_VERSION,
                         true
                     );

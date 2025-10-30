@@ -1,6 +1,6 @@
 // assets/js/activity-detail.js
 /**
- * Activity Detail - Manejo unificado para paciente y psicólogo
+ * Activity Detail - Manejo unificado para paciente y psicÃ³logo
  */
 
 const OpenmindActivityDetail = {
@@ -15,7 +15,7 @@ const OpenmindActivityDetail = {
     init(config) {
         this.config = { ...this.config, ...config };
         this.bindEvents();
-        this.initAccordions(); // 👈 NUEVO: Inicializar acordeones explícitamente
+        this.initAccordions(); // ðŸ‘ˆ NUEVO: Inicializar acordeones explÃ­citamente
     },
 
     bindEvents() {
@@ -62,7 +62,7 @@ const OpenmindActivityDetail = {
         const submitBtn = form.querySelector('#submit-response');
         const formData = new FormData(form);
 
-        // Determinar action según el formulario
+        // Determinar action segÃºn el formulario
         const action = form.id === 'psychologist-response-form'
             ? 'openmind_psychologist_response'
             : 'openmind_submit_response';
@@ -109,7 +109,7 @@ const OpenmindActivityDetail = {
             }
         } catch (error) {
             console.error(error);
-            Toast.show('Error de conexión', 'error');
+            Toast.show('Error de conexiÃ³n', 'error');
         } finally {
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalText;
@@ -129,7 +129,7 @@ const OpenmindActivityDetail = {
         // Crear modal
         const modal = document.createElement('div');
         modal.id = 'edit-response-modal';
-        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+        modal.className = 'hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
         modal.innerHTML = `
             <div class="bg-white rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
                 <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
@@ -188,6 +188,9 @@ const OpenmindActivityDetail = {
 
         document.body.appendChild(modal);
 
+        // Abrir modal usando ModalUtils
+        ModalUtils.openModal('edit-response-modal');
+
         // Inicializar TinyMCE en el modal
         setTimeout(() => {
             if (typeof tinymce !== 'undefined') {
@@ -226,6 +229,11 @@ const OpenmindActivityDetail = {
             if (typeof tinymce !== 'undefined' && tinymce.get('edit_response_content')) {
                 tinymce.get('edit_response_content').remove();
             }
+
+            // Cerrar modal con ModalUtils
+            ModalUtils.closeModal('edit-response-modal');
+
+            // Remover elemento del DOM
             modal.remove();
         }
         this.config.currentEditId = null;
@@ -276,7 +284,7 @@ const OpenmindActivityDetail = {
             }
         } catch (error) {
             console.error(error);
-            Toast.show('Error de conexión', 'error');
+            Toast.show('Error de conexiÃ³n', 'error');
         } finally {
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalText;
@@ -287,42 +295,48 @@ const OpenmindActivityDetail = {
         const responseId = e.currentTarget.dataset.responseId;
 
         const modal = this.createHideModal();
+        modal.id = 'hide-response-modal-dynamic';
         document.body.appendChild(modal);
 
+        // Abrir modal con ModalUtils
+        ModalUtils.openModal('hide-response-modal-dynamic');
+
         modal.querySelector('#confirm-hide').addEventListener('click', async () => {
+            ModalUtils.closeModal('hide-response-modal-dynamic');
             modal.remove();
             await this.hideResponse(responseId);
         });
 
         modal.querySelector('#cancel-hide').addEventListener('click', () => {
+            ModalUtils.closeModal('hide-response-modal-dynamic');
             modal.remove();
         });
     },
 
     createHideModal() {
         const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        modal.className = 'hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
         modal.innerHTML = `
             <div class="bg-white rounded-xl max-w-md w-full mx-4 p-6">
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
                         <i class="fa-solid fa-eye-slash text-orange-600 text-xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-[#333333] m-0">¿Ocultar este mensaje?</h3>
+                    <h3 class="text-xl font-bold text-[#333333] m-0">Â¿Ocultar este mensaje?</h3>
                 </div>
                 
                 <div class="mb-6 space-y-3">
                     <div class="flex items-start gap-2">
                         <i class="fa-solid fa-check text-green-600 mt-1"></i>
-                        <p class="text-sm text-gray-700 m-0">Se ocultará de tu vista</p>
+                        <p class="text-sm text-gray-700 m-0">Se ocultarÃ¡ de tu vista</p>
                     </div>
                     <div class="flex items-start gap-2">
                         <i class="fa-solid fa-user-doctor text-primary-500 mt-1"></i>
-                        <p class="text-sm text-gray-700 m-0">Tu psicólogo seguirá viéndolo</p>
+                        <p class="text-sm text-gray-700 m-0">Tu psicÃ³logo seguirÃ¡ viÃ©ndolo</p>
                     </div>
                     <div class="flex items-start gap-2">
                         <i class="fa-solid fa-shield-halved text-primary-400 mt-1"></i>
-                        <p class="text-sm text-gray-700 m-0">Se conserva por motivos clínicos y legales</p>
+                        <p class="text-sm text-gray-700 m-0">Se conserva por motivos clÃ­nicos y legales</p>
                     </div>
                 </div>
                 
@@ -364,7 +378,7 @@ const OpenmindActivityDetail = {
             }
         } catch (error) {
             console.error(error);
-            Toast.show('Error de conexión', 'error');
+            Toast.show('Error de conexiÃ³n', 'error');
         }
     },
 
@@ -400,11 +414,11 @@ const OpenmindActivityDetail = {
             const isHidden = content.classList.contains('hidden');
 
             if (isHidden) {
-                // Abrir acordeón
+                // Abrir acordeÃ³n
                 content.classList.remove('hidden');
                 icon.style.transform = 'rotate(180deg)';
             } else {
-                // Cerrar acordeón
+                // Cerrar acordeÃ³n
                 content.classList.add('hidden');
                 icon.style.transform = 'rotate(0deg)';
             }
@@ -412,7 +426,7 @@ const OpenmindActivityDetail = {
     }
 };
 
-// Inicializar cuando el DOM esté listo
+// Inicializar cuando el DOM estÃ© listo
 document.addEventListener('DOMContentLoaded', () => {
     if (typeof openmindData !== 'undefined') {
         OpenmindActivityDetail.init({

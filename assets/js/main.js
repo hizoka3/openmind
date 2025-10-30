@@ -39,11 +39,11 @@ const OpenmindApp = {
             btn.addEventListener('click', (e) => this.editActivity(e));
         });
 
-        // Nueva entrada de bitácora
+        // Nueva entrada de bitÃ¡cora
         const diaryBtn = document.getElementById('new-diary-entry');
         if (diaryBtn) diaryBtn.addEventListener('click', () => this.showDiaryModal());
 
-        // Eliminar entrada de bitácora
+        // Eliminar entrada de bitÃ¡cora
         document.querySelectorAll('[data-action="delete-diary"]').forEach(btn => {
             btn.addEventListener('click', (e) => this.deleteDiaryEntry(e));
         });
@@ -52,11 +52,11 @@ const OpenmindApp = {
         const editProfileBtn = document.getElementById('edit-profile');
         if (editProfileBtn) editProfileBtn.addEventListener('click', () => this.showEditProfileModal());
 
-        // Cambiar contraseña
+        // Cambiar contraseÃ±a
         const changePasswordBtn = document.getElementById('change-password');
         if (changePasswordBtn) changePasswordBtn.addEventListener('click', () => this.showChangePasswordModal());
 
-        // Conversaciones (mensajería)
+        // Conversaciones (mensajerÃ­a)
         document.querySelectorAll('.conversation-item').forEach(item => {
             item.addEventListener('click', (e) => this.loadConversation(e));
         });
@@ -104,9 +104,9 @@ const OpenmindApp = {
                 const card = btn.closest('.activity-card');
                 card.classList.add('completed');
                 card.dataset.status = 'completed';
-                btn.replaceWith('<span class="completed-badge">✅ Completada</span>');
+                btn.replaceWith('<span class="completed-badge">âœ… Completada</span>');
 
-                this.showNotification('¡Actividad completada!', 'success');
+                this.showNotification('Â¡Actividad completada!', 'success');
             } else {
                 throw new Error(data.data?.message || 'Error al completar');
             }
@@ -131,7 +131,7 @@ const OpenmindApp = {
                         placeholder="paciente@email.com"
                         required
                     >
-                    <small class="form-help">Si el paciente no existe, se creará automáticamente</small>
+                    <small class="form-help">Si el paciente no existe, se crearÃ¡ automÃ¡ticamente</small>
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn-secondary" onclick="OpenmindApp.closeModal('add-patient-modal')">
@@ -190,7 +190,7 @@ const OpenmindApp = {
         const modal = this.createModal('create-activity-modal', 'Crear Actividad', `
             <form id="create-activity-form">
                 <div class="form-group">
-                    <label>Título</label>
+                    <label>TÃ­tulo</label>
                     <input 
                         type="text" 
                         name="title" 
@@ -200,7 +200,7 @@ const OpenmindApp = {
                     >
                 </div>
                 <div class="form-group">
-                    <label>Descripción</label>
+                    <label>DescripciÃ³n</label>
                     <textarea 
                         name="content" 
                         class="form-control" 
@@ -210,7 +210,7 @@ const OpenmindApp = {
                     ></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Fecha límite (opcional)</label>
+                    <label>Fecha lÃ­mite (opcional)</label>
                     <input 
                         type="date" 
                         name="due_date" 
@@ -361,19 +361,19 @@ const OpenmindApp = {
         }
     },
 
-    // === BITÁCORA / DIARIO ===
+    // === BITÃCORA / DIARIO ===
     showDiaryModal() {
         const modal = this.createModal('diary-modal', 'Nueva Entrada', `
             <form id="diary-form">
                 <div class="form-group">
-                    <label>¿Cómo te sientes?</label>
+                    <label>Â¿CÃ³mo te sientes?</label>
                     <div class="mood-selector">
-                        <label><input type="radio" name="mood" value="feliz"> 😊 Feliz</label>
-                        <label><input type="radio" name="mood" value="triste"> 😢 Triste</label>
-                        <label><input type="radio" name="mood" value="ansioso"> 😰 Ansioso</label>
-                        <label><input type="radio" name="mood" value="neutral"> 😐 Neutral</label>
-                        <label><input type="radio" name="mood" value="enojado"> 😠 Enojado</label>
-                        <label><input type="radio" name="mood" value="calmado"> 😌 Calmado</label>
+                        <label><input type="radio" name="mood" value="feliz"> ðŸ˜Š Feliz</label>
+                        <label><input type="radio" name="mood" value="triste"> ðŸ˜¢ Triste</label>
+                        <label><input type="radio" name="mood" value="ansioso"> ðŸ˜° Ansioso</label>
+                        <label><input type="radio" name="mood" value="neutral"> ðŸ˜ Neutral</label>
+                        <label><input type="radio" name="mood" value="enojado"> ðŸ˜  Enojado</label>
+                        <label><input type="radio" name="mood" value="calmado"> ðŸ˜Œ Calmado</label>
                     </div>
                 </div>
                 <div class="form-group">
@@ -436,7 +436,7 @@ const OpenmindApp = {
     },
 
     async deleteDiaryEntry(e) {
-        if (!confirm('¿Estás seguro de eliminar esta entrada?')) return;
+        if (!confirm('Â¿EstÃ¡s seguro de eliminar esta entrada?')) return;
 
         const btn = e.currentTarget;
         const entryId = btn.dataset.entryId;
@@ -468,7 +468,7 @@ const OpenmindApp = {
         }
     },
 
-    // === MENSAJERÍA ===
+    // === MENSAJERÃA ===
     async loadConversation(e) {
         const item = e.currentTarget;
         const otherUserId = item.dataset.userId;
@@ -505,7 +505,7 @@ const OpenmindApp = {
         const currentUserId = openmindData.userId;
 
         if (messages.length === 0) {
-            container.innerHTML = '<div class="empty-thread"><p>No hay mensajes aún. ¡Inicia la conversación!</p></div>';
+            container.innerHTML = '<div class="empty-thread"><p>No hay mensajes aÃºn. Â¡Inicia la conversaciÃ³n!</p></div>';
             return;
         }
 
@@ -564,7 +564,7 @@ const OpenmindApp = {
 
             if (data.success) {
                 form.reset();
-                // Recargar conversación
+                // Recargar conversaciÃ³n
                 const receiverId = form.receiver_id.value;
                 const activeConv = document.querySelector(`.conversation-item[data-user-id="${receiverId}"]`);
                 if (activeConv) {
@@ -588,14 +588,14 @@ const OpenmindApp = {
 
     // === PERFIL ===
     showEditProfileModal() {
-        this.showNotification('Función en desarrollo', 'info');
+        this.showNotification('FunciÃ³n en desarrollo', 'info');
     },
 
     showChangePasswordModal() {
-        const modal = this.createModal('change-password-modal', 'Cambiar Contraseña', `
+        const modal = this.createModal('change-password-modal', 'Cambiar ContraseÃ±a', `
             <form id="change-password-form">
                 <div class="form-group">
-                    <label>Contraseña actual</label>
+                    <label>ContraseÃ±a actual</label>
                     <input 
                         type="password" 
                         name="current_password" 
@@ -604,7 +604,7 @@ const OpenmindApp = {
                     >
                 </div>
                 <div class="form-group">
-                    <label>Nueva contraseña</label>
+                    <label>Nueva contraseÃ±a</label>
                     <input 
                         type="password" 
                         name="new_password" 
@@ -614,7 +614,7 @@ const OpenmindApp = {
                     >
                 </div>
                 <div class="form-group">
-                    <label>Confirmar nueva contraseña</label>
+                    <label>Confirmar nueva contraseÃ±a</label>
                     <input 
                         type="password" 
                         name="confirm_password" 
@@ -643,7 +643,7 @@ const OpenmindApp = {
         const form = e.target;
 
         if (form.new_password.value !== form.confirm_password.value) {
-            this.showNotification('Las contraseñas no coinciden', 'error');
+            this.showNotification('Las contraseÃ±as no coinciden', 'error');
             return;
         }
 
@@ -664,11 +664,11 @@ const OpenmindApp = {
             const data = await response.json();
 
             if (data.success) {
-                this.showNotification('Contraseña cambiada exitosamente', 'success');
+                this.showNotification('ContraseÃ±a cambiada exitosamente', 'success');
                 this.closeModal('change-password-modal');
                 form.reset();
             } else {
-                throw new Error(data.data?.message || 'Error al cambiar contraseña');
+                throw new Error(data.data?.message || 'Error al cambiar contraseÃ±a');
             }
         } catch (error) {
             console.error('Error:', error);
@@ -685,7 +685,7 @@ const OpenmindApp = {
 
     editActivity(e) {
         const activityId = e.currentTarget.dataset.id;
-        this.showNotification('Función en desarrollo', 'info');
+        this.showNotification('FunciÃ³n en desarrollo', 'info');
     },
 
     // === UTILIDADES ===
@@ -712,7 +712,12 @@ const OpenmindApp = {
         `;
 
         document.body.appendChild(modal);
-        setTimeout(() => modal.style.display = 'flex', 10);
+        setTimeout(() => {
+            modal.style.display = 'flex';
+            if (typeof ModalUtils !== 'undefined') {
+                ModalUtils.open();
+            }
+        }, 10);
 
         return modal;
     },
@@ -720,6 +725,9 @@ const OpenmindApp = {
     closeModal(modalId) {
         const modal = document.getElementById(modalId);
         if (modal) {
+            if (typeof ModalUtils !== 'undefined') {
+                ModalUtils.close();
+            }
             modal.style.display = 'none';
             setTimeout(() => modal.remove(), 300);
         }
@@ -757,7 +765,7 @@ document.addEventListener('DOMContentLoaded', () => OpenmindApp.init());
 
 
 // ==========================================
-// MÓDULO DE MENSAJERÍA
+// MÃ“DULO DE MENSAJERÃA
 // ==========================================
 
 const OpenmindMessages = {
@@ -802,7 +810,7 @@ const OpenmindMessages = {
             container.innerHTML = `
             <div class="p-8 text-center text-gray-400">
                 <i class="fa-solid fa-inbox text-4xl mb-3 text-gray-300"></i>
-                <p class="text-sm not-italic">No tienes conversaciones aún</p>
+                <p class="text-sm not-italic">No tienes conversaciones aÃºn</p>
             </div>
         `;
             return;
@@ -901,7 +909,7 @@ const OpenmindMessages = {
                 <div class="flex flex-col items-center justify-center py-16 text-gray-400">
                     <i class="fa-solid fa-comment-dots text-6xl mb-4 text-gray-300"></i>
                     <p class="text-lg not-italic text-gray-600 mb-6">
-                        No hay mensajes aún. ¡Inicia la conversación!
+                        No hay mensajes aÃºn. Â¡Inicia la conversaciÃ³n!
                     </p>
                 </div>
                 ${this.renderMessageForm(otherUserId)}
@@ -946,7 +954,7 @@ const OpenmindMessages = {
                 <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
                     <i class="fa-solid fa-info-circle text-yellow-600 mr-2"></i>
                     <span class="text-sm text-yellow-700">
-                        Este psicólogo ya no está asignado a ti. Solo puedes leer el historial de mensajes.
+                        Este psicÃ³logo ya no estÃ¡ asignado a ti. Solo puedes leer el historial de mensajes.
                     </span>
                 </div>
             </div>
@@ -972,7 +980,7 @@ const OpenmindMessages = {
                 </div>
             </form>
         </div>
-    `;
+        `;
     },
 
     canSendMessagesTo(otherUserId) {
@@ -1124,16 +1132,16 @@ const OpenmindMessages = {
 };
 
 document.addEventListener('DOMContentLoaded', function() {
-    if (typeof OpenmindMessages !== 'undefined' && typeof openmindData !== 'undefined') {
+    if (typeof OpenmindApp !== 'undefined' && typeof openmindData !== 'undefined') {
         if (document.querySelector('.openmind-dashboard')) {
-            OpenmindMessages.updateGlobalBadge();
-            OpenmindMessages.startPolling();
+            OpenmindApp.updateGlobalBadge();
+            OpenmindApp.startPolling();
         }
     }
 });
 
 // ==========================================
-// BADGE DE DIARIOS COMPARTIDOS (PSICÓLOGO)
+// BADGE DE DIARIOS COMPARTIDOS (PSICÃ“LOGO)
 // ==========================================
 
 async function updateDiaryBadge() {

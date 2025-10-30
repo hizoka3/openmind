@@ -29,7 +29,7 @@ if (!defined('ABSPATH')) exit;
 
             <div class="mb-6">
                 <label for="edit_response_files" class="block text-sm font-medium text-gray-700 mb-2">
-                    Archivos adjuntos (máx. 5)
+                    Archivos adjuntos (mÃ¡x. 5)
                 </label>
                 <input type="file"
                        name="response_files[]"
@@ -57,3 +57,22 @@ if (!defined('ABSPATH')) exit;
         </form>
     </div>
 </div>
+
+<script>
+    // Cerrar modal con botón X
+    document.getElementById('close-edit-modal')?.addEventListener('click', () => {
+        ModalUtils.closeModal('edit-response-modal');
+    });
+
+    // Cerrar modal con botón Cancelar
+    document.getElementById('cancel-edit-modal')?.addEventListener('click', () => {
+        ModalUtils.closeModal('edit-response-modal');
+    });
+
+    // Cerrar al hacer clic fuera del contenido
+    document.getElementById('edit-response-modal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'edit-response-modal') {
+            ModalUtils.closeModal('edit-response-modal');
+        }
+    });
+</script>

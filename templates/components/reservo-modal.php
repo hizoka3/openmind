@@ -1,7 +1,7 @@
 <?php // templates/components/reservo-modal.php
 /**
  * Modal con iframe de Reservo
- * Se muestra cuando el paciente no tiene psicólogo asignado
+ * Se muestra cuando el paciente no tiene psicÃ³logo asignado
  */
 
 if (!defined('ABSPATH')) exit;
@@ -10,17 +10,11 @@ if (!defined('ABSPATH')) exit;
 <script>
     // Definir funciones ANTES del HTML para evitar "undefined"
     window.openReservoModal = function() {
-        const modal = document.getElementById('reservo-modal');
-        if (modal) {
-            modal.style.display = 'flex';
-        }
+        ModalUtils.openModal('reservo-modal');
     }
 
     window.closeReservoModal = function() {
-        const modal = document.getElementById('reservo-modal');
-        if (modal) {
-            modal.style.display = 'none';
-        }
+        ModalUtils.closeModal('reservo-modal');
     }
 </script>
 
@@ -68,7 +62,7 @@ if (!defined('ABSPATH')) exit;
 </style>
 
 <script>
-    // Event listeners (después de que el DOM cargue)
+    // Event listeners (despuÃ©s de que el DOM cargue)
     document.addEventListener('DOMContentLoaded', function() {
         // Cerrar con tecla ESC
         document.addEventListener('keydown', function(e) {
