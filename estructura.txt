@@ -14,6 +14,7 @@
 │   │   ├── activity-detail.js
 │   │   ├── fontawesome-all.min.js
 │   │   ├── main.js
+│   │   ├── modal-utils.js
 │   │   ├── profile-uploader.js
 │   │   └── toast.js
 │   └── webfonts
@@ -59,7 +60,6 @@
 │   │   ├── AccessControl.php
 │   │   ├── Cron.php
 │   │   ├── Installer.php
-│   │   ├── Migration.php
 │   │   └── Plugin.php
 │   ├── Repositories
 │   │   ├── AttachmentRepository.php
@@ -70,60 +70,59 @@
 │   │   └── ImageUploadService.php
 │   └── helpers.php
 ├── tailwind.config.js
-├── templates
-│   ├── auth.php
-│   ├── components
-│   │   ├── activity
-│   │   │   ├── attachments.php
-│   │   │   ├── header.php
-│   │   │   ├── resource-viewer.php
-│   │   │   ├── response-form.php
-│   │   │   └── response-item.php
-│   │   ├── activity-card.php
-│   │   ├── activity-resources.php
-│   │   ├── bitacora-form.php
-│   │   ├── bitacora-list.php
-│   │   ├── bottom-tab-bar.php
-│   │   ├── diary-list.php
-│   │   ├── header.php
-│   │   ├── modal-asignar-actividad.php
-│   │   ├── modal-edit-response.php
-│   │   ├── modal-hide-response.php
-│   │   ├── mood-selector.php
-│   │   ├── patients-table.php
-│   │   ├── profile-card.php
-│   │   ├── reservo-modal.php
-│   │   ├── sidebar-patient.php
-│   │   ├── sidebar-psychologist.php
-│   │   └── toast.php
-│   ├── dashboard-patient.php
-│   ├── dashboard-psychologist.php
-│   └── pages
-│       ├── diario-detalle.php
-│       ├── mensajeria.php
-│       ├── patient
-│       │   ├── actividad-detalle.php
-│       │   ├── actividades.php
-│       │   ├── bitacora-detalle.php
-│       │   ├── bitacora.php
-│       │   ├── diario-detalle.php
-│       │   ├── diario-nuevo.php
-│       │   ├── diario.php
-│       │   ├── inicio.php
-│       │   └── perfil.php
-│       └── psychologist
-│           ├── actividad-detalle.php
-│           ├── actividades.php
-│           ├── biblioteca-detalle.php
-│           ├── bitacora-detalle.php
-│           ├── bitacora-editar.php
-│           ├── bitacora-nueva.php
-│           ├── bitacora-paciente.php
-│           ├── bitacora.php
-│           ├── inicio.php
-│           ├── paciente-detalle.php
-│           ├── pacientes.php
-│           └── perfil.php
-└── test-setup.php
+└── templates
+    ├── auth.php
+    ├── components
+    │   ├── activity
+    │   │   ├── attachments.php
+    │   │   ├── header.php
+    │   │   ├── resource-viewer.php
+    │   │   ├── response-form.php
+    │   │   └── response-item.php
+    │   ├── activity-card.php
+    │   ├── activity-resources.php
+    │   ├── bitacora-form.php
+    │   ├── bitacora-list.php
+    │   ├── bottom-tab-bar.php
+    │   ├── diary-list.php
+    │   ├── header.php
+    │   ├── modal-asignar-actividad.php
+    │   ├── modal-edit-response.php
+    │   ├── modal-hide-response.php
+    │   ├── mood-selector.php
+    │   ├── patients-table.php
+    │   ├── profile-card.php
+    │   ├── reservo-modal.php
+    │   ├── sidebar-patient.php
+    │   ├── sidebar-psychologist.php
+    │   └── toast.php
+    ├── dashboard-patient.php
+    ├── dashboard-psychologist.php
+    └── pages
+        ├── diario-detalle.php
+        ├── mensajeria.php
+        ├── patient
+        │   ├── actividad-detalle.php
+        │   ├── actividades.php
+        │   ├── bitacora-detalle.php
+        │   ├── bitacora.php
+        │   ├── diario-detalle.php
+        │   ├── diario-nuevo.php
+        │   ├── diario.php
+        │   ├── inicio.php
+        │   └── perfil.php
+        └── psychologist
+            ├── actividad-detalle.php
+            ├── actividades.php
+            ├── biblioteca-detalle.php
+            ├── bitacora-detalle.php
+            ├── bitacora-editar.php
+            ├── bitacora-nueva.php
+            ├── bitacora-paciente.php
+            ├── bitacora.php
+            ├── inicio.php
+            ├── paciente-detalle.php
+            ├── pacientes.php
+            └── perfil.php
 
-18 directories, 109 files
+18 directories, 108 files

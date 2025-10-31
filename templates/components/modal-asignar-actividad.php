@@ -6,14 +6,14 @@ $library_activities = \Openmind\Controllers\ActivityController::getLibraryActivi
 ?>
 
 <!-- Modal: Asignar Actividad -->
-<div id="assign-activity-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="p-6 border-b border-gray-200">
+<div id="assign-activity-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" data-lenis-prevent>
+    <div class="bg-white rounded-xl shadow-xl max-w-3xl w-full max-h-[90vh] flex flex-col" data-lenis-prevent>
+        <div class="p-6 border-b border-gray-200 flex-shrink-0">
             <h2 class="text-2xl font-bold text-gray-900">Asignar Actividad</h2>
-            <p class="text-sm text-gray-600 mt-1">Selecciona una actividad de la biblioteca y personalÃ­zala</p>
+            <p class="text-sm text-gray-600 mt-1">Selecciona una actividad de la biblioteca y personalízala</p>
         </div>
 
-        <form id="assign-activity-form" class="p-6 space-y-6">
+        <form id="assign-activity-form" class="overflow-y-auto p-6 space-y-6 flex-1" data-modal-scroll style="overscroll-behavior: contain;">
             <input type="hidden" id="assign-patient-id" name="patient_id">
 
             <!-- Seleccionar de biblioteca -->
@@ -54,44 +54,44 @@ $library_activities = \Openmind\Controllers\ActivityController::getLibraryActivi
                 </div>
             </div>
 
-            <!-- TÃ­tulo personalizado -->
+            <!-- TÃƒÂ­tulo personalizado -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                    TÃ­tulo personalizado
-                    <span class="text-gray-500 font-normal">(opcional - se usa el de biblioteca si estÃ¡ vacÃ­o)</span>
+                    TÃƒÂ­tulo personalizado
+                    <span class="text-gray-500 font-normal">(opcional - se usa el de biblioteca si estÃƒÂ¡ vacÃƒÂ­o)</span>
                 </label>
                 <input type="text" id="assign-custom-title" name="custom_title" placeholder="Ej: Ayuda para controlar tu ansiedad" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
             </div>
 
-            <!-- DescripciÃ³n personalizada -->
+            <!-- DescripciÃƒÂ³n personalizada -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     Mensaje para el paciente
                     <span class="text-gray-500 font-normal">(opcional)</span>
                 </label>
-                <textarea id="assign-custom-description" name="custom_description" rows="4" placeholder="Ej: MarÃ­a, te dejÃ© esta actividad para que complementemos la sesiÃ³n..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"></textarea>
+                <textarea id="assign-custom-description" name="custom_description" rows="4" placeholder="Ej: MarÃƒÂ­a, te dejÃƒÂ© esta actividad para que complementemos la sesiÃƒÂ³n..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"></textarea>
             </div>
 
-            <!-- Fecha lÃ­mite (OPCIONAL) -->
+            <!-- Fecha límite (OPCIONAL) -->
             <div>
                 <label class="flex items-center gap-2 mb-3">
                     <input type="checkbox" id="has-due-date" onchange="toggleDueDate()" class="rounded border-gray-300">
-                    <span class="text-sm font-medium text-gray-700">Agregar fecha lÃ­mite (opcional)</span>
+                    <span class="text-sm font-medium text-gray-700">Agregar fecha límite (opcional)</span>
                 </label>
                 <input type="date" id="assign-due-date" name="due_date" disabled class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 disabled:bg-gray-100 disabled:cursor-not-allowed">
-                <p class="text-xs text-gray-500 mt-1">ðŸ’¡ Tip: Evita presionar al paciente con fechas si no es necesario</p>
-            </div>
-
-            <!-- Botones -->
-            <div class="flex gap-3 pt-4">
-                <button type="submit" class="flex-1 px-6 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
-                    Asignar Actividad
-                </button>
-                <button type="button" onclick="closeAssignModal()" class="px-6 py-2.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
-                    Cancelar
-                </button>
+                <p class="text-xs text-gray-500 mt-1">💡 Tip: Evita presionar al paciente con fechas si no es necesario</p>
             </div>
         </form>
+
+        <!-- Footer con botones fijos -->
+        <div class="p-6 border-t border-gray-200 flex gap-3 flex-shrink-0">
+            <button type="submit" form="assign-activity-form" class="flex-1 px-6 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
+                Asignar Actividad
+            </button>
+            <button type="button" onclick="closeAssignModal()" class="px-6 py-2.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+                Cancelar
+            </button>
+        </div>
     </div>
 </div>
 
@@ -148,14 +148,15 @@ $library_activities = \Openmind\Controllers\ActivityController::getLibraryActivi
             const data = await response.json();
 
             if (data.success) {
+                Toast.show(data.data.message || 'Actividad asignada correctamente', 'success');
                 closeAssignModal();
                 location.reload();
             } else {
-                alert(data.data.message || 'Error al asignar');
+                Toast.show(data.data || 'Error al asignar actividad', 'error');
             }
         } catch (error) {
             console.error(error);
-            alert('Error de conexiÃ³n');
+            Toast.show('Error de conexión', 'error');
         }
     });
 

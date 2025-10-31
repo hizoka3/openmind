@@ -22,7 +22,6 @@ return array(
     'Openmind\\Core\\AccessControl' => $baseDir . '/src/Core/AccessControl.php',
     'Openmind\\Core\\Cron' => $baseDir . '/src/Core/Cron.php',
     'Openmind\\Core\\Installer' => $baseDir . '/src/Core/Installer.php',
-    'Openmind\\Core\\Migration' => $baseDir . '/src/Core/Migration.php',
     'Openmind\\Core\\Plugin' => $baseDir . '/src/Core/Plugin.php',
     'Openmind\\Repositories\\AttachmentRepository' => $baseDir . '/src/Repositories/AttachmentRepository.php',
     'Openmind\\Repositories\\DiaryRepository' => $baseDir . '/src/Repositories/DiaryRepository.php',

@@ -31,7 +31,7 @@ $assignments = get_posts([
 
 <div class="max-w-7xl">
     <!-- Header -->
-    <h1 class="text-2xl font-normal text-gray-900 mb-6">Actividades</h1>
+    <h1 class="text-2xl font-normal text-gray-900 mb-6">Mis Actividades</h1>
 
     <!-- Tabs -->
     <div class="bg-white px-3 md:px-6 rounded-xl shadow-sm mb-4">
@@ -294,9 +294,9 @@ $assignments = get_posts([
 
 <!-- Modal: Asignar Actividad -->
 <div id="assign-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col">
         <!-- Header -->
-        <div class="sticky top-0 bg-white border-b border-gray-200 px-4 md:px-6 py-4 rounded-t-xl">
+        <div class="bg-white border-b border-gray-200 px-4 md:px-6 py-4 rounded-t-xl flex-shrink-0">
             <div class="flex justify-between items-start gap-4">
                 <div class="flex-1 min-w-0">
                     <h2 class="text-lg md:text-xl font-semibold text-gray-900 mb-1">Asignar Actividad</h2>
@@ -309,7 +309,7 @@ $assignments = get_posts([
         </div>
 
         <!-- Body -->
-        <form id="assign-form" class="p-4 md:p-6">
+        <form id="assign-form" class="p-4 md:p-6 overflow-y-auto flex-1" data-modal-scroll style="overscroll-behavior: contain;">
             <input type="hidden" id="library-activity-id" name="library_activity_id">
 
             <!-- Selección de pacientes -->
@@ -333,7 +333,7 @@ $assignments = get_posts([
                         </a>
                     </div>
                 <?php else: ?>
-                    <div class="space-y-2 max-h-60 overflow-y-auto border border-gray-200 rounded-lg p-3">
+                    <div class="space-y-2 max-h-48 overflow-y-auto border border-gray-200 rounded-lg p-3" style="overscroll-behavior: contain;">
                         <?php foreach ($patients as $patient): ?>
                             <label class="flex items-center gap-2 md:gap-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
                                 <input type="checkbox"
@@ -396,25 +396,26 @@ $assignments = get_posts([
                        disabled
                        class="w-full px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-50 disabled:text-gray-500">
             </div>
-
-            <!-- Botones -->
-            <div class="flex gap-3 pt-4 border-t border-gray-200">
-                <button type="button"
-                        onclick="closeAssignModal()"
-                        class="flex-1 px-4 py-2 text-sm md:text-base bg-gray-100 text-gray-700 rounded-lg font-medium transition-all hover:bg-gray-200 border-0 cursor-pointer">
-                    Cancelar
-                </button>
-                <button type="submit"
-                        id="assign-submit-btn"
-                        class="flex-1 px-4 py-2 text-sm md:text-base bg-primary-600 text-white rounded-lg font-medium transition-all hover:bg-primary-700 border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
-                    <span class="btn-text">Asignar</span>
-                    <span class="btn-loading hidden">
-                        <i class="fa-solid fa-spinner fa-spin mr-2"></i>
-                        Asignando...
-                    </span>
-                </button>
-            </div>
         </form>
+
+        <!-- Footer -->
+        <div class="flex gap-3 p-4 md:p-6 pt-4 border-t border-gray-200 flex-shrink-0">
+            <button type="button"
+                    onclick="closeAssignModal()"
+                    class="flex-1 px-4 py-2 text-sm md:text-base bg-gray-100 text-gray-700 rounded-lg font-medium transition-all hover:bg-gray-200 border-0 cursor-pointer">
+                Cancelar
+            </button>
+            <button type="submit"
+                    form="assign-form"
+                    id="assign-submit-btn"
+                    class="flex-1 px-4 py-2 text-sm md:text-base bg-primary-600 text-white rounded-lg font-medium transition-all hover:bg-primary-700 border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                <span class="btn-text">Asignar</span>
+                <span class="btn-loading hidden">
+                    <i class="fa-solid fa-spinner fa-spin mr-2"></i>
+                    Asignando...
+                </span>
+            </button>
+        </div>
     </div>
 </div>
 
@@ -522,19 +523,17 @@ $assignments = get_posts([
         }
     }
 
-    // Modal
+    // Modal - USANDO ModalUtils
     function openAssignModal(activityId, activityTitle) {
         document.getElementById('library-activity-id').value = activityId;
         document.getElementById('modal-activity-title').textContent = activityTitle;
         document.getElementById('custom-title').placeholder = activityTitle;
-        document.getElementById('assign-modal').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
+        ModalUtils.openModal('assign-modal');
     }
 
     function closeAssignModal() {
-        document.getElementById('assign-modal').classList.add('hidden');
+        ModalUtils.closeModal('assign-modal');
         document.getElementById('assign-form').reset();
-        document.body.style.overflow = '';
     }
 
     // Select all patients

@@ -37,7 +37,6 @@ class ComposerStaticInit6d41af1f30d54c9276827afc41c6b883
         'Openmind\\Core\\AccessControl' => __DIR__ . '/../..' . '/src/Core/AccessControl.php',
         'Openmind\\Core\\Cron' => __DIR__ . '/../..' . '/src/Core/Cron.php',
         'Openmind\\Core\\Installer' => __DIR__ . '/../..' . '/src/Core/Installer.php',
-        'Openmind\\Core\\Migration' => __DIR__ . '/../..' . '/src/Core/Migration.php',
         'Openmind\\Core\\Plugin' => __DIR__ . '/../..' . '/src/Core/Plugin.php',
         'Openmind\\Repositories\\AttachmentRepository' => __DIR__ . '/../..' . '/src/Repositories/AttachmentRepository.php',
         'Openmind\\Repositories\\DiaryRepository' => __DIR__ . '/../..' . '/src/Repositories/DiaryRepository.php',

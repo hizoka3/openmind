@@ -25,13 +25,13 @@ echo -e "${CYAN}Current version: ${YELLOW}$current_version${NC}"
 echo ""
 echo "Select version increment type:"
 echo ""
-echo -e "${RED}1)${NC} MAJOR (${major}.x.x → $((major + 1)).0.0)"
+echo -e "${RED}1)${NC} MAJOR (${major}.x.x Ã¢â â $((major + 1)).0.0)"
 echo "   Breaking changes, incompatible API, major features"
 echo ""
-echo -e "${YELLOW}2)${NC} MINOR (x.${minor}.x → ${major}.$((minor + 1)).0)"
+echo -e "${YELLOW}2)${NC} MINOR (x.${minor}.x Ã¢â â ${major}.$((minor + 1)).0)"
 echo "   New features, backwards compatible"
 echo ""
-echo -e "${GREEN}3)${NC} PATCH (x.x.${patch} → ${major}.${minor}.$((patch + 1)))"
+echo -e "${GREEN}3)${NC} PATCH (x.x.${patch} Ã¢â â ${major}.${minor}.$((patch + 1)))"
 echo "   Bug fixes, small improvements"
 echo ""
 
@@ -63,7 +63,7 @@ case $increment_type in
 esac
 
 echo ""
-echo -e "${BLUE}Building version:${NC} ${current_version} → ${GREEN}${new_version}${NC} (${change_type})"
+echo -e "${BLUE}Building version:${NC} ${current_version} Ã¢â â ${GREEN}${new_version}${NC} (${change_type})"
 echo -e "${BLUE}Output:${NC} releases/openmind-v${new_version}.zip"
 echo ""
 read -p "Continue? (y/N): " -r
@@ -119,7 +119,6 @@ mkdir -p "$plugin_dir"
 # Copy all necessary files to the plugin directory
 cp openmind.php "$plugin_dir/"
 cp README.md "$plugin_dir/"
-cp test-setup.php "$plugin_dir/"
 cp -r src "$plugin_dir/"
 cp -r vendor "$plugin_dir/"
 cp -r assets "$plugin_dir/"
@@ -129,7 +128,7 @@ cp composer.json "$plugin_dir/"
 # Clean development files from the plugin directory
 cd "$plugin_dir"
 
-# Remove specific development/test files (keeping test-setup.php)
+# Remove specific development/test files
 rm -f create-test-messages.php 2>/dev/null || true
 rm -f flatten.sh 2>/dev/null || true
 rm -f estructura.txt 2>/dev/null || true
@@ -181,7 +180,6 @@ if [ -d "openmind" ] && [ -f "openmind/openmind.php" ]; then
     echo ""
     echo "Key files verified:"
     [ -f "openmind/openmind.php" ] && echo "  ✅ openmind.php"
-    [ -f "openmind/test-setup.php" ] && echo "  ✅ test-setup.php (included)"
     [ -d "openmind/src" ] && echo "  ✅ src/"
     [ -d "openmind/vendor" ] && echo "  ✅ vendor/"
     [ -d "openmind/assets" ] && echo "  ✅ assets/"
@@ -196,7 +194,7 @@ if [ -d "openmind" ] && [ -f "openmind/openmind.php" ]; then
     [ ! -d "openmind/assets/css/src" ] && echo "  ✅ CSS source files (removed)"
     [ ! -d "openmind/node_modules" ] && echo "  ✅ node_modules/ (not included)"
 else
-    echo -e "${RED}❌ ZIP structure is wrong${NC}"
+    echo -e "${RED}Ã¢ÂÅ ZIP structure is wrong${NC}"
     echo "Found:"
     ls -la
 fi
@@ -213,14 +211,13 @@ echo "================================="
 echo ""
 echo "📦 Package: $zip_file"
 echo "📏 Size: $zip_size"
-echo "🔖 Version: $new_version (${change_type})"
+echo "📖 Version: $new_version (${change_type})"
 echo "🚀 Ready for WordPress!"
 echo ""
 echo "To install:"
-echo "1. Upload via WordPress admin (Plugins → Add New → Upload)"
+echo "1. Upload via WordPress admin (Plugins Ã¢â â Add New Ã¢â â Upload)"
 echo "2. Or extract to wp-content/plugins/ (will create openmind/ folder)"
 echo ""
-echo "⚠️  Note: test-setup.php is included for easy testing"
 echo ""
 echo "Next steps:"
 echo "- Test the plugin on a fresh WordPress install"
