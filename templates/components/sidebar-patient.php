@@ -56,8 +56,6 @@ $menu_items = array_filter($all_menu_items, function($item) use ($is_active) {
     </nav>
 
     <div class="sidebar-footer">
-        <a href="<?php echo wp_logout_url(home_url() . '/auth'); ?>" class="btn-logout">
-            Salir
-        </a>
+
     </div>
 </aside>

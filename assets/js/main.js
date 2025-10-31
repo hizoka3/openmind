@@ -39,11 +39,11 @@ const OpenmindApp = {
             btn.addEventListener('click', (e) => this.editActivity(e));
         });
 
-        // Nueva entrada de bitÃ¡cora
+        // Nueva entrada de bitácora
         const diaryBtn = document.getElementById('new-diary-entry');
         if (diaryBtn) diaryBtn.addEventListener('click', () => this.showDiaryModal());
 
-        // Eliminar entrada de bitÃ¡cora
+        // Eliminar entrada de bitácora
         document.querySelectorAll('[data-action="delete-diary"]').forEach(btn => {
             btn.addEventListener('click', (e) => this.deleteDiaryEntry(e));
         });
@@ -52,11 +52,11 @@ const OpenmindApp = {
         const editProfileBtn = document.getElementById('edit-profile');
         if (editProfileBtn) editProfileBtn.addEventListener('click', () => this.showEditProfileModal());
 
-        // Cambiar contraseÃ±a
+        // Cambiar contraseña
         const changePasswordBtn = document.getElementById('change-password');
         if (changePasswordBtn) changePasswordBtn.addEventListener('click', () => this.showChangePasswordModal());
 
-        // Conversaciones (mensajerÃ­a)
+        // Conversaciones (mensajería)
         document.querySelectorAll('.conversation-item').forEach(item => {
             item.addEventListener('click', (e) => this.loadConversation(e));
         });
@@ -104,15 +104,15 @@ const OpenmindApp = {
                 const card = btn.closest('.activity-card');
                 card.classList.add('completed');
                 card.dataset.status = 'completed';
-                btn.replaceWith('<span class="completed-badge">âœ… Completada</span>');
+                btn.replaceWith('<span class="completed-badge">✅ Completada</span>');
 
-                this.showNotification('Â¡Actividad completada!', 'success');
+                Toast.show(data.data.message || '¡Actividad completada!', 'success');
             } else {
                 throw new Error(data.data?.message || 'Error al completar');
             }
         } catch (error) {
             console.error('Error:', error);
-            this.showNotification('Error al completar la actividad', 'error');
+            Toast.show(error.message || 'Error al completar la actividad', 'error');
             btn.disabled = false;
             btn.textContent = 'Marcar como completada';
         }
@@ -131,7 +131,7 @@ const OpenmindApp = {
                         placeholder="paciente@email.com"
                         required
                     >
-                    <small class="form-help">Si el paciente no existe, se crearÃ¡ automÃ¡ticamente</small>
+                    <small class="form-help">Si el paciente no existe, se creará automáticamente</small>
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn-secondary" onclick="OpenmindApp.closeModal('add-patient-modal')">
@@ -171,7 +171,7 @@ const OpenmindApp = {
             const data = await response.json();
 
             if (data.success) {
-                this.showNotification('Paciente agregado exitosamente', 'success');
+                Toast.show(data.data.message || 'Paciente agregado exitosamente', 'success');
                 this.closeModal('add-patient-modal');
                 setTimeout(() => location.reload(), 1500);
             } else {
@@ -179,7 +179,7 @@ const OpenmindApp = {
             }
         } catch (error) {
             console.error('Error:', error);
-            this.showNotification(error.message, 'error');
+            Toast.show(error.message, 'error');
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Agregar';
         }
@@ -190,7 +190,7 @@ const OpenmindApp = {
         const modal = this.createModal('create-activity-modal', 'Crear Actividad', `
             <form id="create-activity-form">
                 <div class="form-group">
-                    <label>TÃ­tulo</label>
+                    <label>Título</label>
                     <input 
                         type="text" 
                         name="title" 
@@ -200,7 +200,7 @@ const OpenmindApp = {
                     >
                 </div>
                 <div class="form-group">
-                    <label>DescripciÃ³n</label>
+                    <label>Descripción</label>
                     <textarea 
                         name="content" 
                         class="form-control" 
@@ -210,7 +210,7 @@ const OpenmindApp = {
                     ></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Fecha lÃ­mite (opcional)</label>
+                    <label>Fecha límite (opcional)</label>
                     <input 
                         type="date" 
                         name="due_date" 
@@ -252,7 +252,7 @@ const OpenmindApp = {
             const data = await response.json();
 
             if (data.success) {
-                this.showNotification('Actividad creada exitosamente', 'success');
+                Toast.show(data.data.message || 'Actividad creada exitosamente', 'success');
                 this.closeModal('create-activity-modal');
                 setTimeout(() => location.reload(), 1500);
             } else {
@@ -260,7 +260,7 @@ const OpenmindApp = {
             }
         } catch (error) {
             console.error('Error:', error);
-            this.showNotification(error.message, 'error');
+            Toast.show(error.message, 'error');
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> Crear';
         }
@@ -323,7 +323,7 @@ const OpenmindApp = {
             }
         } catch (error) {
             console.error('Error:', error);
-            this.showNotification('Error al cargar pacientes', 'error');
+            Toast.show('Error al cargar pacientes', 'error');
         }
     },
 
@@ -347,7 +347,7 @@ const OpenmindApp = {
             const data = await response.json();
 
             if (data.success) {
-                this.showNotification('Actividad asignada exitosamente', 'success');
+                Toast.show(data.data.message || 'Actividad asignada exitosamente', 'success');
                 this.closeModal('assign-activity-modal');
                 setTimeout(() => location.reload(), 1500);
             } else {
@@ -355,25 +355,25 @@ const OpenmindApp = {
             }
         } catch (error) {
             console.error('Error:', error);
-            this.showNotification(error.message, 'error');
+            Toast.show(error.message, 'error');
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> Asignar';
         }
     },
 
-    // === BITÃCORA / DIARIO ===
+    // === BITÁCORA / DIARIO ===
     showDiaryModal() {
         const modal = this.createModal('diary-modal', 'Nueva Entrada', `
             <form id="diary-form">
                 <div class="form-group">
-                    <label>Â¿CÃ³mo te sientes?</label>
+                    <label>¿Cómo te sientes?</label>
                     <div class="mood-selector">
-                        <label><input type="radio" name="mood" value="feliz"> ðŸ˜Š Feliz</label>
-                        <label><input type="radio" name="mood" value="triste"> ðŸ˜¢ Triste</label>
-                        <label><input type="radio" name="mood" value="ansioso"> ðŸ˜° Ansioso</label>
-                        <label><input type="radio" name="mood" value="neutral"> ðŸ˜ Neutral</label>
-                        <label><input type="radio" name="mood" value="enojado"> ðŸ˜  Enojado</label>
-                        <label><input type="radio" name="mood" value="calmado"> ðŸ˜Œ Calmado</label>
+                        <label><input type="radio" name="mood" value="feliz"> 😊 Feliz</label>
+                        <label><input type="radio" name="mood" value="triste"> 😢 Triste</label>
+                        <label><input type="radio" name="mood" value="ansioso"> 😰 Ansioso</label>
+                        <label><input type="radio" name="mood" value="neutral"> 😐 Neutral</label>
+                        <label><input type="radio" name="mood" value="enojado"> 😠 Enojado</label>
+                        <label><input type="radio" name="mood" value="calmado"> 😌 Calmado</label>
                     </div>
                 </div>
                 <div class="form-group">
@@ -421,7 +421,7 @@ const OpenmindApp = {
             const data = await response.json();
 
             if (data.success) {
-                this.showNotification('Entrada guardada exitosamente', 'success');
+                Toast.show(data.data.message || 'Entrada guardada exitosamente', 'success');
                 this.closeModal('diary-modal');
                 setTimeout(() => location.reload(), 1500);
             } else {
@@ -429,14 +429,14 @@ const OpenmindApp = {
             }
         } catch (error) {
             console.error('Error:', error);
-            this.showNotification(error.message, 'error');
+            Toast.show(error.message, 'error');
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<i class="fa-solid fa-save"></i> Guardar';
         }
     },
 
     async deleteDiaryEntry(e) {
-        if (!confirm('Â¿EstÃ¡s seguro de eliminar esta entrada?')) return;
+        if (!confirm('¿Estás seguro de eliminar esta entrada?')) return;
 
         const btn = e.currentTarget;
         const entryId = btn.dataset.entryId;
@@ -458,17 +458,17 @@ const OpenmindApp = {
                 const entry = btn.closest('.diary-entry, .diary-entry-card');
                 entry.style.opacity = '0';
                 setTimeout(() => entry.remove(), 300);
-                this.showNotification('Entrada eliminada', 'success');
+                Toast.show(data.data.message || 'Entrada eliminada', 'success');
             } else {
                 throw new Error(data.data?.message || 'Error al eliminar');
             }
         } catch (error) {
             console.error('Error:', error);
-            this.showNotification('Error al eliminar la entrada', 'error');
+            Toast.show('Error al eliminar la entrada', 'error');
         }
     },
 
-    // === MENSAJERÃA ===
+    // === MENSAJERÍA ===
     async loadConversation(e) {
         const item = e.currentTarget;
         const otherUserId = item.dataset.userId;
@@ -496,7 +496,7 @@ const OpenmindApp = {
             }
         } catch (error) {
             console.error('Error:', error);
-            this.showNotification('Error al cargar mensajes', 'error');
+            Toast.show('Error al cargar mensajes', 'error');
         }
     },
 
@@ -505,7 +505,7 @@ const OpenmindApp = {
         const currentUserId = openmindData.userId;
 
         if (messages.length === 0) {
-            container.innerHTML = '<div class="empty-thread"><p>No hay mensajes aÃºn. Â¡Inicia la conversaciÃ³n!</p></div>';
+            container.innerHTML = '<div class="empty-thread"><p>No hay mensajes. ¡Inicia la conversación!</p></div>';
             return;
         }
 
@@ -564,7 +564,7 @@ const OpenmindApp = {
 
             if (data.success) {
                 form.reset();
-                // Recargar conversaciÃ³n
+                // Recargar conversación
                 const receiverId = form.receiver_id.value;
                 const activeConv = document.querySelector(`.conversation-item[data-user-id="${receiverId}"]`);
                 if (activeConv) {
@@ -575,7 +575,7 @@ const OpenmindApp = {
             }
         } catch (error) {
             console.error('Error:', error);
-            this.showNotification('Error al enviar mensaje', 'error');
+            Toast.show('Error al enviar mensaje', 'error');
         } finally {
             submitBtn.disabled = false;
         }
@@ -588,14 +588,14 @@ const OpenmindApp = {
 
     // === PERFIL ===
     showEditProfileModal() {
-        this.showNotification('FunciÃ³n en desarrollo', 'info');
+        Toast.show('Función en desarrollo', 'info');
     },
 
     showChangePasswordModal() {
-        const modal = this.createModal('change-password-modal', 'Cambiar ContraseÃ±a', `
+        const modal = this.createModal('change-password-modal', 'Cambiar Contraseña', `
             <form id="change-password-form">
                 <div class="form-group">
-                    <label>ContraseÃ±a actual</label>
+                    <label>Contraseña actual</label>
                     <input 
                         type="password" 
                         name="current_password" 
@@ -604,7 +604,7 @@ const OpenmindApp = {
                     >
                 </div>
                 <div class="form-group">
-                    <label>Nueva contraseÃ±a</label>
+                    <label>Nueva contraseña</label>
                     <input 
                         type="password" 
                         name="new_password" 
@@ -614,7 +614,7 @@ const OpenmindApp = {
                     >
                 </div>
                 <div class="form-group">
-                    <label>Confirmar nueva contraseÃ±a</label>
+                    <label>Confirmar nueva contraseña</label>
                     <input 
                         type="password" 
                         name="confirm_password" 
@@ -643,7 +643,7 @@ const OpenmindApp = {
         const form = e.target;
 
         if (form.new_password.value !== form.confirm_password.value) {
-            this.showNotification('Las contraseÃ±as no coinciden', 'error');
+            Toast.show('Las contraseñas no coinciden', 'error');
             return;
         }
 
@@ -664,15 +664,15 @@ const OpenmindApp = {
             const data = await response.json();
 
             if (data.success) {
-                this.showNotification('ContraseÃ±a cambiada exitosamente', 'success');
+                Toast.show(data.data.message || 'Contraseña cambiada exitosamente', 'success');
                 this.closeModal('change-password-modal');
                 form.reset();
             } else {
-                throw new Error(data.data?.message || 'Error al cambiar contraseÃ±a');
+                throw new Error(data.data?.message || 'Error al cambiar contraseña');
             }
         } catch (error) {
             console.error('Error:', error);
-            this.showNotification(error.message, 'error');
+            Toast.show(error.message, 'error');
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<i class="fa-solid fa-key"></i> Cambiar';
         }
@@ -685,7 +685,7 @@ const OpenmindApp = {
 
     editActivity(e) {
         const activityId = e.currentTarget.dataset.id;
-        this.showNotification('FunciÃ³n en desarrollo', 'info');
+        Toast.show('Función en desarrollo', 'info');
     },
 
     // === UTILIDADES ===
@@ -734,30 +734,7 @@ const OpenmindApp = {
     },
 
     showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `openmind-notification ${type}`;
-
-        const icons = {
-            success: 'fa-circle-check',
-            error: 'fa-circle-xmark',
-            info: 'fa-circle-info',
-            warning: 'fa-triangle-exclamation'
-        };
-
-        notification.innerHTML = `
-            <i class="fa-solid ${icons[type] || icons.info}"></i>
-            <span>${message}</span>
-        `;
-
-        document.body.appendChild(notification);
-
-        setTimeout(() => {
-            notification.classList.add('show');
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }, 100);
+        Toast.show(message, type);
     }
 };
 
@@ -765,7 +742,7 @@ document.addEventListener('DOMContentLoaded', () => OpenmindApp.init());
 
 
 // ==========================================
-// MÃ“DULO DE MENSAJERÃA
+// MÓDULO DE MENSAJERÍA
 // ==========================================
 
 const OpenmindMessages = {
@@ -810,7 +787,7 @@ const OpenmindMessages = {
             container.innerHTML = `
             <div class="p-8 text-center text-gray-400">
                 <i class="fa-solid fa-inbox text-4xl mb-3 text-gray-300"></i>
-                <p class="text-sm not-italic">No tienes conversaciones aÃºn</p>
+                <p class="text-sm not-italic">No tienes conversaciones aún</p>
             </div>
         `;
             return;
@@ -909,7 +886,7 @@ const OpenmindMessages = {
                 <div class="flex flex-col items-center justify-center py-16 text-gray-400">
                     <i class="fa-solid fa-comment-dots text-6xl mb-4 text-gray-300"></i>
                     <p class="text-lg not-italic text-gray-600 mb-6">
-                        No hay mensajes aÃºn. Â¡Inicia la conversaciÃ³n!
+                        No hay mensajes aún. ¡Inicia la conversación!
                     </p>
                 </div>
                 ${this.renderMessageForm(otherUserId)}
@@ -954,7 +931,7 @@ const OpenmindMessages = {
                 <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
                     <i class="fa-solid fa-info-circle text-yellow-600 mr-2"></i>
                     <span class="text-sm text-yellow-700">
-                        Este psicÃ³logo ya no estÃ¡ asignado a ti. Solo puedes leer el historial de mensajes.
+                        Este psicólogo ya no está asignado a ti. Solo puedes leer el historial de mensajes.
                     </span>
                 </div>
             </div>
@@ -1032,12 +1009,13 @@ const OpenmindMessages = {
                 if (data.success) {
                     form.reset();
                     this.loadMessages(this.currentConversation);
+                    Toast.show(data.data.message || 'Mensaje enviado', 'success');
                 } else {
-                    OpenmindApp.showNotification(data.data?.message || 'Error al enviar', 'error');
+                    Toast.show(data.data?.message || 'Error al enviar', 'error');
                 }
             } catch (error) {
                 console.error('Error sending message:', error);
-                OpenmindApp.showNotification('Error al enviar mensaje', 'error');
+                Toast.show('Error al enviar mensaje', 'error');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> <span class="ml-2 hidden md:inline">Enviar</span>';
@@ -1131,6 +1109,20 @@ const OpenmindMessages = {
     }
 };
 
+function formatTimeAgo(timestamp) {
+    const now = Math.floor(Date.now() / 1000);
+    const diff = now - timestamp;
+
+    if (diff < 60) return 'hace un momento';
+    if (diff < 3600) return `hace ${Math.floor(diff / 60)} min`;
+    if (diff < 86400) return `hace ${Math.floor(diff / 3600)} h`;
+    if (diff < 604800) return `hace ${Math.floor(diff / 86400)} días`;
+
+    // Fecha completa si > 7 días
+    const date = new Date(timestamp * 1000);
+    return date.toLocaleDateString('es-CL');
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof OpenmindApp !== 'undefined' && typeof openmindData !== 'undefined') {
         if (document.querySelector('.openmind-dashboard')) {
@@ -1141,7 +1133,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ==========================================
-// BADGE DE DIARIOS COMPARTIDOS (PSICÃ“LOGO)
+// BADGE DE DIARIOS COMPARTIDOS (PSICÓLOGO)
 // ==========================================
 
 async function updateDiaryBadge() {

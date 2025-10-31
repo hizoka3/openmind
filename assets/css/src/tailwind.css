@@ -21,6 +21,10 @@
     #forgot-password-form button {
         box-shadow: none !important;
     }
+
+    b, strong {
+        font-weight: 700 !important;
+    }
 }
 
 /* ==========================================
