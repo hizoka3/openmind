@@ -49,8 +49,8 @@ if ($is_psychologist && ($entry->is_private == 1 || $entry->author_id != $entry-
 
 $patient = get_userdata($entry->patient_id);
 $mood_emojis = [
-    'feliz' => '😊', 'triste' => '😢', 'ansioso' => '😰',
-    'neutral' => '😐', 'enojado' => '😠', 'calmado' => '😌'
+        'feliz' => '😊', 'triste' => '😢', 'ansioso' => '😰',
+        'neutral' => '😐', 'enojado' => '😠', 'calmado' => '😌'
 ];
 
 // URLs de retorno según el rol
@@ -93,7 +93,6 @@ if ($is_owner) {
                     <?php else: ?>
                         <div>
                             <h1 class="text-3xl font-bold text-gray-900 m-0 mb-2">
-                                <i class="fa-solid fa-book-open mr-2 text-purple-500"></i>
                                 Entrada de Diario
                             </h1>
                             <p class="text-sm text-gray-600 m-0">
@@ -135,6 +134,29 @@ if ($is_owner) {
             <div class="prose prose-lg max-w-none">
                 <?php echo wp_kses_post(wpautop($entry->content)); ?>
             </div>
+
+            <!-- Attachments -->
+            <?php
+            $attachments = \Openmind\Repositories\AttachmentRepository::getByEntry('diary', $entry->id);
+            if (!empty($attachments)):
+                ?>
+                <div class="mt-8 pt-8 border-t border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        Imágenes adjuntas (<?php echo count($attachments); ?>)
+                    </h3>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        <?php foreach ($attachments as $att): ?>
+                            <a href="<?php echo esc_url($att->file_path); ?>"
+                               target="_blank"
+                               class="group block rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all border-2 border-gray-200 hover:border-primary-500">
+                                <img src="<?php echo esc_url($att->file_path); ?>"
+                                     alt="<?php echo esc_attr($att->file_name); ?>"
+                                     class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-200">
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
 
         <!-- Acciones (solo para el dueño) -->
@@ -211,15 +233,13 @@ if ($is_owner) {
                         const data = await response.json();
 
                         if (data.success) {
-                            if (typeof OpenmindApp !== 'undefined') {
-                                OpenmindApp.showNotification(data.data.message, 'success');
-                            }
+                            Toast.show(data.data.message, 'success');
                             setTimeout(() => location.reload(), 500);
                         } else {
                             throw new Error(data.data?.message);
                         }
                     } catch (error) {
-                        alert('Error: ' + error.message);
+                        Toast.show('Error: ' + error.message, 'error');
                     }
                 });
             }
@@ -244,9 +264,7 @@ if ($is_owner) {
                         const data = await response.json();
 
                         if (data.success) {
-                            if (typeof OpenmindApp !== 'undefined') {
-                                OpenmindApp.showNotification('Entrada eliminada', 'success');
-                            }
+                            Toast.show('Entrada eliminada', 'success');
                             setTimeout(() => {
                                 window.location.href = '<?php echo add_query_arg('view', 'diario', home_url('/dashboard-paciente/')); ?>';
                             }, 500);
@@ -254,7 +272,7 @@ if ($is_owner) {
                             throw new Error(data.data?.message);
                         }
                     } catch (error) {
-                        alert('Error al eliminar: ' + error.message);
+                        Toast.show('Error al eliminar: ' + error.message, 'error');
                     }
                 });
             }

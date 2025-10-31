@@ -48,10 +48,6 @@ class Plugin {
             '\Openmind\Controllers\DiaryController',
             'savePatientDiary'
         ]);
-
-        // DEBUG TEMPORAL - VERIFICAR QUE EL HOOK EXISTE
-        error_log('=== HOOKS REGISTRADOS ===');
-        error_log('admin_post_openmind_save_session_note registrado: ' . (has_action('admin_post_openmind_save_session_note') ? 'SI' : 'NO'));
     }
 
     private static function registerAjaxActions(): void {

@@ -188,7 +188,8 @@ class PsychologistProfile {
                                         'textarea_name' => $key,
                                         'textarea_rows' => 8,
                                         'media_buttons' => false,
-                                        'teeny' => true
+                                        'teeny' => true,
+                                        'quicktags' => false
                                 ]);
                                 ?>
 

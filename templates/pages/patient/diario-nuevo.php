@@ -73,27 +73,13 @@ $psychologist = $psychologist_id ? get_userdata($psychologist_id) : null;
                     Escribe tus pensamientos <span class="text-red-500">*</span>
                 </label>
                 <div class="border border-gray-300 rounded-lg overflow-hidden">
-                    <?php
-                    $editor_settings = [
-                            'textarea_name' => 'content',
-                            'textarea_rows' => 15,
-                            'media_buttons' => false,
-                            'teeny' => false,
-                            'quicktags' => true,
-                            'tinymce' => [
-                                    'toolbar1' => 'formatselect,bold,italic,underline,bullist,numlist,link,blockquote,hr,removeformat',
-                                    'toolbar2' => '',
-                                    'content_css' => OPENMIND_URL . 'assets/css/editor-style.css',
-                                    'height' => 400,
-                                    'menubar' => false,
-                                    'statusbar' => true,
-                                    'resize' => true,
-                                    'branding' => false,
-                                    'elementpath' => false
-                            ]
-                    ];
-                    wp_editor('', 'diary_content', $editor_settings);
-                    ?>
+
+                    <textarea name="content"
+                              id="diary_content"
+                              class="w-full p-4 text-gray-700 focus:outline-none"
+                              rows="10"
+                              required ></textarea>
+
                 </div>
                 <p class="text-xs text-gray-500 mt-2">
                     <i class="fa-solid fa-info-circle mr-1"></i>
