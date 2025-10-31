@@ -19,8 +19,8 @@ if (!defined('ABSPATH')) exit;
 </script>
 
 <!-- Modal Reservo -->
-<div id="reservo-modal" class="fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50" style="display: none;">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden">
+<div id="reservo-modal" class="fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50" data-lenis-prevent style="display: none;">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden" data-lenis-prevent>
         <!-- Header -->
         <div class="flex items-center justify-between p-6 border-b border-gray-200">
             <div>
@@ -35,7 +35,7 @@ if (!defined('ABSPATH')) exit;
         </div>
 
         <!-- Iframe Reservo -->
-        <div class="p-6">
+        <div class="p-6" data-lenis-prevent>
             <iframe
                     src="<?php echo esc_url(OPENMIND_RESERVO_URL); ?>"
                     width="100%"

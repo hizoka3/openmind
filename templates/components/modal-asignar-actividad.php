@@ -54,22 +54,22 @@ $library_activities = \Openmind\Controllers\ActivityController::getLibraryActivi
                 </div>
             </div>
 
-            <!-- TÃƒÂ­tulo personalizado -->
+            <!-- Título personalizado -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                    TÃƒÂ­tulo personalizado
-                    <span class="text-gray-500 font-normal">(opcional - se usa el de biblioteca si estÃƒÂ¡ vacÃƒÂ­o)</span>
+                    Título personalizado
+                    <span class="text-gray-500 font-normal">(opcional - se usa el de biblioteca si está vacío)</span>
                 </label>
                 <input type="text" id="assign-custom-title" name="custom_title" placeholder="Ej: Ayuda para controlar tu ansiedad" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
             </div>
 
-            <!-- DescripciÃƒÂ³n personalizada -->
+            <!-- Descripción personalizada -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                     Mensaje para el paciente
                     <span class="text-gray-500 font-normal">(opcional)</span>
                 </label>
-                <textarea id="assign-custom-description" name="custom_description" rows="4" placeholder="Ej: MarÃƒÂ­a, te dejÃƒÂ© esta actividad para que complementemos la sesiÃƒÂ³n..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"></textarea>
+                <textarea id="assign-custom-description" name="custom_description" rows="4" placeholder="Ej: María, te dejé esta actividad para que complementemos la sesión..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"></textarea>
             </div>
 
             <!-- Fecha límite (OPCIONAL) -->

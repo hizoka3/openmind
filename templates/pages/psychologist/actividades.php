@@ -293,8 +293,8 @@ $assignments = get_posts([
 </div>
 
 <!-- Modal: Asignar Actividad -->
-<div id="assign-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col">
+<div id="assign-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" data-lenis-prevent>
+    <div class="bg-white rounded-xl shadow-xl max-w-3xl w-full max-h-[90vh] flex flex-col" data-lenis-prevent>
         <!-- Header -->
         <div class="bg-white border-b border-gray-200 px-4 md:px-6 py-4 rounded-t-xl flex-shrink-0">
             <div class="flex justify-between items-start gap-4">
@@ -309,7 +309,7 @@ $assignments = get_posts([
         </div>
 
         <!-- Body -->
-        <form id="assign-form" class="p-4 md:p-6 overflow-y-auto flex-1" data-modal-scroll style="overscroll-behavior: contain;">
+        <form id="assign-form" class="p-4 md:p-6 overflow-y-auto flex-1" data-lenis-prevent style="overscroll-behavior: contain;">
             <input type="hidden" id="library-activity-id" name="library_activity_id">
 
             <!-- Selección de pacientes -->
