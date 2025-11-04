@@ -501,6 +501,7 @@ const OpenmindApp = {
     },
 
     renderMessages(messages, otherUserId) {
+        console.log('Mensaje completo:', messages[0]);
         const container = document.getElementById('message-thread');
         const currentUserId = openmindData.userId;
 
@@ -512,7 +513,7 @@ const OpenmindApp = {
         const messagesHtml = messages.map(msg => `
             <div class="message ${msg.sender_id == currentUserId ? 'sent' : 'received'}">
                 <div class="message-content">${msg.message}</div>
-                <div class="message-time">${msg.formatted_time}</div>
+                <div class="message-time">${formatTimeAgo(msg.timestamp)}</div>
             </div>
         `).join('');
 
@@ -781,6 +782,7 @@ const OpenmindMessages = {
     },
 
     renderConversations(conversations) {
+        console.log('Mensaje completo:', conversations);
         const container = document.getElementById('conversations-list');
 
         if (!conversations || conversations.length === 0) {
@@ -812,7 +814,7 @@ const OpenmindMessages = {
                     </div>
                     <p class="text-xs text-gray-500 m-0">
                         <i class="fa-solid fa-clock mr-1"></i>
-                        ${conv.formatted_time}
+                        ${formatTimeAgo(conv.timestamp)}
                     </p>
                 </div>
                 ${conv.unread_count > 0 ? `<span class="unread-badge">${conv.unread_count}</span>` : ''}
@@ -900,7 +902,7 @@ const OpenmindMessages = {
                 <div class="message-content">${this.escapeHtml(msg.message)}</div>
                 <div class="message-time">
                     <i class="fa-solid fa-clock mr-1"></i>
-                    ${msg.formatted_time}
+                    ${formatTimeAgo(msg.timestamp)}
                 </div>
             </div>
         `).join('');

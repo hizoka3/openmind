@@ -76,7 +76,7 @@ class MessageController {
 
         // Formatear fechas para cada mensaje
         foreach ($messages as $msg) {
-            $msg->formatted_time = openmind_time_ago($msg->created_at);
+            $msg->timestamp = strtotime($msg->created_at) - (get_option('gmt_offset') * HOUR_IN_SECONDS);
         }
 
         // Marcar conversación como leída al abrir
@@ -129,7 +129,7 @@ class MessageController {
 
         // Formatear fechas para cada conversación
         foreach ($conversations as $conv) {
-            $conv->formatted_time = openmind_time_ago($conv->last_message_at);
+            $conv->timestamp = strtotime($conv->last_message_at) - (get_option('gmt_offset') * HOUR_IN_SECONDS);
         }
 
         wp_send_json_success(['conversations' => $conversations]);

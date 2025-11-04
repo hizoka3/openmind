@@ -30,7 +30,7 @@ $unread_messages = \Openmind\Repositories\MessageRepository::getUnreadCount($use
                 <h1 class="text-2xl font-normal text-gray-900 m-0">
                     Hola <?php echo esc_html($current_user->display_name); ?>
                 </h1>
-                <p class="text-gray-600 m-0">Bienvenido a tu espacio personal</p>
+                <p class="text-gray-600 m-0">Bienvenido/a a tu espacio personal</p>
             </div>
         </div>
     </div>
